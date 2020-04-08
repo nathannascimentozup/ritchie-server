@@ -1,0 +1,790 @@
+{
+	"info": {
+		"_postman_id": "475f3f4c-76f6-42b3-8762-2dcdbd9381fa",
+		"name": "Datadriven-ritchie-server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "73bc58b0-557b-4620-976e-b24e33ada5fe",
+						"exec": [
+							"let jsonData = pm.response.json();",
+							"if(jsonData.access_token) ",
+							"    pm.environment.set(\"access_token\", jsonData.access_token);",
+							"    ",
+							"    ",
+							"let httpStatus = pm.response.code",
+							"",
+							"",
+							"if (httpStatus === 200) {",
+							"    pm.test(`Status code is ${data.loginStatus}`, function () {",
+							"        pm.response.to.have.status(data.loginStatus);",
+							"    });",
+							"}",
+							"",
+							"if (httpStatus === 400) {",
+							"    pm.test(\"Should has a validationError field\", function () {",
+							"        pm.expect(pm.response.text()).not.eql(null);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "x-org",
+						"type": "text",
+						"value": "zup"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{loginUsername}}\",\n    \"password\": \"{{loginPassword}}\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9dd51fa5-5686-45c2-9337-03d0ae45ef24",
+						"exec": [
+							"let httpStatus = pm.response.code",
+							"",
+							"",
+							"pm.test(`Status code is ${data.createUserStatus}`, function () {",
+							"    pm.response.to.have.status(data.createUserStatus);",
+							"});",
+							"",
+							"",
+							"if (httpStatus === 400) {",
+							"    pm.test(\"Should has a validationError field\", function () {",
+							"        pm.expect(pm.response.text()).not.eql(null);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "x-org",
+						"type": "text",
+						"value": "zup"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\" : \"{{email}}\",\n\t\"firstName\" : \"{{firstName}}\",\n\t\"lastName\" : \"{{lastName}}\",\n\t\"organization\" : \"{{organization}}\",\n\t\"password\" : \"{{userPassword}}\",\n\t\"username\" : \"{{userName}}\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create credential admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "73f12d6f-5898-4588-a424-08bfd99dd192",
+						"exec": [
+							"let httpStatus = pm.response.code",
+							"",
+							"pm.test(`Status code is ${data.createCredentialAdminStatus}`, function () {",
+							"    pm.response.to.have.status(data.createCredentialAdminStatus);",
+							"});",
+							"",
+							"",
+							"if (httpStatus === 400) {",
+							"    pm.test(\"Should has a validationError field\", function () {",
+							"        pm.expect(pm.response.text()).not.eql(null);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "x-org",
+						"value": "zup",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{credentialUsername}}\",\n    \"service\": \"{{credentialService}}\",\n    \"credential\": {\n        \"username\": \"{{credentialUsername}}\",\n        \"token\": \"{{credentialToken}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/credentials/admin",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"credentials",
+						"admin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create credential me",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3038ab84-ef1b-4c95-a000-e871a3e82cdc",
+						"exec": [
+							"let httpStatus = pm.response.code",
+							"",
+							"pm.test(`Status code is ${data.createCredentialUserStatus}`, function () {",
+							"    pm.response.to.have.status(data.createCredentialUserStatus);",
+							"});",
+							"",
+							"if (httpStatus === 400) {",
+							"    pm.test(\"Should has a validationError field\", function () {",
+							"        pm.expect(pm.response.text()).not.eql(null);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "x-org",
+						"value": "zup",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"service\": \"{{credentialService}}\",\n    \"credential\": {\n        \"username\": \"{{credentialUsername}}\",\n        \"token\": \"{{credentialToken}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/credentials/me",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"credentials",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get credential",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7105b491-ef5d-4ed3-981b-76dd3c7146d1",
+						"exec": [
+							"pm.test(`Status code is ${data.getCredentialStatus}`, function () {",
+							"    pm.response.to.have.status(data.getCredentialStatus);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "x-org",
+						"value": "zup",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/credentials/me/{{credentialService}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"credentials",
+						"me",
+						"{{credentialService}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get credential configs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "430213f5-17f6-49c4-b083-6aa0a3e58203",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "x-org",
+						"type": "text",
+						"value": "zup"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/credentials/config",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"credentials",
+						"config"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get tree",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "02ead63a-8bff-48af-8058-b26e20f31e79",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "x-org",
+						"type": "text",
+						"value": "zup"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/tree",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"tree"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get configs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a1d4252d-4aef-4c82-90fe-36d3efa75874",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							" pm.test(\"Should return config fields\", function () {",
+							"    pm.expect(pm.response.json().keycloak_url).not.eql(null);",
+							"    pm.expect(pm.response.json().keycloak_realm).not.eql(null);",
+							"    pm.expect(pm.response.json().keycloak_client_id).not.eql(null);",
+							"    pm.expect(pm.response.json().keycloak_client_secret).not.eql(null);",
+							"    pm.expect(pm.response.json().formula_url).not.eql(null);",
+							"    pm.expect(pm.response.json().formula_provider).not.eql(null);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "x-org",
+						"type": "text",
+						"value": "zup"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/configs",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"configs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get health",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6b905dc1-0d1c-452c-a859-a9dba5e12eb7",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							" pm.test(\"Should return health fields\", function () {",
+							"    let data = pm.response.json()[0];",
+							"    pm.expect(data.nameOrg).not.eql(null);",
+							"    pm.expect(data.healths.services.length).to.eql(3);",
+							"    pm.expect(data.healths.status).not.eql(null);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "x-org",
+						"type": "text",
+						"value": "zup"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/health",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get metrics",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7ddf96fb-d744-44cb-af39-be0c80525c58",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "x-org",
+						"type": "text",
+						"value": "zup"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/metrics",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"metrics"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get autocomplete bash",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "419893ad-e8d6-4859-ae7b-caab07796dca",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "x-org",
+						"type": "text",
+						"value": "zup"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/auto-complete/bash",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"auto-complete",
+						"bash"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get autocomplete zsh",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8093d915-5738-4fdb-a0ef-391192eb1e48",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "x-org",
+						"type": "text",
+						"value": "zup"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/auto-complete/bash",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"auto-complete",
+						"bash"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a0afacb0-19ae-4cbc-9076-abf4a9997c4a",
+						"exec": [
+							"let httpStatus = pm.response.code",
+							"",
+							"pm.test(`Status code is ${data.deleteUserStatus}`, function () {",
+							"    pm.response.to.have.status(data.deleteUserStatus);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "x-org",
+						"value": "zup",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{userName}}\",\n    \"email\": \"{{email}}\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "f454df63-0e3f-41fb-8470-dce9da7d4c2c",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "5ae1c793-832a-4182-a387-163d69c370bb",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

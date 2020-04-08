@@ -1,0 +1,4 @@
+loginUsername,loginPassword,email,firstName,lastName,organization,userPassword,userName,credentialService,credentialUsername,credentialToken,loginStatus,createUserStatus,deleteUserStatus,createCredentialAdminStatus,createCredentialUserStatus,getCredentialStatus
+admin,camaroamarelo,test@test.com,test,test,zup,change123,test,github,test,a567975c-f89e-4b68-b4a3-95987b3ffb37,200,201,200,201,201,200
+admin,,,test,test,zup,change123,test,,test,a567975c-f89e-4b68-b4a3-95987b3ffb37,400,400,400,400,400,404
+vitao,dev,test@test.com,test,test,zup,change123,test,github,test,a567975c-f89e-4b68-b4a3-95987b3ffb37,200,403,403,403,201,200

@@ -1,0 +1,82 @@
+---
+constraints:
+  - pattern: /credentials/me/*
+    roles:
+      user:
+        - POST
+        - GET
+
+  - pattern: /credentials/me
+    roles:
+      user:
+        - POST
+        - GET
+
+  - pattern: /credentials/admin
+    roles:
+      admin:
+        - POST
+
+  - pattern: /credentials/config
+    roles:
+      user:
+        - GET
+      admin:
+        - POST
+
+  - pattern: /keycloak
+    roles:
+      user:
+        - GET
+
+  - pattern: /users
+    roles:
+      admin:
+        - POST
+        - DELETE
+
+  - pattern: /tree
+    roles:
+      user:
+        - GET
+
+
+  - pattern: /repositories
+    roles:
+      user:
+        - GET
+
+  - pattern: /metrics/use
+    roles:
+      user:
+        - POST
+
+
+publicConstraints:
+  - pattern: /login
+    methods:
+      - POST
+      
+  - pattern: /metrics
+    methods:
+      - GET
+
+  - pattern: /auto-complete/bash
+    methods:
+      - GET
+
+  - pattern: /auto-complete/zsh
+    methods:
+      - GET
+
+  - pattern: /health
+    methods:
+      - GET
+
+  - pattern: /oauth
+    methods:
+      - GET
+
+  - pattern: /cli-version
+    methods:
+      - GET

@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  server:
+    image: ${DOCKER_REGISTRY_BUILDER}/ritchie-server:builder
+    volumes:
+      - .:/home/application
+    command: ["/home/application/run-tests-ci.sh"]
+    depends_on:
+      - stubby4j
+      - vault
+      - keycloak
+
+  stubby4j:
+    image: sandokandias/stubby4j-docker
+    environment:
+      STUBBY_PORT: 8882
+    volumes:
+      - ./testdata/stubby4j/integrations.yml:/usr/local/stubby.yml
+
+  vault:
+    image: vault:1.3.0
+    volumes:
+      - ./resources/vault.hcl:/vault/config/vault.hcl
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=87e7784b-d598-44fe-8962-c7c345a11eed
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+      - SKIP_SETCAP=true
+      - disable_mlock=true
+
+  keycloak:
+    image: jboss/keycloak:7.0.0
+    environment:
+      DB_VENDOR: H2
+      KEYCLOAK_IMPORT: /tmp/keycloak/ritchie.json
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    volumes:
+      - ./testdata/security/keycloak:/tmp/keycloak
