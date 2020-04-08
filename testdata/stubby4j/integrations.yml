@@ -1,0 +1,11 @@
+#s3-mock
+- request:
+    method: GET
+    url: ^/s3-version-mock$
+
+  response:
+    status: 200
+    headers:
+      content-type: text/plain
+    body: >
+      dev-test

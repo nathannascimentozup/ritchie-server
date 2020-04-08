@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  vault:
+    image: vault:1.3.0
+    ports:
+      - "8200:8200"
+    volumes:
+      - ./resources/vault.hcl:/vault/config/vault.hcl
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=87e7784b-d598-44fe-8962-c7c345a11eed
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+      - SKIP_SETCAP=true
+      - disable_mlock=true
+
+  stubby4j:
+    image: sandokandias/stubby4j-docker
+    ports:
+      - "8787:8787"
+      - "8882:8882"
+    environment:
+      STUBBY_PORT: 8882
+    volumes:
+      - ./testdata/stubby4j/integrations.yml:/usr/local/stubby.yml
+
+  keycloak:
+    image: jboss/keycloak:7.0.0
+    environment:
+      DB_VENDOR: H2
+      KEYCLOAK_IMPORT: /tmp/keycloak/ritchie.json
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./testdata/security/keycloak:/tmp/keycloak
