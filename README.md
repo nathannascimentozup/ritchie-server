@@ -10,10 +10,12 @@ Currently, this repository is integrated with :
 
 - [Vault](https://www.vaultproject.io/) - to securely store datas.
 
+[Contribute to the Ritchie community](https://github.com/ZupIT/ritchie-server/blob/master/CONTRIBUTING.md)
+
 
 ## Documentation
 
-- [Gitbook](https://docs.ritchiecli.io/v/doc-english/)
+- [Gitbook](https://docs.ritchiecli.io)
 
 - [Zup Products](https://www.zup.com.br/en/about) 
 
