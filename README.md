@@ -15,7 +15,7 @@ Currently, this repository is integrated with :
 
 ## Documentation
 
-- [Gitbook](https://docs.ritchiecli.io/v/doc-english/)
+- [Gitbook](https://docs.ritchiecli.io)
 
 - [Zup Products](https://www.zup.com.br/en/about) 
 
