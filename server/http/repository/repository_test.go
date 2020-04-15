@@ -87,7 +87,7 @@ func TestHandler_Handler(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mu := NewConfigHandler(tt.fields.Config)
 
-			r, _ := http.NewRequest(tt.fields.method, "/metrics/use", bytes.NewReader([]byte{}))
+			r, _ := http.NewRequest(tt.fields.method, "/usage", bytes.NewReader([]byte{}))
 
 			r.Header.Add(server.OrganizationHeader, tt.fields.org)
 			r.Header.Add("Content-Type", "application/json")

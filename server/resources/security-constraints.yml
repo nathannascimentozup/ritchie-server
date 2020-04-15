@@ -46,7 +46,7 @@ constraints:
       user:
         - GET
 
-  - pattern: /metrics/use
+  - pattern: /usage
     roles:
       user:
         - POST
