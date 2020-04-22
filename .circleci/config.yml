@@ -1,0 +1,172 @@
+version: 2.1
+
+references:
+  images:
+    go: &GOLANG_IMAGE cimg/go:1.14
+#    python: &PYTHON_IMAGE circleci/python:2.7-stretch
+
+  paths:
+    test-results: &TEST_RESULTS_DIR bin
+
+  environment: &ENVIRONMENT
+    TEST_RESULTS_DIR: *TEST_RESULTS_DIR
+    GIT_EMAIL : "zup-ci@zup.com.br"
+    GIT_USERNAME: "zup-ci"
+    GIT_NAME: "Zup CI"
+    BUILD_IMAGE: *GOLANG_IMAGE
+
+  filters: &FILTERS
+    branches:
+      only:
+        - master
+        - /^release-.*/
+        - qa
+
+#  filters-release: &FILTERS_RELEASE
+#    branches:
+#      only:
+#        - /^release-.*/
+
+executors:
+  ritchie-executor:
+    docker:
+      - image: *GOLANG_IMAGE
+        user: root
+    working_directory: /workspace
+
+#  delivery-executor:
+#    docker:
+#      - image: *PYTHON_IMAGE
+#        user: root
+#    working_directory: /workspace
+
+jobs:
+  lint:
+    executor: ritchie-executor
+    steps:
+      - checkout
+      - run:
+          name: Install golangci-lint
+          command: |
+            download=https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
+            wget -O- -q $download | sh -s -- -b /go/bin/ v1.24.0
+      - run: go mod download
+      - run:
+          name: lint
+          command: |
+            /go/bin/golangci-lint run
+  test:
+    executor: ritchie-executor
+    environment:
+      <<: *ENVIRONMENT
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: Install Docker client
+          command: |
+            set -x
+            VER="17.03.0-ce"
+            curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
+            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            mv /tmp/docker/* /usr/bin
+
+      - run:
+          name: Install Docker Compose
+          command: |
+            set -x
+            curl -L https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+            chmod +x /usr/local/bin/docker-compose
+
+      - run:
+          name: Running test
+          command: |
+            mkdir -p $TEST_RESULTS_DIR
+            docker-compose -f docker-compose-ci.yml run server
+
+#      - store_test_results:
+#          path: *TEST_RESULTS_DIR
+#      - store_artifacts:
+#          path: *TEST_RESULTS_DIR
+#      - run:
+#          name: codecov upload
+#          when: always
+#          command: bash <(curl -s https://codecov.io/bash)
+
+  build:
+    executor: ritchie-executor
+    branches:
+    steps:
+      - checkout
+      - run:
+          name: Running build
+          command: |
+            . ./version.sh
+            make build-circle
+      - persist_to_workspace:
+          root: dist
+          paths:
+            - linux
+            - darwin
+            - windows
+      - store_test_results:
+          path: *TEST_RESULTS_DIR
+      - store_artifacts:
+          path: *TEST_RESULTS_DIR
+
+  delivery:
+    executor: delivery-executor
+    environment:
+      <<: *ENVIRONMENT
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /workspace/dist
+      - run:
+          name: Delivering cli binary
+          command: |
+            pip install awscli
+            . ./version.sh
+            . ./bucket.sh
+            . ./credentials.sh
+            make delivery
+
+  release:
+    environment:
+      <<: *ENVIRONMENT
+    executor: delivery-executor
+    steps:
+      - checkout
+      - run:
+          name: Releasing
+          command: |
+            . ./version.sh
+            make release
+
+
+workflows:
+  build_and_test:
+    jobs:
+#      - lint:
+#          filters:
+#            <<: *FILTERS
+      - test:
+          filters:
+            <<: *FILTERS
+#      - build:
+#          filters:
+#            <<: *FILTERS
+#          requires:
+#            - test
+#            - lint
+#      - delivery:
+#          filters:
+#            <<: *FILTERS
+#          requires:
+#            - build
+#      - release:
+#          filters:
+#            <<: *FILTERS_RELEASE
+#          requires:
+#            - build
