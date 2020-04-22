@@ -2,7 +2,7 @@ version: '3'
 
 services:
   server:
-    image: ${DOCKER_REGISTRY_BUILDER}/ritchie-server:builder
+    image: ${BUILD_IMAGE}
     volumes:
       - .:/home/application
     command: ["/home/application/run-tests-ci.sh"]
