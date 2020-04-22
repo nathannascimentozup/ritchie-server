@@ -83,8 +83,8 @@ jobs:
           name: Running test
           command: |
             mkdir -p $TEST_RESULTS_DIR
-#            docker-compose -f docker-compose-ci.yml run server
             ls
+#            docker-compose -f docker-compose-ci.yml run server
 
 #      - store_test_results:
 #          path: *TEST_RESULTS_DIR
