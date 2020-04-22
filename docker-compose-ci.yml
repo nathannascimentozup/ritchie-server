@@ -5,7 +5,8 @@ services:
     image: ${BUILD_IMAGE}
     volumes:
       - .:/home/application
-    command: ["/home/application/run-tests-ci.sh"]
+#    command: ["/home/application/run-tests-ci.sh"]
+    command: ["ls","/home/application"]
     depends_on:
       - stubby4j
       - vault
