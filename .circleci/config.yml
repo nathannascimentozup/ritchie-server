@@ -60,8 +60,9 @@ jobs:
     environment:
       <<: *ENVIRONMENT
     steps:
-      - checkout
+
       - setup_remote_docker
+      - checkout
 
 #      - run:
 #          name: Install Docker client
