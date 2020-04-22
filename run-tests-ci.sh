@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 cd /home/application
 ls
 #./wait-for-it.sh "stubby4j:8882" && echo "stubby4j is up"
