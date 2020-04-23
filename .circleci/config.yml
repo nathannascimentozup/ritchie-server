@@ -42,7 +42,7 @@ executors:
 
 jobs:
   lint:
-    executor: ritchie-executor
+    executor: ritchie-server-executor
     steps:
       - checkout
       - run:
@@ -57,7 +57,7 @@ jobs:
           command: |
             /go/bin/golangci-lint run
   test:
-    executor: ritchie-executor
+    executor: ritchie-server-executor
     environment:
       <<: *ENVIRONMENT
     steps:
@@ -97,7 +97,7 @@ jobs:
 #          command: bash <(curl -s https://codecov.io/bash)
 
   build:
-    executor: ritchie-executor
+    executor: ritchie-server-executor
     branches:
     steps:
       - checkout
