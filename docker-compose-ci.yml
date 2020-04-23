@@ -7,6 +7,7 @@ services:
       - .:/home/application
     command: ["/home/application/run-tests-ci.sh"]
 #    command: ["ls","/home/application/testdata"]
+    user: root
     depends_on:
       - stubby4j
       - vault
