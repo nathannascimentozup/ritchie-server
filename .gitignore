@@ -11,7 +11,7 @@ settings.xml
 /bin/
 /test/tests.*
 /test/coverage.*
-/go.sum
+#/go.sum
 
 # Test binary, built with `go test -c`
 *.test
