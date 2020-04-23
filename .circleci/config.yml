@@ -31,7 +31,7 @@ references:
 executors:
   ritchie-server-executor:
     machine:
-      - image: *CI_MACHINE_IMAGE
+      image: *CI_MACHINE_IMAGE
     working_directory: /workspace
 
 #  delivery-executor:
