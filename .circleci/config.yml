@@ -62,7 +62,6 @@ jobs:
       <<: *ENVIRONMENT
     steps:
 
-      - setup_remote_docker
       - checkout
 
 #      - run:
