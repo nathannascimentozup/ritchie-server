@@ -18,7 +18,7 @@ export OAUTH_URL=http://keycloak:8080/auth/realms/ritchie
 export CLI_VERSION_URL=http://stubby4j:8882/s3-version-mock
 
 mkdir -p bin
-go test -mod=vendor -v -coverprofile=bin/cov.out `go list ./... | grep -v vendor/`
+go test -v -coverprofile=bin/cov.out `go list ./... | grep -v vendor/`
 testStatus=$?
 if [ $testStatus -ne 0 ]; then
     echo "Tests failed"
