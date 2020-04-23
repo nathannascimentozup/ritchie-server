@@ -17,13 +17,12 @@ export KEYCLOAK_URL=http://keycloak:8080
 export OAUTH_URL=http://keycloak:8080/auth/realms/ritchie
 export CLI_VERSION_URL=http://stubby4j:8882/s3-version-mock
 
-mkdir -p bin
-go test -v -coverprofile=bin/cov.out `go list ./... | grep -v vendor/`
+go test -v -coverprofile=cov.out `go list ./... | grep -v vendor/`
 testStatus=$?
 if [ $testStatus -ne 0 ]; then
     echo "Tests failed"
     exit 1
 fi
 
-go tool cover -func=bin/cov.out
+go tool cover -func=cov.out
 rm -rf testdata/file_config_test.json
