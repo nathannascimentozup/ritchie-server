@@ -25,6 +25,3 @@ if [ $testStatus -ne 0 ]; then
     echo "Tests failed"
     exit 1
 fi
-
-go tool cover -func=bin/cov.out
-rm -rf testdata/file_config_test.json
