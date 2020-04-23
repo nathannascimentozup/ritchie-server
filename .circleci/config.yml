@@ -4,6 +4,7 @@ references:
   images:
     go: &GOLANG_IMAGE cimg/go:1.14
 #    python: &PYTHON_IMAGE circleci/python:2.7-stretch
+    ci_machine: &CI_MACHINE_IMAGE ubuntu-1604:201903-01
 
   paths:
     test-results: &TEST_RESULTS_DIR bin
@@ -28,10 +29,9 @@ references:
 #        - /^release-.*/
 
 executors:
-  ritchie-executor:
-    docker:
-      - image: *GOLANG_IMAGE
-        user: root
+  ritchie-server-executor:
+    machine:
+      - image: *CI_MACHINE_IMAGE
     working_directory: /workspace
 
 #  delivery-executor:
@@ -50,6 +50,7 @@ jobs:
           command: |
             download=https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
             wget -O- -q $download | sh -s -- -b /go/bin/ v1.24.0
+            circleci-install golang 1.14
       - run: go mod download
       - run:
           name: lint
