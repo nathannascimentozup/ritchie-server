@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd /home/application
+
 ./wait-for-it.sh "stubby4j:8882" && echo "stubby4j is up"
 ./wait-for-it.sh "vault:8200" && echo "vault is up"
 ./wait-for-it.sh "keycloak:8080" && echo "keycloak is up"
