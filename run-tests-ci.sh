@@ -19,8 +19,6 @@ export CLI_VERSION_URL=http://stubby4j:8882/s3-version-mock
 
 gotestsum --format=short-verbose --junitfile "$TEST_RESULTS_DIR"/gotestsum-report.xml -- -p 2 -coverprofile=coverage.txt $(go list ./... | grep -v vendor/)
 
-ls -lah "$TEST_RESULTS_DIR"
-
 testStatus=$?
 if [ $testStatus -ne 0 ]; then
     echo "Tests failed"

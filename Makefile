@@ -26,6 +26,13 @@ build:
 	# $(DOCKERTAG) "${REGISTRY}/${BINARY_NAME}:${RELEASE}" "${REGISTRY}/${BINARY_NAME}:latest"
 	rm go.sum ritchie-server
 
+build-circle:
+	GOOS=linux GOARCH=amd64 ${GOBUILD} -o ./${BINARY_NAME} -v ${CMD_PATH}
+	cp $(BINARY_NAME) server
+	$(DOCKERBUILD) -t "${REGISTRY}/${BINARY_NAME}:${RELEASE}" ./server
+	# $(DOCKERTAG) "${REGISTRY}/${BINARY_NAME}:${RELEASE}" "${REGISTRY}/${BINARY_NAME}:latest"
+	rm go.sum ritchie-server
+
 build-local-mac:
 	GOOS=darwin GOARCH=amd64 ${GOBUILD} -o ./${BINARY_NAME} -v ${CMD_PATH}
 

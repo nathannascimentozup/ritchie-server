@@ -139,11 +139,11 @@ workflows:
       - test:
           filters:
             <<: *FILTERS
-#      - build:
-#          filters:
-#            <<: *FILTERS
-#          requires:
-#            - test
+      - build:
+          filters:
+            <<: *FILTERS
+          requires:
+            - test
 #            - lint
 #      - delivery:
 #          filters:
