@@ -3,6 +3,7 @@ version: 2.1
 references:
   images:
     go: &GOLANG_IMAGE cimg/go:1.14
+    python: &PYTHON_IMAGE circleci/python:2.7-stretch
     ci_machine: &CI_MACHINE_IMAGE ubuntu-1604:201903-01
 
   paths:
@@ -38,6 +39,12 @@ executors:
       - image: *GOLANG_IMAGE
         user: root
     working_directory: ~/workspace
+
+  delivery-executor:
+    docker:
+      - image: *PYTHON_IMAGE
+        user: root
+    working_directory: /workspace
 
 jobs:
   lint:
