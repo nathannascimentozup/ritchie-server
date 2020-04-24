@@ -91,8 +91,6 @@ jobs:
     branches:
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/workspace/bin
       - run:
           name: Running build
           command: |
@@ -113,6 +111,8 @@ jobs:
       <<: *ENVIRONMENT
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/workspace/bin
       - run:
           name: Creating docker image
           command: |
