@@ -34,6 +34,13 @@ executors:
       image: *CI_MACHINE_IMAGE
     working_directory: ~/workspace
 
+  ritchie-executor:
+    docker:
+      - image: *GOLANG_IMAGE
+        user: root
+    working_directory: /workspace
+
+
 #  delivery-executor:
 #    docker:
 #      - image: *PYTHON_IMAGE
@@ -80,22 +87,19 @@ jobs:
           command: bash <(curl -s https://codecov.io/bash)
 
   build:
-    executor: ritchie-server-executor
+    executor: ritchie-executor
     branches:
     steps:
       - checkout
       - run:
           name: Running build
           command: |
-            circleci-install golang 1.13
             . ./version.sh
             make build-circle
       - persist_to_workspace:
-          root: dist
+          root: .
           paths:
-            - linux
-            - darwin
-            - windows
+            - bin
       - store_test_results:
           path: *TEST_RESULTS_DIR
       - store_artifacts:
