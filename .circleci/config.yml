@@ -137,9 +137,9 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - lint:
-          filters:
-            <<: *FILTERS
+#      - lint:
+#          filters:
+#            <<: *FILTERS
       - test:
           filters:
             <<: *FILTERS
@@ -148,7 +148,7 @@ workflows:
             <<: *FILTERS
           requires:
             - test
-            - lint
+#            - lint
       - docker:
           filters:
             <<: *FILTERS
