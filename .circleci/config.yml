@@ -56,13 +56,12 @@ jobs:
           name: Install golangci-lint
           command: |
             download=https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
-            wget -O- -q $download | sh -s -- -b /go/bin/ v1.24.0
-            circleci-install golang 1.13
+            wget -O- -q $download | sh -s -- -b go/bin/ v1.24.0
       - run: go mod download
       - run:
           name: lint
           command: |
-            /go/bin/golangci-lint run
+            go/bin/golangci-lint run
   test:
     executor: ritchie-server-executor
     environment:
@@ -118,24 +117,10 @@ jobs:
             . ./version.sh
             . ./registry.sh
             make build-container-circle
-
-  delivery:
-    executor: delivery-executor
-    environment:
-      <<: *ENVIRONMENT
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /workspace/dist
       - run:
-          name: Delivering cli binary
+          name: Pushing docker image to registry
           command: |
-            pip install awscli
-            . ./version.sh
-            . ./bucket.sh
-            . ./credentials.sh
-            make delivery
-
+            make publish
   release:
     environment:
       <<: *ENVIRONMENT
@@ -152,18 +137,18 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-#      - lint:
-#          filters:
-#            <<: *FILTERS
-#      - test:
-#          filters:
-#            <<: *FILTERS
+      - lint:
+          filters:
+            <<: *FILTERS
+      - test:
+          filters:
+            <<: *FILTERS
       - build:
           filters:
             <<: *FILTERS
-#          requires:
-#            - test
-#            - lint
+          requires:
+            - test
+            - lint
       - docker:
           filters:
             <<: *FILTERS
