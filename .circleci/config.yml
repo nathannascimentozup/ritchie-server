@@ -49,7 +49,7 @@ executors:
 
 jobs:
   lint:
-    executor: ritchie-server-executor
+    executor: ritchie-executor
     steps:
       - checkout
       - run:
