@@ -110,6 +110,7 @@ jobs:
     environment:
       <<: *ENVIRONMENT
     steps:
+      - checkout
       - run:
           name: Creating docker image
           command: |
