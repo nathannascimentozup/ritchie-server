@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 cd /home/application
 
@@ -19,6 +19,8 @@ export CLI_VERSION_URL=http://stubby4j:8882/s3-version-mock
 
 mkdir -p $TEST_RESULTS_DIR
 gotestsum --format=short-verbose --junitfile $TEST_RESULTS_DIR/gotestsum-report.xml -- -p 2 -coverprofile=coverage.txt `go list ./... | grep -v vendor/`
+
+ls -lah bin
 
 testStatus=$?
 if [ $testStatus -ne 0 ]; then
