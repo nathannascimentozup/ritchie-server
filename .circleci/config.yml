@@ -136,14 +136,14 @@ workflows:
 #      - lint:
 #          filters:
 #            <<: *FILTERS
-      - test:
-          filters:
-            <<: *FILTERS
+#      - test:
+#          filters:
+#            <<: *FILTERS
       - build:
           filters:
             <<: *FILTERS
-          requires:
-            - test
+#          requires:
+#            - test
 #            - lint
 #      - delivery:
 #          filters:
