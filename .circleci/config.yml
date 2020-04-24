@@ -120,6 +120,8 @@ jobs:
       - run:
           name: Pushing docker image to registry
           command: |
+            . ./version.sh
+            . ./registry.sh
             . ./credentials.sh
             make publish
   release:
