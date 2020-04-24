@@ -38,7 +38,7 @@ executors:
     docker:
       - image: *GOLANG_IMAGE
         user: root
-    working_directory: /workspace
+    working_directory: ~/workspace
 
 
 #  delivery-executor:
@@ -104,6 +104,16 @@ jobs:
           path: *TEST_RESULTS_DIR
       - store_artifacts:
           path: *TEST_RESULTS_DIR
+
+  docker:
+    executor: ritchie-server-executor
+    environment:
+      <<: *ENVIRONMENT
+    steps:
+      - run:
+          name: Creating docker image
+          command: |
+            make build-container-circle
 
   delivery:
     executor: delivery-executor
