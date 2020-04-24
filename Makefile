@@ -34,7 +34,7 @@ build-local:
 
 publish:
 	LOGIN_CMD="$(shell aws ecr get-login --region ${DOCKER_AWS_REGION} --no-include-email | sed 's/https:\/\///')"
-	${LOGIN_CMD}
+	echo ${LOGIN_CMD}
 	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
 
 test:
