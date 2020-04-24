@@ -120,6 +120,7 @@ jobs:
       - run:
           name: Pushing docker image to registry
           command: |
+            . ./credentials.sh
             make publish
   release:
     environment:
@@ -140,25 +141,20 @@ workflows:
 #      - lint:
 #          filters:
 #            <<: *FILTERS
-      - test:
-          filters:
-            <<: *FILTERS
+#      - test:
+#          filters:
+#            <<: *FILTERS
       - build:
           filters:
             <<: *FILTERS
-          requires:
-            - test
+#          requires:
+#            - test
 #            - lint
       - docker:
           filters:
             <<: *FILTERS
           requires:
             - build
-#      - delivery:
-#          filters:
-#            <<: *FILTERS
-#          requires:
-#            - build
 #      - release:
 #          filters:
 #            <<: *FILTERS_RELEASE
