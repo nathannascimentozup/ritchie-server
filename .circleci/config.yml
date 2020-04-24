@@ -112,7 +112,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/workspace/bin
+          at: ~/workspace
       - run:
           name: Creating docker image
           command: |
