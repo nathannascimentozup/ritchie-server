@@ -94,7 +94,6 @@ jobs:
       - run:
           name: Running build
           command: |
-            . ./version.sh
             make build-circle
       - persist_to_workspace:
           root: .
@@ -116,6 +115,8 @@ jobs:
       - run:
           name: Creating docker image
           command: |
+            . ./version.sh
+            . ./registry.sh
             make build-container-circle
 
   delivery:
