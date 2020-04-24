@@ -160,6 +160,11 @@ workflows:
 #          requires:
 #            - test
 #            - lint
+      - docker:
+          filters:
+            <<: *FILTERS
+          requires:
+            - build
 #      - delivery:
 #          filters:
 #            <<: *FILTERS
