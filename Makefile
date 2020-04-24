@@ -34,7 +34,8 @@ build-local:
 
 publish:
 	LOGIN_CMD="$(shell aws ecr get-login --region ${DOCKER_AWS_REGION} --no-include-email | sed 's/https:\/\///')"
-	echo $(LOGIN_CMD)
+	${LOGIN_CMD}
+	cat ~/.docker/config.json
 	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
 
 test:
