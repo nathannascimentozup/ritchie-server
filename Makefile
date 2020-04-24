@@ -33,10 +33,9 @@ build-local:
 	${GOBUILD} -o ./${BINARY_NAME} -v ${CMD_PATH}
 
 publish:
-	LOGIN_CMD="$(shell aws ecr get-login --region ${DOCKER_AWS_REGION} --no-include-email | sed 's|https://||')"
+	LOGIN_CMD="$(shell aws ecr get-login --region ${DOCKER_AWS_REGION} --no-include-email | sed 's/https:\/\///)"
 	${LOGIN_CMD}
 	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
-	# ${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:latest"
 
 test:
 	DOCKER_REGISTRY_BUILDER=${REGISTRY} docker-compose -f docker-compose-ci.yml run server
