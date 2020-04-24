@@ -31,7 +31,8 @@ build-circle:
 	GOOS=linux GOARCH=amd64 ${GOBUILD} -o ./bin/${BINARY_NAME} -v ${CMD_PATH}
 
 build-container-circle:
-	cp $(BINARY_NAME) server
+	ls
+	cp bin/$(BINARY_NAME) server
 	$(DOCKERBUILD) -t "${REGISTRY}/${BINARY_NAME}:${RELEASE}" ./server
 	rm go.sum ritchie-server
 
