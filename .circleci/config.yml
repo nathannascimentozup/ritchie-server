@@ -87,6 +87,7 @@ jobs:
       - run:
           name: Running build
           command: |
+            circleci-install golang 1.13
             . ./version.sh
             make build-circle
       - persist_to_workspace:
