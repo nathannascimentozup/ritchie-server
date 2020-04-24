@@ -3,7 +3,6 @@ version: 2.1
 references:
   images:
     go: &GOLANG_IMAGE cimg/go:1.14
-#    python: &PYTHON_IMAGE circleci/python:2.7-stretch
     ci_machine: &CI_MACHINE_IMAGE ubuntu-1604:201903-01
 
   paths:
@@ -23,10 +22,10 @@ references:
         - /^release-.*/
         - qa
 
-#  filters-release: &FILTERS_RELEASE
-#    branches:
-#      only:
-#        - /^release-.*/
+  filters-release: &FILTERS_RELEASE
+    branches:
+      only:
+        - /^release-.*/
 
 executors:
   ritchie-server-executor:
@@ -39,13 +38,6 @@ executors:
       - image: *GOLANG_IMAGE
         user: root
     working_directory: ~/workspace
-
-
-#  delivery-executor:
-#    docker:
-#      - image: *PYTHON_IMAGE
-#        user: root
-#    working_directory: /workspace
 
 jobs:
   lint:
@@ -93,7 +85,7 @@ jobs:
       - run:
           name: Running build
           command: |
-            make build-circle
+            make build
       - persist_to_workspace:
           root: .
           paths:
@@ -116,7 +108,7 @@ jobs:
           command: |
             . ./version.sh
             . ./registry.sh
-            make build-container-circle
+            make build-container
       - run:
           name: Pushing docker image to registry
           command: |
@@ -140,25 +132,25 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-#      - lint:
-#          filters:
-#            <<: *FILTERS
-#      - test:
-#          filters:
-#            <<: *FILTERS
+      - lint:
+          filters:
+            <<: *FILTERS
+      - test:
+          filters:
+            <<: *FILTERS
       - build:
           filters:
             <<: *FILTERS
-#          requires:
-#            - test
-#            - lint
+          requires:
+            - test
+            - lint
       - docker:
           filters:
             <<: *FILTERS
           requires:
             - build
-#      - release:
-#          filters:
-#            <<: *FILTERS_RELEASE
-#          requires:
-#            - build
+      - release:
+          filters:
+            <<: *FILTERS_RELEASE
+          requires:
+            - build
