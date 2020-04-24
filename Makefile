@@ -33,7 +33,6 @@ build-circle:
 build-container-circle:
 	cp bin/$(BINARY_NAME) server
 	$(DOCKERBUILD) -t "${REGISTRY}/${BINARY_NAME}:${RELEASE}" ./server
-	rm go.sum ritchie-server
 
 build-local-mac:
 	GOOS=darwin GOARCH=amd64 ${GOBUILD} -o ./${BINARY_NAME} -v ${CMD_PATH}
