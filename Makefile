@@ -33,7 +33,7 @@ build-local:
 	${GOBUILD} -o ./${BINARY_NAME} -v ${CMD_PATH}
 
 publish:
-	$(aws ecr get-login --region ${DOCKER_AWS_REGION} --no-include-email | sed 's/https:\/\///')
+	$(shell aws ecr get-login --region ${DOCKER_AWS_REGION} --no-include-email | sed 's/https:\/\///')
 	cat ~/.docker/config.json
 	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
 
