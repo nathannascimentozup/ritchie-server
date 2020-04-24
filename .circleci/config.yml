@@ -91,6 +91,8 @@ jobs:
     branches:
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/workspace/bin
       - run:
           name: Running build
           command: |
