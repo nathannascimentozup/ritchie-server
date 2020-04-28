@@ -9,8 +9,10 @@ help. If a reviewer realizes you have based your work on the wrong branch, we'll
 let you know so that you can rebase it.
 
 >**Note**: To contribute code to Ritchie projects, see the
-[Ritchie community guidelines](https://docs.ritchiecli.io/community) as well as the 
-[Open source contribution guidelines](https://opensource.guide/how-to-contribute/).
+
+[Ritchie community guidelines](https://docs.ritchiecli.io/v/doc-english/community) as well as the 
+[Open source contribution guidelines](https://opensource.guide/how-to-contribute/) and our 
+[Code of Conduct](https://github.com/ZupIT/ritchie-server/blob/master/CODE_OF_CONDUCT.md).
 
 ## New features for the project
 
