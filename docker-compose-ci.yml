@@ -1,11 +1,15 @@
-version: '3'
+version: '3.3'
 
 services:
   server:
-    image: ${DOCKER_REGISTRY_BUILDER}/ritchie-server:builder
+    image: ${BUILD_IMAGE}
+    environment:
+      TEST_RESULTS_DIR: ${TEST_RESULTS_DIR}
     volumes:
       - .:/home/application
     command: ["/home/application/run-tests-ci.sh"]
+#    command: ["ls","/home/application/testdata"]
+    user: root
     depends_on:
       - stubby4j
       - vault

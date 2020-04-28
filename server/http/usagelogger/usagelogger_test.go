@@ -109,7 +109,7 @@ func TestHandler_Handler(t *testing.T) {
 
 			payloadJson, _ := json.Marshal(tt.fields.command)
 
-			r, _ := http.NewRequest(tt.fields.method, "/metrics/use", bytes.NewReader(payloadJson))
+			r, _ := http.NewRequest(tt.fields.method, "/usage", bytes.NewReader(payloadJson))
 
 			r.Header.Add(server.OrganizationHeader, tt.fields.org)
 			r.Header.Add("Content-Type", "application/json")
