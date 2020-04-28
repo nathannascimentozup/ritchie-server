@@ -4,7 +4,7 @@
 
 ## Ritchie Server
 
-This repository contains the integrations configured for the Ritchie [Team Version](https://docs.ritchiecli.io/v/doc-english/arquitetura-do-sistema/versao-team).
+This repository contains the integrations configured for the Ritchie [Team Version](https://docs.ritchiecli.io/software-architecture/team-version).
 
 Currently, this repository is integrated with :
 
@@ -24,8 +24,7 @@ Currently, this repository is integrated with :
 
 ## How to install Ritchie
 
-- [Windows](https://docs.ritchiecli.io/v/master/get-started/installation/windows)
+- [Windows](https://docs.ritchiecli.io/get-started/installation/windows)
 
-- [Linux / Mac](https://docs.ritchiecli.io/v/master/get-started/installation/linux-mac)
-
+- [Linux / Mac](https://docs.ritchiecli.io/get-started/installation/linux-mac)
 
