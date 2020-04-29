@@ -23,6 +23,15 @@ references:
         - /^release-.*/
         - qa
 
+  filters-checks: &FILTERS_CHECK
+    branches:
+      only:
+        - master
+        - /^release-.*/
+        - qa
+        - /^feature.*/
+        - /^bug.*/
+
   filters-release: &FILTERS_RELEASE
     branches:
       only:
@@ -141,10 +150,10 @@ workflows:
     jobs:
       - lint:
           filters:
-            <<: *FILTERS
+            <<: *FILTERS_CHECK
       - test:
           filters:
-            <<: *FILTERS
+            <<: *FILTERS_CHECK
       - build:
           filters:
             <<: *FILTERS
