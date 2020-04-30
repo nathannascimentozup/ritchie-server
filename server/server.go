@@ -198,6 +198,7 @@ type Configurator interface {
 	LoadRepositoryHandler() DefaultHandler
 	LoadMiddlewareHandler() MiddlewareHandler
 	LoadCredentialHandler() CredentialHandler
+	LoadHelloHandler() DefaultHandler
 }
 
 type WildcardPatternMatcher interface {

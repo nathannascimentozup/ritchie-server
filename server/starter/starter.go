@@ -12,6 +12,7 @@ import (
 	"ritchie-server/server/http/cliversion"
 	"ritchie-server/server/http/credential"
 	"ritchie-server/server/http/health"
+	"ritchie-server/server/http/hello"
 	configHttp "ritchie-server/server/http/keycloak"
 	"ritchie-server/server/http/login"
 	"ritchie-server/server/http/oauth"
@@ -102,6 +103,10 @@ func (c Configurator) LoadMiddlewareHandler() server.MiddlewareHandler {
 
 func (c Configurator) LoadCredentialHandler() server.CredentialHandler {
 	return credential.NewCredentialHandler(c.vaultManager, c.conf)
+}
+
+func (c Configurator) LoadHelloHandler() server.DefaultHandler {
+	return hello.NewHelloHandler()
 }
 
 func loadConfigs() map[string]*server.ConfigFile {
