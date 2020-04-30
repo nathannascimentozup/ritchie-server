@@ -23,6 +23,7 @@ Currently, this repository is integrated with :
 - [Zup Products](https://www.zup.com.br/en/about) 
 
 
+
 ## How to install Ritchie
 
 - [Windows](https://docs.ritchiecli.io/get-started/installation/windows)
