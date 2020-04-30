@@ -33,7 +33,12 @@ func (mh Handler) Filter(next http.Handler) http.Handler {
 			if err != nil {
 				log.Error("Authorization failed ", err)
 				w.WriteHeader(http.StatusUnauthorized)
-				w.Write([]byte(fmt.Sprintf("Authorization Failed: %v", err.Error())))
+				_, err := w.Write([]byte(fmt.Sprintf("Authorization Failed: %v", err.Error())))
+				if err != nil {
+					fmt.Sprintln("Error in Write ")
+					return
+				}
+
 				metrics.Metric(r.URL.Path).With(prometheus.Labels{"code": "401"}).Inc()
 				return
 			}
@@ -46,7 +51,11 @@ func (mh Handler) Filter(next http.Handler) http.Handler {
 			metrics.LatencyOpsRequest.With(prometheus.Labels{"path": r.URL.Path}).Observe(float64(time.Since(start).Milliseconds()))
 		} else {
 			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte(fmt.Sprintf("Forbidden ")))
+			_, err := w.Write([]byte("Forbidden "))
+			if err != nil {
+				fmt.Sprintln("Errror in Write ")
+				return
+			}
 		}
 	})
 }

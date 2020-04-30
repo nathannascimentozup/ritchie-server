@@ -2,6 +2,7 @@ package oauth
 
 import (
 	"encoding/json"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"ritchie-server/server"
@@ -30,7 +31,11 @@ func (ch Handler) Handler() http.HandlerFunc {
 				return
 			}
 			w.Header().Set("Content-type", "application/json")
-			json.NewEncoder(w).Encode(oc)
+			err = json.NewEncoder(w).Encode(oc)
+			if err != nil {
+				fmt.Sprintln("Error in Json Encode ")
+				return
+			}
 		}
 	}
 }

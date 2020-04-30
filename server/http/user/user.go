@@ -112,7 +112,6 @@ func (uh Handler) deleteVaultCredentials(org string, deleteUser deleteUser) erro
 		return err
 	}
 
-	if keys != nil {
 		for i := range keys {
 			credentialPath := fmt.Sprintf("%s/%s", credentialKey, keys[i])
 			err := uh.vaultManager.Delete(credentialPath)
@@ -120,7 +119,7 @@ func (uh Handler) deleteVaultCredentials(org string, deleteUser deleteUser) erro
 				return err
 			}
 		}
-	}
+
 	return nil
 }
 

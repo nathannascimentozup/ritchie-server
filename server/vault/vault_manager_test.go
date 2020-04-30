@@ -1,6 +1,7 @@
 package vault
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -100,7 +101,11 @@ func TestManager_Read(t *testing.T) {
 			vm := NewVaultManager(tt.fields.client)
 
 			if tt.args.data != nil {
-				vm.Write(tt.args.key, tt.args.data)
+				err := vm.Write(tt.args.key, tt.args.data)
+				if err != nil {
+					fmt.Sprintln("Error in Write ")
+					return
+				}
 			}
 
 			got, err := vm.Read(tt.args.key)

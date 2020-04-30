@@ -2,6 +2,7 @@ package cliversion
 
 import (
 	"encoding/json"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -10,7 +11,6 @@ import (
 
 type Handler struct {
 	Config           server.Config
-	defaultConfigOrg string
 }
 
 func NewConfigHandler(config server.Config) server.DefaultHandler {
@@ -65,6 +65,10 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 	cliVersionConfigs.Version = bodyString
 
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(cliVersionConfigs)
+	err = json.NewEncoder(w).Encode(cliVersionConfigs)
+	if err != nil {
+		fmt.Sprintln("Error in Json Encode ")
+		return
+	}
 
 }

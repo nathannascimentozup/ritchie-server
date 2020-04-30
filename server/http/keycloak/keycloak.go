@@ -2,6 +2,7 @@ package keycloak
 
 import (
 	"encoding/json"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"ritchie-server/server"
@@ -37,6 +38,9 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(*keycloakConfigs)
-
+	err = json.NewEncoder(w).Encode(*keycloakConfigs)
+	if err != nil {
+		fmt.Sprintln("Error in Encode Json ")
+		return
+	}
 }

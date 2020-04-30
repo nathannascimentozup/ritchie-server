@@ -3,6 +3,7 @@ package health
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -46,7 +47,11 @@ func TestConfigHealth_Handler(t *testing.T) {
 					}
 
 					js, _ := json.Marshal(orgs)
-					w.Write(js)
+					_, err := w.Write(js)
+					if err != nil {
+						fmt.Sprintln("Error in Write ")
+						return
+					}
 				}
 			}(),
 		},
@@ -76,7 +81,11 @@ func TestConfigHealth_Handler(t *testing.T) {
 
 					w.WriteHeader(http.StatusInternalServerError)
 					js, _ := json.Marshal(orgs)
-					w.Write(js)
+					_, err := w.Write(js)
+					if err != nil {
+						fmt.Sprintln("Error in Write ")
+						return
+					}
 				}
 			}(),
 		},

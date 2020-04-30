@@ -84,23 +84,9 @@ type (
 		Version  string `json:"cliversion"`
 	}
 
-	Configuration struct {
-		conf         Config
-		vaultManager VaultManager
-	}
-
 	HealthEndpoints struct {
 		KeycloakURL string
 		VaultURL    string
-	}
-
-	WildcardPattern struct {
-		str     string
-		pattern string
-	}
-
-	SliceInterface struct {
-		slice interface{}
 	}
 
 	CreateUser struct {
