@@ -59,7 +59,7 @@ func (ch ConfigHealth) Handler() http.HandlerFunc {
 			if !(keycloakCheck && vaultCheck) {
 				w.WriteHeader(http.StatusInternalServerError)
 			}
-			fmt.Fprintf(w, string(resp))
+			fmt.Fprint(w, string(resp))
 		}
 	})
 }
