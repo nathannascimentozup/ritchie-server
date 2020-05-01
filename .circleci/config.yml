@@ -129,7 +129,6 @@ jobs:
             . ./version.sh
             . ./registry.sh
             . ./credentials.sh
-            make publish
   release:
     environment:
       <<: *ENVIRONMENT
