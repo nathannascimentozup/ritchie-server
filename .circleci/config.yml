@@ -19,7 +19,6 @@ references:
   filters: &FILTERS
     branches:
       only:
-        - master
         - /^release-.*/
         - qa
 
