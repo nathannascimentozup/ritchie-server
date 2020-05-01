@@ -3,6 +3,7 @@ package keycloak
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"ritchie-server/server"
@@ -32,7 +33,11 @@ func TestHandler_Handler(t *testing.T) {
 				return func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
 					w.Header().Set("Content-type", "application/json")
-					json.NewEncoder(w).Encode(keycloakConfigWant())
+					err := json.NewEncoder(w).Encode(keycloakConfigWant())
+					if err != nil {
+						fmt.Sprintln("Error in  Encode Json ")
+						return
+					}
 				}
 			}(),
 		},
@@ -89,8 +94,15 @@ func TestHandler_Handler(t *testing.T) {
 
 			if len(g.Body.String()) > 0 {
 				var got, want server.KeycloakConfig
-				json.Unmarshal(g.Body.Bytes(), &got)
-				json.Unmarshal(w.Body.Bytes(), &want)
+				err := json.Unmarshal(g.Body.Bytes(), &got)
+				if err != nil {
+					fmt.Sprintln("Erro in Json Unmarshal ")
+					return
+				}
+				err = json.Unmarshal(w.Body.Bytes(), &want)
+				if err != nil {
+					return
+				}
 				if got != want {
 					t.Errorf("Wrong version. Got %v out %v", got, want)
 				}

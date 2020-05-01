@@ -22,6 +22,7 @@ type Handler struct {
 	RepositoryHandler       server.DefaultHandler
 	MiddlewareHandler       server.MiddlewareHandler
 	CredentialHandler       server.CredentialHandler
+	HelloHandler			server.DefaultHandler
 }
 
 func init() {
@@ -41,12 +42,14 @@ func init() {
 		RepositoryHandler:       i.LoadRepositoryHandler(),
 		MiddlewareHandler:       i.LoadMiddlewareHandler(),
 		CredentialHandler:       i.LoadCredentialHandler(),
+		HelloHandler: i.LoadHelloHandler(),
 	}
 }
 
 func main() {
 
 	log.Info("Starting server")
+	http.Handle("/", h.MiddlewareHandler.Filter(h.HelloHandler.Handler()))
 	http.Handle("/login", h.MiddlewareHandler.Filter(h.LoginHandler.Handler()))
 	http.Handle("/keycloak", h.MiddlewareHandler.Filter(h.KeycloakHandler.Handler()))
 	http.Handle("/users", h.MiddlewareHandler.Filter(h.UserHandler.Handler()))

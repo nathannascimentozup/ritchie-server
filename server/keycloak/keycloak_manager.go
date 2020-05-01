@@ -110,7 +110,11 @@ func (m Manager) actions(id, accessToken, keycloakUrl, realm string) {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 	req.Header.Set("Content-Type", "application/json")
 	client := http.DefaultClient
-	client.Do(req)
+	_, err := client.Do(req)
+	if err != nil {
+		fmt.Sprintln("Error in client.Do ")
+		return
+	}
 }
 
 func buildKeyCloakUser(u server.CreateUser) gocloak.User {

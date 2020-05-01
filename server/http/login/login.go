@@ -2,6 +2,7 @@ package login
 
 import (
 	"encoding/json"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
@@ -50,7 +51,11 @@ func (lh Handler) processPost(w http.ResponseWriter, r *http.Request) {
 		err := map[string]interface{}{"validationError": validErrs}
 		w.Header().Set("Content-type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(err)
+		er := json.NewEncoder(w).Encode(err)
+		if er != nil {
+			fmt.Sprintln("Error in Json Encode ")
+			return
+		}
 		return
 	}
 	token, code, err := lh.KeyCloakManager.Login(organizationHeader, l.Username, l.Password)
@@ -61,7 +66,11 @@ func (lh Handler) processPost(w http.ResponseWriter, r *http.Request) {
 	objectResponse := response{Token: token}
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(objectResponse)
+	err = json.NewEncoder(w).Encode(objectResponse)
+	if err != nil {
+		fmt.Sprintln("Error in Json Encode ")
+		return
+	}
 }
 
 

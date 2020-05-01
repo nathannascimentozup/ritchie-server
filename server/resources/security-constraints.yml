@@ -73,6 +73,10 @@ publicConstraints:
     methods:
       - GET
 
+  - pattern: /
+    methods:
+      - GET
+
   - pattern: /oauth
     methods:
       - GET

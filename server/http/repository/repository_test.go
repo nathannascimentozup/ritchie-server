@@ -3,6 +3,7 @@ package repository
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -34,7 +35,11 @@ func TestHandler_Handler(t *testing.T) {
 				return func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
 					w.Header().Set("Content-type", "application/json")
-					json.NewEncoder(w).Encode(repositoryConfigWant())
+					err := json.NewEncoder(w).Encode(repositoryConfigWant())
+					if err != nil {
+						fmt.Sprintln("Error in Encode Json ")
+						return
+					}
 				}
 			}(),
 		},

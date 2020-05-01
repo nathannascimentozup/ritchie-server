@@ -29,8 +29,7 @@ references:
         - master
         - /^release-.*/
         - qa
-        - /^feature.*/
-        - /^bug.*/
+        - /^pull\/.*$/
 
   filters-release: &FILTERS_RELEASE
     branches:

@@ -74,13 +74,11 @@ func (auth Authorization) validateConstraints(path, method string, roles []inter
 		if wpm.NewWildcardPattern(path, pc.Pattern).Match() {
 			for _, role := range roles {
 				rm := pc.RoleMappings[role.(string)]
-				if rm != nil {
 					for _, m := range rm {
 						if method == m {
 							return true
 						}
 					}
-				}
 			}
 		}
 	}

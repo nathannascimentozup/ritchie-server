@@ -1,5 +1,6 @@
 [![CircleCI](https://circleci.com/gh/ZupIT/ritchie-server/tree/master.svg?style=svg)](https://circleci.com/gh/ZupIT/ritchie-server) [![codecov](https://codecov.io/gh/zupit/ritchie-server/branch/master/graph/badge.svg)](https://codecov.io/gh/zupit/ritchie-server) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+
 <img class="special-img-class" src="/docs/img/ritchie-banner.png" />
 
 ## Ritchie Server
@@ -20,6 +21,7 @@ Currently, this repository is integrated with :
 - [Gitbook](https://docs.ritchiecli.io)
 
 - [Zup Products](https://www.zup.com.br/en/about) 
+
 
 
 ## How to install Ritchie

@@ -3,6 +3,7 @@ package cliversion
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"ritchie-server/server"
@@ -32,7 +33,11 @@ func TestHandler_Handler(t *testing.T) {
 				return func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
 					w.Header().Set("Content-type", "application/json")
-					json.NewEncoder(w).Encode("dev-test")
+					err := json.NewEncoder(w).Encode("dev-test")
+					if err != nil {
+						fmt.Sprintln("Error in Json Encode ")
+						return
+					}
 				}
 			}(),
 		},
@@ -114,9 +119,17 @@ func TestHandler_Handler(t *testing.T) {
 
 			if len(g.Body.String()) > 0 {
 				cv := server.CliVersionConfig{}
-				json.Unmarshal(g.Body.Bytes(), &cv)
+				err := json.Unmarshal(g.Body.Bytes(), &cv)
+				if err != nil {
+					fmt.Sprintln("Error in Json Unmarshal ")
+					return
+				}
 				var v string
-				json.Unmarshal(w.Body.Bytes(), &v)
+				err = json.Unmarshal(w.Body.Bytes(), &v)
+				if err != nil {
+					fmt.Sprintln("Error in Json Unmarshal ")
+					return
+				}
 				if cv.Version != v {
 					t.Errorf("Wrong version. Got %v out %v", cv.Version, w.Body.String())
 				}

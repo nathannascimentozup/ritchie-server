@@ -1,6 +1,7 @@
 package keycloak
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"ritchie-server/server"
 	"ritchie-server/server/mock"
@@ -277,6 +278,10 @@ func randomCreateUser() server.CreateUser {
 func createUserTestForDelete() server.CreateUser {
 	m := NewKeycloakManager(mock.DummyConfig())
 	u := randomCreateUser()
-	m.CreateUser(u, "zup")
+	_, err := m.CreateUser(u, "zup")
+	if err != nil {
+		fmt.Sprintln("Error in Create User ")
+		return server.CreateUser{}
+	}
 	return u
 }
