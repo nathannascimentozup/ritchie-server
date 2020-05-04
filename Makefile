@@ -51,7 +51,7 @@ release:
 
 build:
 	mkdir bin
-	GOOS=linux GOARCH=amd64 ${GOBUILD} -o ./bin/${BINARY_NAME} -v ${CMD_PATH}
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 ${GOBUILD} -o ./bin/${BINARY_NAME} -v ${CMD_PATH}
 
 build-container:
 	cp bin/$(BINARY_NAME) server
