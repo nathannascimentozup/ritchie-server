@@ -7,6 +7,7 @@ import (
 	"ritchie-server/server"
 	"ritchie-server/server/metrics"
 	"strconv"
+	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -47,7 +48,7 @@ func (mh Handler) Filter(next http.Handler) http.Handler {
 			start := time.Now()
 			ww := &responseWriter{w, http.StatusOK}
 			next.ServeHTTP(ww, r)
-			metrics.Metric(r.URL.Path).With(prometheus.Labels{"code": strconv.Itoa(ww.statusCode)}).Inc()
+			metrics.Metric(strings.ReplaceAll(r.URL.Path, ".", "-")).With(prometheus.Labels{"code": strconv.Itoa(ww.statusCode)}).Inc()
 			metrics.LatencyOpsRequest.With(prometheus.Labels{"path": r.URL.Path}).Observe(float64(time.Since(start).Milliseconds()))
 		} else {
 			w.WriteHeader(http.StatusForbidden)

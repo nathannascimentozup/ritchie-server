@@ -17,6 +17,7 @@ import (
 	"ritchie-server/server/http/login"
 	"ritchie-server/server/http/oauth"
 	"ritchie-server/server/http/repository"
+	"ritchie-server/server/http/tree"
 	"ritchie-server/server/http/usagelogger"
 	"ritchie-server/server/http/user"
 	"ritchie-server/server/keycloak"
@@ -94,6 +95,10 @@ func (c Configurator) LoadCliVersionHandler() server.DefaultHandler {
 
 func (c Configurator) LoadRepositoryHandler() server.DefaultHandler {
 	return repository.NewConfigHandler(c.conf)
+}
+
+func (c Configurator) LoadTreeHandler() server.DefaultHandler {
+	return tree.NewConfigHandler(c.conf)
 }
 
 func (c Configurator) LoadMiddlewareHandler() server.MiddlewareHandler {

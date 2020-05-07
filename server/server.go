@@ -12,26 +12,14 @@ const (
 )
 
 type (
-	Command struct {
-		Usage   string   `json:"usage"`
-		Help    string   `json:"help"`
-		Formula *Formula `json:"formula,omitempty"`
-		Parent  string   `json:"parent"`
-	}
 
 	Repository struct {
-		Name     string `json:"name"`
-		Priority int    `json:"priority"`
-		TreePath string `json:"treePath"`
-		Username string `json:"username,omitempty"`
-		Password string `json:"password,omitempty"`
-	}
-
-	Formula struct {
-		Path    string `json:"path"`
-		Bin     string `json:"bin"`
-		Config  string `json:"config"`
-		RepoUrl string `json:"repoUrl"`
+		Name        string `json:"name"`
+		Priority    int    `json:"priority"`
+		TreePath    string `json:"treePath"`
+		InternalUrl string `json:"internalUrl,omitempty"`
+		Username    string `json:"username,omitempty"`
+		Password    string `json:"password,omitempty"`
 	}
 
 	Credential struct {
@@ -182,6 +170,7 @@ type Configurator interface {
 	LoadUsageLoggerHandler() DefaultHandler
 	LoadCliVersionHandler() DefaultHandler
 	LoadRepositoryHandler() DefaultHandler
+	LoadTreeHandler() DefaultHandler
 	LoadMiddlewareHandler() MiddlewareHandler
 	LoadCredentialHandler() CredentialHandler
 	LoadHelloHandler() DefaultHandler

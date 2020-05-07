@@ -35,12 +35,6 @@ constraints:
         - POST
         - DELETE
 
-  - pattern: /tree
-    roles:
-      user:
-        - GET
-
-
   - pattern: /repositories
     roles:
       user:
@@ -61,14 +55,6 @@ publicConstraints:
     methods:
       - GET
 
-  - pattern: /auto-complete/bash
-    methods:
-      - GET
-
-  - pattern: /auto-complete/zsh
-    methods:
-      - GET
-
   - pattern: /health
     methods:
       - GET
@@ -82,5 +68,9 @@ publicConstraints:
       - GET
 
   - pattern: /cli-version
+    methods:
+      - GET
+
+  - pattern: /tree/*
     methods:
       - GET
