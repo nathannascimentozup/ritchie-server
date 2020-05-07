@@ -25,28 +25,10 @@ func (auth Authorization) AuthorizationPath(bearerToken, path, method, org strin
 	if org == "" {
 		return false, fmt.Errorf("x-org not received. ")
 	}
-	if "" == bearerToken {
-		return false, fmt.Errorf("Bearer Token is empty ")
-	}
-	if !strings.Contains(bearerToken, bearer) {
-		return false, fmt.Errorf("Bearer Token is not valid ")
-	}
-	jwtString := strings.Replace(bearerToken, bearer, "", -1)
-	if "" == jwtString {
-		return false, fmt.Errorf("Bearer Token result is empty ")
-	}
-	keycloakConfig, err := auth.Config.ReadKeycloakConfigs(org)
+	roles, err := auth.ListRealmRoles(bearerToken, org)
 	if err != nil {
 		return false, err
 	}
-	client := gocloak.NewClient(keycloakConfig.Url)
-	claims := jwt.MapClaims{}
-	_, err = client.DecodeAccessTokenCustomClaims(jwtString, keycloakConfig.Realm, claims)
-	if err != nil {
-		return false, err
-	}
-	realmAccess := claims["realm_access"].(map[string]interface{})
-	roles := realmAccess["roles"].([]interface{})
 	return auth.validateConstraints(path, method, roles), nil
 }
 
@@ -83,4 +65,30 @@ func (auth Authorization) validateConstraints(path, method string, roles []inter
 		}
 	}
 	return false
+}
+
+func (auth Authorization) ListRealmRoles(bearerToken, org string) ([]interface{}, error) {
+	if "" == bearerToken {
+		return nil, fmt.Errorf("Bearer Token is empty ")
+	}
+	if !strings.Contains(bearerToken, bearer) {
+		return nil, fmt.Errorf("Bearer Token is not valid ")
+	}
+	jwtString := strings.Replace(bearerToken, bearer, "", -1)
+	if "" == jwtString {
+		return nil, fmt.Errorf("Bearer Token result is empty ")
+	}
+	kConfig, err := auth.Config.ReadKeycloakConfigs(org)
+	if err != nil {
+		return nil, err
+	}
+	client := gocloak.NewClient(kConfig.Url)
+	claims := jwt.MapClaims{}
+	_, err = client.DecodeAccessTokenCustomClaims(jwtString, kConfig.Realm, claims)
+	if err != nil {
+		return nil, err
+	}
+	realmAccess := claims["realm_access"].(map[string]interface{})
+	roles := realmAccess["roles"].([]interface{})
+	return roles, nil
 }

@@ -9,3 +9,121 @@
       content-type: text/plain
     body: >
       dev-test
+
+#s3-tree
+- request:
+    method: GET
+    url: ^/tree/tree.json$
+
+  response:
+    status: 200
+    headers:
+      content-type: application/json
+    body: >
+      {
+        "commands": [
+          {
+            "usage": "darwin",
+            "help": "Darwin commands",
+            "parent": "root"
+          },
+          {
+            "usage": "deploy",
+            "help": "Deploy Module Darwin",
+            "formula": {
+              "path": "darwin/deploy",
+              "bin": "darwin-deploy-${so}",
+              "bundle": "${so}.zip",
+              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
+            },
+            "parent": "root_darwin"
+          },
+          {
+            "usage": "scaffold",
+            "help": "Generates scaffold",
+            "parent": "root"
+          },
+          {
+            "usage": "generate",
+            "help": "Generates scaffold",
+            "parent": "root_scaffold"
+          },
+          {
+            "usage": "spring-iti",
+            "help": "Generates a project for kotlin/java",
+            "formula": {
+              "path": "scaffold/spring-iti",
+              "bin": "spring-iti-${so}",
+              "bundle": "${so}.zip",
+              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
+            },
+            "parent": "root_scaffold_generate"
+          },
+          {
+            "usage": "github",
+            "help": "Manipulate GitHub objects",
+            "parent": "root"
+          },
+          {
+            "usage": "generate",
+            "help": "Manipulate GitHub objects",
+            "parent": "root_github"
+          },
+          {
+            "usage": "zup-webhook",
+            "help": "Apply Zup WebHook CI and Zup Bot",
+            "formula": {
+              "path": "github/zup-webhook",
+              "bin": "zup-webhook-${so}",
+              "bundle": "${so}.zip",
+              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
+            },
+            "parent": "root_github_generate"
+          },
+          {
+            "usage": "jenkins",
+            "help": "Manipulate Jenkins objects",
+            "parent": "root"
+          },
+          {
+            "usage": "generate",
+            "help": "Apply Jenkins objects",
+            "parent": "root_jenkins"
+          },
+          {
+            "usage": "job",
+            "help": "Apply Jenkins Job CI",
+            "formula": {
+              "path": "jenkins/jobs",
+              "bin": "jobs-${so}",
+              "bundle": "${so}.zip",
+              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
+            },
+            "parent": "root_jenkins_generate"
+          },
+          {
+            "usage": "vivo",
+            "help": "Manipulate Vivo objects",
+            "parent": "root"
+          },
+          {
+            "usage": "generate",
+            "help": "Apply Vivo objects",
+            "parent": "root_vivo",
+            "roles": ["NAO"]
+          },
+          {
+            "usage": "deploy",
+            "help": "Deploy Vivo in PRD",
+            "formula": {
+              "path": "vivo/deploy",
+              "bin": "vivo-deploy-${so}",
+              "bundle": "${so}.zip",
+              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
+            },
+            "parent": "root_vivo_generate",
+            "roles": ["NAO"]
+          }
+        ],
+        "version": "1.0.0"
+      }

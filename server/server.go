@@ -89,6 +89,7 @@ type (
 type Constraints interface {
 	AuthorizationPath(bearerToken, path, method, org string) (bool, error)
 	ValidatePublicConstraints(path, method string) bool
+	ListRealmRoles(bearerToken, org string) ([]interface{}, error)
 }
 
 type ConfigHealth interface {
@@ -171,6 +172,7 @@ type Configurator interface {
 	LoadCliVersionHandler() DefaultHandler
 	LoadRepositoryHandler() DefaultHandler
 	LoadTreeHandler() DefaultHandler
+	LoadFormulasHandler() DefaultHandler
 	LoadMiddlewareHandler() MiddlewareHandler
 	LoadCredentialHandler() CredentialHandler
 	LoadHelloHandler() DefaultHandler

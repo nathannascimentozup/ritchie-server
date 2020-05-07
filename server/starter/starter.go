@@ -11,6 +11,7 @@ import (
 	"ritchie-server/server/config"
 	"ritchie-server/server/http/cliversion"
 	"ritchie-server/server/http/credential"
+	"ritchie-server/server/http/formulas"
 	"ritchie-server/server/http/health"
 	"ritchie-server/server/http/hello"
 	configHttp "ritchie-server/server/http/keycloak"
@@ -99,6 +100,10 @@ func (c Configurator) LoadRepositoryHandler() server.DefaultHandler {
 
 func (c Configurator) LoadTreeHandler() server.DefaultHandler {
 	return tree.NewConfigHandler(c.conf)
+}
+
+func (c Configurator) LoadFormulasHandler() server.DefaultHandler {
+	return formulas.NewConfigHandler(c.conf)
 }
 
 func (c Configurator) LoadMiddlewareHandler() server.MiddlewareHandler {

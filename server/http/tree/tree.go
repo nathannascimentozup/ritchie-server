@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"ritchie-server/server"
+	"ritchie-server/server/security"
 	"time"
 )
 
@@ -25,6 +26,7 @@ type (
 		Help    string   `json:"help"`
 		Formula *formula `json:"formula,omitempty"`
 		Parent  string   `json:"parent"`
+		Roles   []string `json:"roles,omitempty"`
 	}
 
 	formula struct {
@@ -35,12 +37,12 @@ type (
 		BinLinux   string   `json:"binLinux,omitempty"`
 		Config     string   `json:"config,omitempty"`
 		RepoUrl    string   `json:"repoUrl"`
-		Roles      []string `json:"roles,omitempty"`
 	}
 )
 
 const (
-	repoNameHeader = "x-repo-name"
+	repoNameHeader      = "x-repo-name"
+	authorizationHeader = "Authorization"
 )
 
 func NewConfigHandler(config server.Config) server.DefaultHandler {
@@ -60,10 +62,10 @@ func (lh Handler) Handler() http.HandlerFunc {
 
 func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 
-	organizationHeader := r.Header.Get(server.OrganizationHeader)
-	repositoryConfigs, err := lh.Config.ReadRepositoryConfig(organizationHeader)
+	org := r.Header.Get(server.OrganizationHeader)
+	repositoryConfigs, err := lh.Config.ReadRepositoryConfig(org)
 	if err != nil {
-		log.Printf("Error while processing %v's repository configuration: %v", organizationHeader, err)
+		log.Printf("Error while processing %v's repository configuration: %v", org, err)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -72,7 +74,7 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-
+	//TODO: Validar se encontrou - Talvez um metodo
 	var repository server.Repository
 	repoName := r.Header.Get(repoNameHeader)
 	if repoName != "" {
@@ -84,17 +86,43 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	//TODO: Validar se encontrou
+
 	internalTreeUrl := repository.InternalUrl + r.URL.Path
 	t, err := loadTreeFile(internalTreeUrl)
+	//TODO: Validar se encontrou
 
-	//TODO: Remover os que nao possui roles
+	authorizationToken := r.Header.Get(authorizationHeader)
+	sec := security.NewAuthorization(lh.Config)
+	roles, err := sec.ListRealmRoles(authorizationToken, org)
+	finalTree := finalTreeFile(roles, t)
 
 	w.Header().Set("Content-type", "application/json")
-	err = json.NewEncoder(w).Encode(t)
+	err = json.NewEncoder(w).Encode(finalTree)
 	if err != nil {
 		fmt.Sprintln("Error in Json Encode ")
 		return
 	}
+}
+
+func finalTreeFile(roles []interface{}, actualTree tree) tree {
+	rfind := make(map[string]interface{})
+	for _, r := range roles {
+		rfind[r.(string)] = r
+	}
+	ft := tree{}
+	ft.Version = actualTree.Version
+	for _, c := range actualTree.Commands {
+		if len(c.Roles) > 0 {
+			for _, r := range c.Roles {
+				if rfind[r] != nil {
+					ft.Commands = append(ft.Commands, c)
+				}
+			}
+		} else {
+			ft.Commands = append(ft.Commands, c)
+		}
+	}
+	return ft
 }
 
 func loadTreeFile(url string) (tree, error) {

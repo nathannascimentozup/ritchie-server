@@ -21,6 +21,7 @@ type Handler struct {
 	CliVersionHandler       server.DefaultHandler
 	RepositoryHandler       server.DefaultHandler
 	TreeHandler             server.DefaultHandler
+	FormulasHandler         server.DefaultHandler
 	MiddlewareHandler       server.MiddlewareHandler
 	CredentialHandler       server.CredentialHandler
 	HelloHandler            server.DefaultHandler
@@ -42,6 +43,7 @@ func init() {
 		CliVersionHandler:       i.LoadCliVersionHandler(),
 		RepositoryHandler:       i.LoadRepositoryHandler(),
 		TreeHandler:             i.LoadTreeHandler(),
+		FormulasHandler:         i.LoadFormulasHandler(),
 		MiddlewareHandler:       i.LoadMiddlewareHandler(),
 		CredentialHandler:       i.LoadCredentialHandler(),
 		HelloHandler:            i.LoadHelloHandler(),
@@ -65,7 +67,7 @@ func main() {
 	http.Handle("/cli-version", h.MiddlewareHandler.Filter(h.CliVersionHandler.Handler()))
 	http.Handle("/repositories", h.MiddlewareHandler.Filter(h.RepositoryHandler.Handler()))
 	http.Handle("/tree/", h.MiddlewareHandler.Filter(h.TreeHandler.Handler()))
-	//http.Handle("/formulas/", h.MiddlewareHandler.Filter(h..Handler()))
+	http.Handle("/formulas/", h.MiddlewareHandler.Filter(h.FormulasHandler.Handler()))
 	http.Handle("/", h.MiddlewareHandler.Filter(h.HelloHandler.Handler()))
 	log.Fatal(http.ListenAndServe(":3000", nil))
 }

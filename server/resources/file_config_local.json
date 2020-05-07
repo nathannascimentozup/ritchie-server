@@ -16,13 +16,13 @@
          "name": "commons",
          "priority": 0,
          "treePath": "http://localhost:3000/tree/tree.json",
-         "internalUrl" : "https://ritchie-cli-bucket234376412767550.s3-sa-east-1.amazonaws.com"
+         "internalUrl" : "http://localhost:8882"
        },
        {
          "name": "zup",
          "priority": 1,
          "treePath": "http://localhost:3000/tree/tree-zup.json",
-         "internalUrl" : "https://ritchie-cli-bucket234376412767550.s3-sa-east-1.amazonaws.com"
+         "internalUrl" : "http://localhost:8882"
        }
      ],
 
