@@ -1,8 +1,9 @@
 package server
 
 import (
-	"github.com/hashicorp/vault/api"
 	"net/http"
+
+	"github.com/hashicorp/vault/api"
 )
 
 const (
@@ -12,6 +13,8 @@ const (
 )
 
 type (
+	Org     string
+	Ctx     string
 	Command struct {
 		Usage   string   `json:"usage"`
 		Help    string   `json:"help"`
@@ -164,8 +167,9 @@ type DefaultHandler interface {
 }
 
 type CredentialHandler interface {
-	HandlerAdmin() http.HandlerFunc
-	HandlerMe() http.HandlerFunc
+	HandleAdmin() http.HandlerFunc
+	HandleMe() http.HandlerFunc
+	HandleOrg() http.HandlerFunc
 }
 
 type MiddlewareHandler interface {

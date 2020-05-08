@@ -2,17 +2,19 @@ package credential
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"strings"
+
+	"github.com/dgrijalva/jwt-go"
 
 	"ritchie-server/server"
 )
 
 const (
-	credentialVaultPath = "/%s/%s/%s"
-	authorizationHeader = "Authorization"
-	bearer              = "Bearer "
+	credentialVaultPath    = "/%s/%s/%s"
+	orgCredentialVaultPath = "/%s/%s"
+	authorizationHeader    = "Authorization"
+	bearer                 = "Bearer "
 )
 
 type user struct {
@@ -31,10 +33,10 @@ func NewCredentialHandler(v server.VaultManager, c server.Config) server.Credent
 	return Handler{v: v, c: c}
 }
 
-func (h Handler) defaultValidate(c server.Credential, org string) map[string]string {
+func (h Handler) defaultValidate(c server.Credential, org server.Org) map[string]string {
 	errs := make(map[string]string)
 
-	credentials, _ := h.c.ReadCredentialConfigs(org)
+	credentials, _ := h.c.ReadCredentialConfigs(string(org))
 
 	found := false
 
@@ -57,8 +59,28 @@ func (h Handler) defaultValidate(c server.Credential, org string) map[string]str
 	return errs
 }
 
-func (h Handler) findCredential(org, ctx string, c server.Credential) (map[string]interface{}, error) {
+func (h Handler) findCredential(org server.Org, ctx server.Ctx, c server.Credential) (map[string]interface{}, error) {
 	path := fmt.Sprintf(credentialVaultPath, ctxResolver(org, ctx), c.Username, c.Service)
+	credential, err := h.v.Read(path)
+	if err != nil {
+		return nil, err
+	}
+
+	// By default, we search credentials by the user,
+	// but if the user doesn't have a credential,
+	// we will search by the organization.
+	if credential == nil {
+		credential, err = h.findOrgCredential(org, ctx, c)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return credential, nil
+}
+
+func (h Handler) findOrgCredential(org server.Org, ctx server.Ctx, c server.Credential) (map[string]interface{}, error) {
+	path := fmt.Sprintf(orgCredentialVaultPath, ctxResolver(org, ctx), c.Service)
 	credential, err := h.v.Read(path)
 	if err != nil {
 		return nil, err
@@ -67,7 +89,7 @@ func (h Handler) findCredential(org, ctx string, c server.Credential) (map[strin
 	return credential, nil
 }
 
-func (h Handler) createCredential(org, ctx string, c server.Credential) error {
+func (h Handler) createCredential(org server.Org, ctx server.Ctx, c server.Credential) error {
 	path := fmt.Sprintf(credentialVaultPath, ctxResolver(org, ctx), c.Username, c.Service)
 	if err := h.v.Write(path, c.Credential); err != nil {
 		return err
@@ -75,20 +97,20 @@ func (h Handler) createCredential(org, ctx string, c server.Credential) error {
 	return nil
 }
 
-func ctxResolver(org, ctx string) string {
+func ctxResolver(org server.Org, ctx server.Ctx) string {
 	if ctx != "" {
 		return fmt.Sprintf("%s_%s", org, ctx)
 	}
 
-	return org
+	return string(org)
 }
 
-func org(r *http.Request) string {
-	return r.Header.Get(server.OrganizationHeader)
+func org(r *http.Request) server.Org {
+	return server.Org(r.Header.Get(server.OrganizationHeader))
 }
 
-func ctx(r *http.Request) string {
-	return r.Header.Get(server.ContextHeader)
+func ctx(r *http.Request) server.Ctx {
+	return server.Ctx(r.Header.Get(server.ContextHeader))
 }
 
 func loadUser(r http.Request) user {

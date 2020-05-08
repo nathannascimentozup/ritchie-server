@@ -17,6 +17,11 @@ constraints:
       admin:
         - POST
 
+  - pattern: /credentials/org
+    roles:
+      admin:
+        - POST
+
   - pattern: /credentials/config
     roles:
       user:

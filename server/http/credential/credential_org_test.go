@@ -5,12 +5,13 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"testing"
+
 	"ritchie-server/server"
 	"ritchie-server/server/mock"
-	"testing"
 )
 
-func TestHandler_HandlerAdmin(t *testing.T) {
+func TestHandler_HandleOrg(t *testing.T) {
 	type fields struct {
 		v       server.VaultManager
 		c       server.Config
@@ -25,11 +26,12 @@ func TestHandler_HandlerAdmin(t *testing.T) {
 		out    http.HandlerFunc
 	}{
 		{
-			name:   "method not found",
-			fields: fields{method: http.MethodPatch},
+			name:   "method not allowed",
+			fields: fields{method: http.MethodGet},
 			out: func() http.HandlerFunc {
 				return func(w http.ResponseWriter, r *http.Request) {
-					http.NotFound(w, r)
+					w.Header().Add("Allow", http.MethodPost)
+					w.WriteHeader(http.StatusMethodNotAllowed)
 				}
 			}(),
 		},
@@ -145,7 +147,7 @@ func TestHandler_HandlerAdmin(t *testing.T) {
 
 			g := httptest.NewRecorder()
 
-			h.HandleAdmin().ServeHTTP(g, r)
+			h.HandleOrg().ServeHTTP(g, r)
 
 			if g.Code != w.Code {
 				t.Errorf("Handler returned wrong status code: got %v out %v", g.Code, w.Code)
