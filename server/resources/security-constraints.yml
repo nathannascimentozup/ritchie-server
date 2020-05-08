@@ -45,6 +45,16 @@ constraints:
       user:
         - POST
 
+  - pattern: /tree/*
+    roles:
+      user:
+        - GET
+
+  - pattern: /formulas/*
+    roles:
+      user:
+        - GET
+
 
 publicConstraints:
   - pattern: /login
@@ -68,13 +78,5 @@ publicConstraints:
       - GET
 
   - pattern: /cli-version
-    methods:
-      - GET
-
-  - pattern: /tree/*
-    methods:
-      - GET
-
-  - pattern: /formulas/*
     methods:
       - GET

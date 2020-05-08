@@ -62,7 +62,6 @@ func (lh Handler) Handler() http.HandlerFunc {
 }
 
 func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
-
 	org := r.Header.Get(server.OrganizationHeader)
 	repositoryConfigs, err := lh.Config.ReadRepositoryConfig(org)
 	if err != nil {
@@ -75,7 +74,7 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	//TODO: Validar se encontrou - Talvez um metodo
+
 	var repository server.Repository
 	repoName := r.Header.Get(repoNameHeader)
 	if repoName != "" {
@@ -85,27 +84,27 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 		}
+	} else {
+		log.Println("No repo name passed in header x-repo-name")
+		w.WriteHeader(http.StatusNotFound)
+		return
 	}
-	//TODO: Validar se encontrou
-
-	internalTreeUrl := repository.ProxyTo + r.URL.Path
-	t, err := loadTreeFile(internalTreeUrl)
-	//TODO: Validar se encontrou
-
-	authorizationToken := r.Header.Get(authorizationHeader)
-	sec := security.NewAuthorization(lh.Config)
-	roles, err := sec.ListRealmRoles(authorizationToken, org)
-
-	finalTree := finalTreeFile(roles, t)
-	if repository.ReplaceRepoUrl != "" {
-		for _, c := range finalTree.Commands {
-			if c.Formula != nil {
-				if c.Formula.RepoUrl != "" {
-					c.Formula.RepoUrl = repository.ReplaceRepoUrl
-				}
-			}
-		}
+	if repository.Name == "" {
+		log.Printf("No repo for org %s with name %s\n", org, repoName)
+		w.WriteHeader(http.StatusNotFound)
+		return
 	}
+
+	proxyToUrl := repository.ProxyTo + r.URL.Path
+	t, err := loadTreeFile(proxyToUrl)
+	if err != nil {
+		log.Printf("Failed to load tree. proxyToUrl: %s, error: %v\n", proxyToUrl, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	at := r.Header.Get(authorizationHeader)
+	finalTree := lh.finalTreeFile(at, repository.ReplaceRepoUrl, org, t)
 
 	w.Header().Set("Content-type", "application/json")
 	err = json.NewEncoder(w).Encode(finalTree)
@@ -115,7 +114,9 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func finalTreeFile(roles []interface{}, actualTree tree) tree {
+func (lh Handler) finalTreeFile(authorizationToken, replaceRepoUrl, org string, actualTree tree) tree {
+	sec := security.NewAuthorization(lh.Config)
+	roles, _ := sec.ListRealmRoles(authorizationToken, org)
 	rfind := make(map[string]interface{})
 	for _, r := range roles {
 		rfind[strings.ToUpper(r.(string))] = r
@@ -131,6 +132,15 @@ func finalTreeFile(roles []interface{}, actualTree tree) tree {
 			}
 		} else {
 			ft.Commands = append(ft.Commands, c)
+		}
+	}
+	if replaceRepoUrl != "" {
+		for _, c := range ft.Commands {
+			if c.Formula != nil {
+				if c.Formula.RepoUrl != "" {
+					c.Formula.RepoUrl = replaceRepoUrl
+				}
+			}
 		}
 	}
 	return ft
