@@ -16,13 +16,15 @@
          "name": "commons",
          "priority": 0,
          "treePath": "http://localhost:3000/tree/tree.json",
-         "internalUrl" : "http://localhost:8882"
+         "proxyTo" : "http://localhost:8882",
+         "replaceRepoUrl" : "http://localhost:3000/formulas"
        },
        {
          "name": "zup",
          "priority": 1,
          "treePath": "http://localhost:3000/tree/tree-zup.json",
-         "internalUrl" : "http://localhost:8882"
+         "proxyTo" : "http://localhost:8882",
+         "replaceRepoUrl" : "http://localhost:3000/formulas"
        }
      ],
 

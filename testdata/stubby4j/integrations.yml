@@ -25,7 +25,8 @@
           {
             "usage": "darwin",
             "help": "Darwin commands",
-            "parent": "root"
+            "parent": "root",
+            "roles": ["USER"]
           },
           {
             "usage": "deploy",
@@ -36,17 +37,20 @@
               "bundle": "${so}.zip",
               "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
             },
-            "parent": "root_darwin"
+            "parent": "root_darwin",
+            "roles": ["USER"]
           },
           {
             "usage": "scaffold",
             "help": "Generates scaffold",
-            "parent": "root"
+            "parent": "root",
+            "roles": ["NOT_VIEW"]
           },
           {
             "usage": "generate",
             "help": "Generates scaffold",
-            "parent": "root_scaffold"
+            "parent": "root_scaffold",
+            "roles": ["NOT_VIEW"]
           },
           {
             "usage": "spring-iti",
@@ -57,17 +61,20 @@
               "bundle": "${so}.zip",
               "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
             },
-            "parent": "root_scaffold_generate"
+            "parent": "root_scaffold_generate",
+            "roles": ["NOT_VIEW"]
           },
           {
             "usage": "github",
             "help": "Manipulate GitHub objects",
-            "parent": "root"
+            "parent": "root",
+            "roles": ["NOT_VIEW"]
           },
           {
             "usage": "generate",
             "help": "Manipulate GitHub objects",
-            "parent": "root_github"
+            "parent": "root_github",
+            "roles": ["NOT_VIEW"]
           },
           {
             "usage": "zup-webhook",
@@ -78,17 +85,20 @@
               "bundle": "${so}.zip",
               "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
             },
-            "parent": "root_github_generate"
+            "parent": "root_github_generate",
+            "roles": ["NOT_VIEW"]
           },
           {
             "usage": "jenkins",
             "help": "Manipulate Jenkins objects",
-            "parent": "root"
+            "parent": "root",
+            "roles": ["NOT_VIEW"]
           },
           {
             "usage": "generate",
             "help": "Apply Jenkins objects",
-            "parent": "root_jenkins"
+            "parent": "root_jenkins",
+            "roles": ["NOT_VIEW"]
           },
           {
             "usage": "job",
@@ -99,18 +109,20 @@
               "bundle": "${so}.zip",
               "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
             },
-            "parent": "root_jenkins_generate"
+            "parent": "root_jenkins_generate",
+            "roles": ["NOT_VIEW"]
           },
           {
             "usage": "vivo",
             "help": "Manipulate Vivo objects",
-            "parent": "root"
+            "parent": "root",
+            "roles": ["NOT_VIEW"]
           },
           {
             "usage": "generate",
             "help": "Apply Vivo objects",
             "parent": "root_vivo",
-            "roles": ["NAO"]
+            "roles": ["NOT_VIEW"]
           },
           {
             "usage": "deploy",
@@ -122,7 +134,7 @@
               "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
             },
             "parent": "root_vivo_generate",
-            "roles": ["NAO"]
+            "roles": ["NOT_VIEW"]
           }
         ],
         "version": "1.0.0"

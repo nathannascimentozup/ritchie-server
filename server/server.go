@@ -14,12 +14,13 @@ const (
 type (
 
 	Repository struct {
-		Name        string `json:"name"`
-		Priority    int    `json:"priority"`
-		TreePath    string `json:"treePath"`
-		InternalUrl string `json:"internalUrl,omitempty"`
-		Username    string `json:"username,omitempty"`
-		Password    string `json:"password,omitempty"`
+		Name           string `json:"name"`
+		Priority       int    `json:"priority"`
+		TreePath       string `json:"treePath"`
+		ProxyTo        string `json:"proxyTo,omitempty"`
+		ReplaceRepoUrl string `json:"replaceRepoUrl,omitempty"`
+		Username       string `json:"username,omitempty"`
+		Password       string `json:"password,omitempty"`
 	}
 
 	Credential struct {

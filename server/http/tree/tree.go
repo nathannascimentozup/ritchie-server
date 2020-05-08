@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"ritchie-server/server"
 	"ritchie-server/server/security"
+	"strings"
 	"time"
 )
 
@@ -87,14 +88,24 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 	}
 	//TODO: Validar se encontrou
 
-	internalTreeUrl := repository.InternalUrl + r.URL.Path
+	internalTreeUrl := repository.ProxyTo + r.URL.Path
 	t, err := loadTreeFile(internalTreeUrl)
 	//TODO: Validar se encontrou
 
 	authorizationToken := r.Header.Get(authorizationHeader)
 	sec := security.NewAuthorization(lh.Config)
 	roles, err := sec.ListRealmRoles(authorizationToken, org)
+
 	finalTree := finalTreeFile(roles, t)
+	if repository.ReplaceRepoUrl != "" {
+		for _, c := range finalTree.Commands {
+			if c.Formula != nil {
+				if c.Formula.RepoUrl != "" {
+					c.Formula.RepoUrl = repository.ReplaceRepoUrl
+				}
+			}
+		}
+	}
 
 	w.Header().Set("Content-type", "application/json")
 	err = json.NewEncoder(w).Encode(finalTree)
@@ -107,14 +118,14 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 func finalTreeFile(roles []interface{}, actualTree tree) tree {
 	rfind := make(map[string]interface{})
 	for _, r := range roles {
-		rfind[r.(string)] = r
+		rfind[strings.ToUpper(r.(string))] = r
 	}
 	ft := tree{}
 	ft.Version = actualTree.Version
 	for _, c := range actualTree.Commands {
 		if len(c.Roles) > 0 {
 			for _, r := range c.Roles {
-				if rfind[r] != nil {
+				if rfind[strings.ToUpper(r)] != nil {
 					ft.Commands = append(ft.Commands, c)
 				}
 			}

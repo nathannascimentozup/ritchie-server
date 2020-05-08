@@ -61,7 +61,7 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 	//TODO: Validar se encontrou
 	//TODO: Achar commando na tree file e valiar role
 
-	u, _ := url.Parse(repository.InternalUrl)
+	u, _ := url.Parse(repository.ProxyTo)
 	proxy := httputil.NewSingleHostReverseProxy(u)
 
 	r.URL.Host = u.Host
