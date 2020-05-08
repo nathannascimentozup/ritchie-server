@@ -5,9 +5,10 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"testing"
+
 	"ritchie-server/server"
 	"ritchie-server/server/mock"
-	"testing"
 )
 
 func TestHandler_HandlerMe(t *testing.T) {
@@ -149,7 +150,7 @@ func TestHandler_HandlerMe(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := NewCredentialHandler(tt.fields.v, tt.fields.c)
-			b := []byte{}
+			var b []byte
 			if len(tt.fields.payload) > 0 {
 				b = append(b, []byte(tt.fields.payload)...)
 			}
@@ -165,7 +166,7 @@ func TestHandler_HandlerMe(t *testing.T) {
 
 			g := httptest.NewRecorder()
 
-			h.HandlerMe().ServeHTTP(g, r)
+			h.HandleMe().ServeHTTP(g, r)
 
 			if g.Code != w.Code {
 				t.Errorf("Handler returned wrong status code: got %v out %v", g.Code, w.Code)

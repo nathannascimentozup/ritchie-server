@@ -6,10 +6,11 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
+
 	"ritchie-server/server"
 )
 
-func (h Handler) HandlerMe() http.HandlerFunc {
+func (h Handler) HandleMe() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		username := loadUser(*r).username
 		switch r.Method {
@@ -36,16 +37,15 @@ func (h Handler) processMePost(w http.ResponseWriter, r *http.Request, loggedUse
 	}
 	c.Username = loggedUser
 
-	if validationError := h.defaultValidate(c, org); len(validationError) > 0 {
-		err := map[string]interface{}{"validationError": validationError}
+	if err := h.defaultValidate(c, org); len(err) > 0 {
+		err := map[string]interface{}{"validationError": err}
 		w.Header().Set("Content-type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(err)
 		return
 	}
 
-	err := h.createCredential(org, ctx, c)
-	if err != nil {
+	if err := h.createCredential(org, ctx, c); err != nil {
 		log.Error("Failed to create credential ", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		_ = json.NewEncoder(w).Encode(err.Error())
@@ -62,7 +62,6 @@ func (h Handler) processMeGet(w http.ResponseWriter, r *http.Request, loggedUser
 	c := server.Credential{Service: service, Username: loggedUser}
 
 	cre, err := h.findCredential(org, ctx, c)
-
 	if err != nil {
 		log.Error("Failed to retrieve credential ", err)
 		w.WriteHeader(http.StatusInternalServerError)
