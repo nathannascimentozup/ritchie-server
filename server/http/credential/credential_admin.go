@@ -9,18 +9,18 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (h Handler) HandlerAdmin() http.HandlerFunc {
+func (h Handler) HandleAdmin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
-			h.processPost(w, r)
+			h.processAdminPost(w, r)
 		default:
 			http.NotFound(w, r)
 		}
 	}
 }
 
-func (h Handler) processPost(w http.ResponseWriter, r *http.Request) {
+func (h Handler) processAdminPost(w http.ResponseWriter, r *http.Request) {
 	org := org(r)
 	ctx := ctx(r)
 	var c server.Credential
@@ -43,7 +43,7 @@ func (h Handler) processPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.createCredential(ctx, org, c)
+	err := h.createCredential(org, ctx, c)
 	if err != nil {
 		log.Error("Failed to create credential ", err)
 		w.WriteHeader(http.StatusInternalServerError)

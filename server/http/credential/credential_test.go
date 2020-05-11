@@ -6,6 +6,7 @@ import (
 
 type vaultManagerMock struct {
 	Error      error
+	Key        string
 	ReturnMap  map[string]interface{}
 	ReturnList []interface{}
 }
@@ -41,4 +42,3 @@ func (v vaultManagerMock) Delete(key string) error {
 
 func (v vaultManagerMock) Start(*api.Client) {
 }
-
