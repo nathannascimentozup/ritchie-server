@@ -57,7 +57,7 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 		res := response{
 			Name:     r.Name,
 			Priority: r.Priority,
-			TreePath: r.TreePath,
+			TreePath: r.ServerUrl + r.TreePath,
 			Username: r.Username,
 			Password: r.Password,
 		}

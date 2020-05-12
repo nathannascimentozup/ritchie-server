@@ -21,6 +21,7 @@ type (
 		Priority       int    `json:"priority"`
 		TreePath       string `json:"treePath"`
 		ProxyTo        string `json:"proxyTo,omitempty"`
+		ServerUrl      string `json:"serverUrl,omitempty"`
 		ReplaceRepoUrl string `json:"replaceRepoUrl,omitempty"`
 		Username       string `json:"username,omitempty"`
 		Password       string `json:"password,omitempty"`

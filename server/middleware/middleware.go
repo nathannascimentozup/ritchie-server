@@ -39,8 +39,8 @@ func (mh Handler) Filter(next http.Handler) http.Handler {
 					fmt.Sprintln("Error in Write ")
 					return
 				}
-
-				metrics.Metric(r.URL.Path).With(prometheus.Labels{"code": "401"}).Inc()
+				path:= strings.ReplaceAll(r.URL.Path, ".", "-")
+				metrics.Metric(path).With(prometheus.Labels{"code": "401"}).Inc()
 				return
 			}
 		}
@@ -54,7 +54,7 @@ func (mh Handler) Filter(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusForbidden)
 			_, err := w.Write([]byte("Forbidden "))
 			if err != nil {
-				fmt.Sprintln("Errror in Write ")
+				fmt.Sprintln("Error in Write ")
 				return
 			}
 		}

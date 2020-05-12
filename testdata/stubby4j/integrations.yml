@@ -21,121 +21,149 @@
       content-type: application/json
     body: >
       {
-        "commands": [
+          "commands": [
+              {
+                  "usage": "aws",
+                  "help": "Apply Aws objects",
+                  "parent": "root",
+                  "roles" : ["USER"]
+              },
+              {
+                  "usage": "apply",
+                  "help": "Apply Aws objects",
+                  "parent": "root_aws",
+                  "roles" : ["USER"]
+              },
+              {
+                  "usage": "terraform",
+                  "help": "Apply Aws terraform objects",
+                  "formula": {
+                      "path": "aws/terraform",
+                      "bin": "terraform-cli-${so}",
+                      "repoUrl": "http://localhost:3000/formulas"
+                  },
+                  "parent": "root_aws_apply",
+                  "roles" : ["USER"]
+              },
+              {
+                  "usage": "kafka",
+                  "help": "Kafka commands",
+                  "parent": "root",
+                  "roles" : ["RIT_KAFKA"]
+              },
+              {
+                  "usage": "list",
+                  "help": "Kafka list commands",
+                  "parent": "root_kafka",
+                  "roles" : ["RIT_KAFKA"]
+              },
+              {
+                  "usage": "create",
+                  "help": "Kafka create commands",
+                  "parent": "root_kafka",
+                  "roles" : ["RIT_KAFKA"]
+              },
+              {
+                  "usage": "topic",
+                  "help": "List kafka topics",
+                  "formula": {
+                      "path": "kafka",
+                      "bin": "kafka-${so}",
+                      "config": "list-topic-config.json",
+                      "repoUrl": "http://localhost:3000/formulas"
+                  },
+                  "parent": "root_kafka_list",
+                  "roles" : ["RIT_KAFKA"]
+              },
+              {
+                  "usage": "topic",
+                  "help": "Create kafka topics",
+                  "formula": {
+                      "path": "kafka",
+                      "bin": "kafka-${so}",
+                      "config": "create-topic-config.json",
+                      "repoUrl": "http://localhost:3000/formulas"
+                  },
+                  "parent": "root_kafka_create",
+                  "roles" : ["RIT_KAFKA"]
+              },
+              {
+                  "usage": "consume",
+                  "help": "Consume kafka messages",
+                  "formula": {
+                      "path": "kafka",
+                      "bin": "kafka-${so}",
+                      "config": "consume-config.json",
+                      "repoUrl": "http://localhost:3000/formulas"
+                  },
+                  "parent": "root_kafka",
+                  "roles" : ["RIT_KAFKA"]
+              },
+              {
+                  "usage": "produce",
+                  "help": "Produce kafka messages",
+                  "formula": {
+                      "path": "kafka",
+                      "bin": "kafka-${so}",
+                      "config": "produce-config.json",
+                      "repoUrl": "http://localhost:3000/formulas"
+                  },
+                  "parent": "root_kafka",
+                  "roles" : ["RIT_KAFKA"]
+              }
+          ],
+          "version": "1.0.0"
+      }
+
+#s3-formulas-config.json
+- request:
+    method: GET
+    url: ^/formulas/aws/terraform/config.json$
+
+  response:
+    status: 200
+    headers:
+      content-type: application/json
+    body: >
+      {
+        "description": "Apply terraform on AWS",
+        "inputs": [
           {
-            "usage": "darwin",
-            "help": "Darwin commands",
-            "parent": "root",
-            "roles": ["USER"]
+            "name": "repository",
+            "type": "text",
+            "default": "https://github.com/zup/terraform-mock",
+            "label": "Select your repository URL: ",
+            "items": [
+              "https://github.com/zup/mock-1",
+              "https://github.com/zup/mock-2"
+            ]
           },
           {
-            "usage": "deploy",
-            "help": "Deploy Module Darwin",
-            "formula": {
-              "path": "darwin/deploy",
-              "bin": "darwin-deploy-${so}",
-              "bundle": "${so}.zip",
-              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
-            },
-            "parent": "root_darwin",
-            "roles": ["USER"]
+            "name": "terraform_path",
+            "type": "text",
+            "default": "src",
+            "label": "Type your terraform files path [src]: "
           },
           {
-            "usage": "scaffold",
-            "help": "Generates scaffold",
-            "parent": "root",
-            "roles": ["NOT_VIEW"]
+            "name": "environment",
+            "type": "text",
+            "label": "Type your environment name: [ex.: qa, prod]"
           },
           {
-            "usage": "generate",
-            "help": "Generates scaffold",
-            "parent": "root_scaffold",
-            "roles": ["NOT_VIEW"]
+            "name": "git_user",
+            "type": "CREDENTIAL_GITHUB_USERNAME"
           },
           {
-            "usage": "spring-iti",
-            "help": "Generates a project for kotlin/java",
-            "formula": {
-              "path": "scaffold/spring-iti",
-              "bin": "spring-iti-${so}",
-              "bundle": "${so}.zip",
-              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
-            },
-            "parent": "root_scaffold_generate",
-            "roles": ["NOT_VIEW"]
+            "name": "git_token",
+            "type": "CREDENTIAL_GITHUB_TOKEN"
           },
           {
-            "usage": "github",
-            "help": "Manipulate GitHub objects",
-            "parent": "root",
-            "roles": ["NOT_VIEW"]
+            "name": "aws_access_key_id",
+            "type": "CREDENTIAL_AWS_ACCESSKEYID"
           },
           {
-            "usage": "generate",
-            "help": "Manipulate GitHub objects",
-            "parent": "root_github",
-            "roles": ["NOT_VIEW"]
-          },
-          {
-            "usage": "zup-webhook",
-            "help": "Apply Zup WebHook CI and Zup Bot",
-            "formula": {
-              "path": "github/zup-webhook",
-              "bin": "zup-webhook-${so}",
-              "bundle": "${so}.zip",
-              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
-            },
-            "parent": "root_github_generate",
-            "roles": ["NOT_VIEW"]
-          },
-          {
-            "usage": "jenkins",
-            "help": "Manipulate Jenkins objects",
-            "parent": "root",
-            "roles": ["NOT_VIEW"]
-          },
-          {
-            "usage": "generate",
-            "help": "Apply Jenkins objects",
-            "parent": "root_jenkins",
-            "roles": ["NOT_VIEW"]
-          },
-          {
-            "usage": "job",
-            "help": "Apply Jenkins Job CI",
-            "formula": {
-              "path": "jenkins/jobs",
-              "bin": "jobs-${so}",
-              "bundle": "${so}.zip",
-              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
-            },
-            "parent": "root_jenkins_generate",
-            "roles": ["NOT_VIEW"]
-          },
-          {
-            "usage": "vivo",
-            "help": "Manipulate Vivo objects",
-            "parent": "root",
-            "roles": ["NOT_VIEW"]
-          },
-          {
-            "usage": "generate",
-            "help": "Apply Vivo objects",
-            "parent": "root_vivo",
-            "roles": ["NOT_VIEW"]
-          },
-          {
-            "usage": "deploy",
-            "help": "Deploy Vivo in PRD",
-            "formula": {
-              "path": "vivo/deploy",
-              "bin": "vivo-deploy-${so}",
-              "bundle": "${so}.zip",
-              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
-            },
-            "parent": "root_vivo_generate",
-            "roles": ["NOT_VIEW"]
+            "name": "aws_secret_access_key",
+            "type": "CREDENTIAL_AWS_SECRETACCESSKEY"
           }
-        ],
-        "version": "1.0.0"
+        ]
       }
