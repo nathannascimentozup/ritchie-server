@@ -5,7 +5,7 @@ export VAULT_AUTHENTICATION=APPROLE
 export VAULT_ROLE_ID=$(cat /tmp/vault/role-id.txt)
 export VAULT_SECRET_ID=$(cat /tmp/vault/secret-id.txt)
 export FILE_CONFIG="$(pwd)/server/resources/file_config_local.json"
-export KEYCLOAK_URL=http://localhost:8882
+export KEYCLOAK_URL=http://localhost:8080
 
 mkdir -p bin
 go test -v -coverprofile=bin/cov.out $1

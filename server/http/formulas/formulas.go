@@ -50,9 +50,16 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	repoName := r.Header.Get(repoNameHeader)
+	repo, err := tm.FindRepo(repos, repoName)
+	if err != nil {
+		log.Printf("no repo for org %s, with name %s, error: %v", org, repoName, err)
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	bt := r.Header.Get(authorizationHeader)
 	sec := security.NewAuthorization(lh.Config)
-	allow, repo, err := tm.FormulaAllow(sec, r.URL.Path, bt, repoName, org, repos)
+	allow, err := tm.FormulaAllow(sec, r.URL.Path, bt, org, repo)
 	if err != nil {
 		log.Printf("error try allow access: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)

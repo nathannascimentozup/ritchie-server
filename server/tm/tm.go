@@ -11,15 +11,15 @@ import (
 	"ritchie-server/server"
 )
 
-func TreeRemoteAllow(sec server.Constraints, bToken, org, repoName, tPath string, repos []server.Repository) (server.Tree, server.Repository, error) {
-	rTree, repo, err := treeRemote(org, repoName, tPath, repos)
+func TreeRemoteAllow(sec server.Constraints, bToken, org, tPath string, repo server.Repository) (server.Tree, error) {
+	rTree, err := treeRemote(tPath, repo)
 	if err != nil {
-		return rTree, repo, err
+		return rTree, err
 	}
 
 	roles, err := sec.ListRealmRoles(bToken, org)
 	if err != nil {
-		return rTree, repo, err
+		return rTree, err
 	}
 	rfind := make(map[string]interface{})
 	for _, r := range roles {
@@ -47,48 +47,35 @@ func TreeRemoteAllow(sec server.Constraints, bToken, org, repoName, tPath string
 			}
 		}
 	}
-	return ft, repo, nil
+	return ft, nil
 }
 
-func FormulaAllow(sec server.Constraints, path, token, repoName, org string, repos []server.Repository) (bool, server.Repository, error) {
-	tr, repo, err := TreeRemoteAllow(sec, token, org, repoName, path, repos)
-	if err != nil {
-		return false, repo, err
-	}
+func FormulaAllow(sec server.Constraints, fPath, token, org string, repo server.Repository) (bool, error) {
+	tr, err := TreeRemoteAllow(sec, token, org, repo.TreePath, repo)
 
 	roles, err := sec.ListRealmRoles(token, org)
 	if err != nil {
-		return false, repo, err
+		return false, err
 	}
 
 	rfind := make(map[string]interface{})
 	for _, r := range roles {
 		rfind[strings.ToUpper(r.(string))] = r
 	}
-	p := strings.Replace(path, "/formulas/", "", 1)
+	p := strings.Replace(fPath, "/formulas/", "", 1)
 	s := strings.Split(p, "/")
 	key := strings.ReplaceAll(p, "/" + s[len(s) -1], "")
 	for _, c := range tr.Commands {
 		if c.Formula != nil {
 			if c.Formula.Path == key {
-				if len(c.Roles) > 0 {
-					for _, r := range c.Roles {
-						if rfind[strings.ToUpper(r)] != nil {
-							return true, repo, nil
-						}
-					}
-					return false, repo, nil
-				} else {
-					return true, repo, nil
-				}
+				return true, nil
 			}
 		}
 	}
-	return false, repo, nil
+	return false, nil
 }
 
-func treeRemote(org, repoName, tPath string, repos []server.Repository) (server.Tree, server.Repository, error) {
-	var tree server.Tree
+func FindRepo(repos []server.Repository, repoName string) (server.Repository, error) {
 	var repository server.Repository
 	for _, r := range repos {
 		if r.Name == repoName {
@@ -97,15 +84,19 @@ func treeRemote(org, repoName, tPath string, repos []server.Repository) (server.
 		}
 	}
 	if repository.Name == "" {
-		return tree, repository, fmt.Errorf("No repo for org %s with name %s\n", org, repoName)
+		return repository, fmt.Errorf("No repo with name %s\n", repoName)
 	}
+	return repository, nil
+}
 
-	tURL := fmt.Sprintf("%s%s", repository.Remote, tPath)
+func treeRemote(tPath string, repo server.Repository) (server.Tree, error) {
+	var tree server.Tree
+	tURL := fmt.Sprintf("%s%s", repo.Remote, tPath)
 	t, err := loadTreeFile(tURL)
 	if err != nil {
-		return tree, repository, err
+		return tree, err
 	}
-	return t, repository, nil
+	return t, nil
 }
 
 func loadTreeFile(url string) (server.Tree, error) {

@@ -119,9 +119,7 @@ func TestAuthorization_AuthorizationPath(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			auth := Authorization{
-				Config: tt.fields.Config,
-			}
+			auth := NewAuthorization(tt.fields.Config)
 			got, err := auth.AuthorizationPath(tt.in.bearerToken, tt.in.path, tt.in.method, tt.in.org)
 			if (err != nil) != tt.outErr {
 				t.Errorf("AuthorizationPath() error = %v, outErr %v", err, tt.outErr)
@@ -173,9 +171,7 @@ func TestAuthorization_ValidatePublicConstraints(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			auth := Authorization{
-				Config: tt.fields.Config,
-			}
+			auth := NewAuthorization(tt.fields.Config)
 			if got := auth.ValidatePublicConstraints(tt.args.path, tt.args.method); got != tt.out {
 				t.Errorf("ValidatePublicConstraints() = %v, out %v", got, tt.out)
 			}

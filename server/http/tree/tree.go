@@ -49,9 +49,16 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	repoName := r.Header.Get(repoNameHeader)
-	at := r.Header.Get(authorizationHeader)
+	repo, err := tm.FindRepo(repos, repoName)
+	if err != nil {
+		log.Printf("no repo for org %s, with name %s, error: %v", org, repoName, err)
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	bt := r.Header.Get(authorizationHeader)
 	sec := security.NewAuthorization(lh.Config)
-	finalTree, _, err := tm.TreeRemoteAllow(sec, at, org, repoName, r.URL.Path, repos)
+	finalTree, err := tm.TreeRemoteAllow(sec, bt, org, r.URL.Path, repo)
 	if err != nil {
 		log.Printf("error load tree: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)

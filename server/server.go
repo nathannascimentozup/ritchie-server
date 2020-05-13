@@ -28,11 +28,11 @@ type (
 	}
 
 	Tree struct {
-		Commands []command `json:"commands"`
+		Commands []Command `json:"commands"`
 		Version  string    `json:"version"`
 	}
 
-	command struct {
+	Command struct {
 		Usage   string   `json:"usage"`
 		Help    string   `json:"help"`
 		Formula *formula `json:"formula,omitempty"`
