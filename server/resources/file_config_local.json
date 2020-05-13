@@ -16,7 +16,7 @@
          "name": "commons",
          "priority": 0,
          "treePath": "/tree/tree.json",
-         "proxyTo" : "http://localhost:8882",
+         "remote" : "http://localhost:8882",
          "serverUrl" : "http://localhost:3000",
          "replaceRepoUrl" : "http://localhost:3000/formulas"
        },
@@ -24,7 +24,7 @@
          "name": "zup",
          "priority": 1,
          "treePath": "/tree/tree-zup.json",
-         "proxyTo" : "http://localhost:8882",
+         "remote" : "http://localhost:8882",
          "serverUrl" : "http://localhost:3000",
          "replaceRepoUrl" : "http://localhost:3000/formulas"
        }

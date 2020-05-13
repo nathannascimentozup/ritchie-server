@@ -20,11 +20,35 @@ type (
 		Name           string `json:"name"`
 		Priority       int    `json:"priority"`
 		TreePath       string `json:"treePath"`
-		ProxyTo        string `json:"proxyTo,omitempty"`
+		Remote         string `json:"remote,omitempty"`
 		ServerUrl      string `json:"serverUrl,omitempty"`
 		ReplaceRepoUrl string `json:"replaceRepoUrl,omitempty"`
 		Username       string `json:"username,omitempty"`
 		Password       string `json:"password,omitempty"`
+	}
+
+	Tree struct {
+		Commands []command `json:"commands"`
+		Version  string    `json:"version"`
+	}
+
+	command struct {
+		Usage   string   `json:"usage"`
+		Help    string   `json:"help"`
+		Formula *formula `json:"formula,omitempty"`
+		Parent  string   `json:"parent"`
+		Roles   []string `json:"roles,omitempty"`
+	}
+
+	formula struct {
+		Path       string `json:"path"`
+		Bin        string `json:"bin,omitempty"`
+		BinWindows string `json:"binWindows,omitempty"`
+		BinDarwin  string `json:"binDarwin,omitempty"`
+		BinLinux   string `json:"binLinux,omitempty"`
+		Bundle     string `json:"bundle,omitempty"`
+		Config     string `json:"config,omitempty"`
+		RepoUrl    string `json:"repoUrl"`
 	}
 
 	Credential struct {

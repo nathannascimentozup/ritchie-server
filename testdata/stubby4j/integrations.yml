@@ -21,98 +21,79 @@
       content-type: application/json
     body: >
       {
-          "commands": [
-              {
-                  "usage": "aws",
-                  "help": "Apply Aws objects",
-                  "parent": "root",
-                  "roles" : ["USER"]
-              },
-              {
-                  "usage": "apply",
-                  "help": "Apply Aws objects",
-                  "parent": "root_aws",
-                  "roles" : ["USER"]
-              },
-              {
-                  "usage": "terraform",
-                  "help": "Apply Aws terraform objects",
-                  "formula": {
-                      "path": "aws/terraform",
-                      "bin": "terraform-cli-${so}",
-                      "repoUrl": "http://localhost:3000/formulas"
-                  },
-                  "parent": "root_aws_apply",
-                  "roles" : ["USER"]
-              },
-              {
-                  "usage": "kafka",
-                  "help": "Kafka commands",
-                  "parent": "root",
-                  "roles" : ["RIT_KAFKA"]
-              },
-              {
-                  "usage": "list",
-                  "help": "Kafka list commands",
-                  "parent": "root_kafka",
-                  "roles" : ["RIT_KAFKA"]
-              },
-              {
-                  "usage": "create",
-                  "help": "Kafka create commands",
-                  "parent": "root_kafka",
-                  "roles" : ["RIT_KAFKA"]
-              },
-              {
-                  "usage": "topic",
-                  "help": "List kafka topics",
-                  "formula": {
-                      "path": "kafka",
-                      "bin": "kafka-${so}",
-                      "config": "list-topic-config.json",
-                      "repoUrl": "http://localhost:3000/formulas"
-                  },
-                  "parent": "root_kafka_list",
-                  "roles" : ["RIT_KAFKA"]
-              },
-              {
-                  "usage": "topic",
-                  "help": "Create kafka topics",
-                  "formula": {
-                      "path": "kafka",
-                      "bin": "kafka-${so}",
-                      "config": "create-topic-config.json",
-                      "repoUrl": "http://localhost:3000/formulas"
-                  },
-                  "parent": "root_kafka_create",
-                  "roles" : ["RIT_KAFKA"]
-              },
-              {
-                  "usage": "consume",
-                  "help": "Consume kafka messages",
-                  "formula": {
-                      "path": "kafka",
-                      "bin": "kafka-${so}",
-                      "config": "consume-config.json",
-                      "repoUrl": "http://localhost:3000/formulas"
-                  },
-                  "parent": "root_kafka",
-                  "roles" : ["RIT_KAFKA"]
-              },
-              {
-                  "usage": "produce",
-                  "help": "Produce kafka messages",
-                  "formula": {
-                      "path": "kafka",
-                      "bin": "kafka-${so}",
-                      "config": "produce-config.json",
-                      "repoUrl": "http://localhost:3000/formulas"
-                  },
-                  "parent": "root_kafka",
-                  "roles" : ["RIT_KAFKA"]
-              }
-          ],
-          "version": "1.0.0"
+        "commands": [
+          {
+            "usage": "aws",
+            "help": "Apply Aws objects",
+            "parent": "root",
+            "roles" : ["USER"]
+          },
+          {
+            "usage": "apply",
+            "help": "Apply Aws objects",
+            "parent": "root_aws",
+            "roles" : ["USER"]
+          },
+          {
+            "usage": "terraform",
+            "help": "Apply Aws terraform objects",
+            "formula": {
+              "path": "aws/terraform",
+              "bin": "terraform-cli-${so}",
+              "bundle": "${so}.zip",
+              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
+            },
+            "parent": "root_aws_apply",
+            "roles" : ["USER"]
+          },
+          {
+            "usage": "kafka",
+            "help": "Kafka commands",
+            "parent": "root",
+            "roles" : ["RIT_KAFKA"]
+          },
+          {
+            "usage": "create",
+            "help": "Kafka create commands",
+            "parent": "root_kafka",
+            "roles" : ["RIT_KAFKA"]
+          },
+          {
+            "usage": "topic",
+            "help": "Create kafka topics",
+            "formula": {
+              "path": "kafka",
+              "bin": "kafka-${so}",
+              "bundle": "${so}.zip",
+              "config": "create-topic-config.json",
+              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
+            },
+            "parent": "root_kafka_create",
+            "roles" : ["RIT_KAFKA"]
+          },
+          {
+            "usage": "scaffold",
+            "help": "Manipulate scaffold objects",
+            "parent": "root"
+          },
+          {
+            "usage": "generate",
+            "help": "Generates a scaffold by some template",
+            "parent": "root_scaffold"
+          },
+          {
+            "usage": "coffee-go",
+            "help": "Generates a project by coffee template in Go",
+            "formula": {
+              "path": "scaffold/coffee-go",
+              "bin": "coffee-go-${so}",
+              "bundle": "${so}.zip",
+              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
+            },
+            "parent": "root_scaffold_generate"
+          }
+        ],
+        "version": "1.0.0"
       }
 
 #s3-formulas-config.json
@@ -167,3 +148,14 @@
           }
         ]
       }
+
+#s3-formulas-zip
+- request:
+    method: GET
+    url: ^/formulas/aws/terraform/linux.zip$
+
+  response:
+    status: 200
+    headers:
+      content-type: application/zip
+    file: response.zip

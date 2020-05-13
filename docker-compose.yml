@@ -22,6 +22,7 @@ services:
       STUBBY_PORT: 8882
     volumes:
       - ./testdata/stubby4j/integrations.yml:/usr/local/stubby.yml
+      - ./testdata/stubby4j/response.zip:/usr/local/response.zip
 
   keycloak:
     image: jboss/keycloak:7.0.0
