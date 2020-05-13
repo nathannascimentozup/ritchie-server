@@ -99,7 +99,8 @@ func (c Configurator) LoadRepositoryHandler() server.DefaultHandler {
 }
 
 func (c Configurator) LoadTreeHandler() server.DefaultHandler {
-	return tree.NewConfigHandler(c.conf)
+	sa := security.NewAuthorization(c.conf)
+	return tree.NewConfigHandler(c.conf, sa)
 }
 
 func (c Configurator) LoadFormulasHandler() server.DefaultHandler {

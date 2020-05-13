@@ -2,17 +2,16 @@ package tree
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
 	"ritchie-server/server"
-	"ritchie-server/server/security"
 	"ritchie-server/server/tm"
 )
 
 type Handler struct {
-		Config server.Config
+	Config        server.Config
+	Authorization server.Constraints
 }
 
 const (
@@ -20,8 +19,8 @@ const (
 	authorizationHeader = "Authorization"
 )
 
-func NewConfigHandler(config server.Config) server.DefaultHandler {
-	return Handler{Config: config}
+func NewConfigHandler(config server.Config, auth server.Constraints) server.DefaultHandler {
+	return Handler{Config: config, Authorization: auth}
 }
 
 func (lh Handler) Handler() http.HandlerFunc {
@@ -57,17 +56,12 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bt := r.Header.Get(authorizationHeader)
-	sec := security.NewAuthorization(lh.Config)
-	finalTree, err := tm.TreeRemoteAllow(sec, bt, org, r.URL.Path, repo)
+	finalTree, err := tm.TreeRemoteAllow(lh.Authorization, bt, org, r.URL.Path, repo)
 	if err != nil {
 		log.Printf("error load tree: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-type", "application/json")
-	err = json.NewEncoder(w).Encode(finalTree)
-	if err != nil {
-		fmt.Sprintln("Error in Json Encode ")
-		return
-	}
+	json.NewEncoder(w).Encode(finalTree)
 }

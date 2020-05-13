@@ -21,6 +21,10 @@ func (a authorizationMock) ValidatePublicConstraints(path, method string) bool {
 	return a.boolResp
 }
 
+func (d authorizationMock) ListRealmRoles(bearerToken, org string) ([]interface{}, error) {
+	return nil, d.errorResp
+}
+
 func TestHandler_Filter(t *testing.T) {
 
 	type fields struct {

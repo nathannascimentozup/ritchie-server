@@ -106,7 +106,7 @@ func TestTreeRemoteAllow(t *testing.T) {
 			for _, c := range got.Commands {
 				commands[c.Parent+c.Usage] = &c
 			}
-			for _, c := range got.Commands {
+			for _, c := range tt.out.Commands {
 				if commands[c.Parent+c.Usage] == nil {
 					t.Errorf("Commands receive in tree error gotT = %v, outT %v", got, tt.out)
 				}
