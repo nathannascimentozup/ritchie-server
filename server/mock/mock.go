@@ -11,6 +11,7 @@ const (
 	keycloakUrl = "KEYCLOAK_URL"
 	oauthUrl = "OAUTH_URL"
 	cliVersionUrl = "CLI_VERSION_URL"
+	remoteUrl =  "REMOTE_URL"
 )
 
 func DummyConfig(args ...string) server.Config {
@@ -31,6 +32,7 @@ func DummyConfig(args ...string) server.Config {
 
 func DummyConfigMap(args ...string) map[string]*server.ConfigFile {
 	keycloakUrl := getEnv(keycloakUrl, "http://localhost:8080")
+	remoteUrl := getEnv(remoteUrl, "http://localhost:8882")
 	realm := "ritchie"
 	clientId := "user-login"
 	clientSecret := "user-login"
@@ -71,7 +73,7 @@ func DummyConfigMap(args ...string) map[string]*server.ConfigFile {
 					Name:           "commons",
 					Priority:       0,
 					TreePath:       "/tree/tree.json",
-					Remote:         "http://localhost:8882",
+					Remote:         remoteUrl,
 					ServerUrl:      "http://localhost:3000",
 					ReplaceRepoUrl: "http://localhost:3000/formulas",
 					Username:       "",
@@ -81,7 +83,7 @@ func DummyConfigMap(args ...string) map[string]*server.ConfigFile {
 					Name:           "test1",
 					Priority:       1,
 					TreePath:       "/tree/tree-test1.json",
-					Remote:         "http://localhost:8882",
+					Remote:         remoteUrl,
 					ServerUrl:      "http://localhost:3000",
 					ReplaceRepoUrl: "http://localhost:3000/formulas",
 					Username:       "",

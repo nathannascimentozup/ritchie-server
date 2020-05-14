@@ -58,12 +58,12 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 	bt := r.Header.Get(authorizationHeader)
 	finalTree, err := tm.TreeRemoteAllow(lh.Authorization, bt, org, r.URL.Path, repo)
 	if err != nil {
-		log.Fatal("Error unmarshal configDummy")
+		log.Printf("Error load final tree. Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-type", "application/json")
 	if err := json.NewEncoder(w).Encode(finalTree); err != nil {
-		log.Fatalf("Error encode finalTree: %v", finalTree)
+		log.Printf("Error encode finalTree: %v", finalTree)
 	}
 }
