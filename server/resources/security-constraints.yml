@@ -5,10 +5,16 @@ constraints:
       user:
         - POST
         - GET
+      rit_user:
+        - POST
+        - GET
 
   - pattern: /credentials/me
     roles:
       user:
+        - POST
+        - GET
+      rit_user:
         - POST
         - GET
 
@@ -16,22 +22,32 @@ constraints:
     roles:
       admin:
         - POST
+      rit_admin:
+        - POST
 
   - pattern: /credentials/org
     roles:
       admin:
+        - POST
+      rit_admin:
         - POST
 
   - pattern: /credentials/config
     roles:
       user:
         - GET
+      rit_user:
+        - GET
       admin:
+        - POST
+      rit_admin:
         - POST
 
   - pattern: /keycloak
     roles:
       user:
+        - GET
+      rit_user:
         - GET
 
   - pattern: /users
@@ -39,27 +55,44 @@ constraints:
       admin:
         - POST
         - DELETE
+      rit_admin:
+        - POST
+        - DELETE
+
+  - pattern: /tree
+    roles:
+      user:
+        - GET
+      rit_user:
+        - GET
 
   - pattern: /repositories
     roles:
       user:
+        - GET
+      rit_user:
         - GET
 
   - pattern: /usage
     roles:
       user:
         - POST
+      rit_user:
+        - POST
 
   - pattern: /tree/*
     roles:
       user:
+        - GET
+      rit_user:
         - GET
 
   - pattern: /formulas/*
     roles:
       user:
         - GET
-
+      rit_user:
+        - GET
 
 publicConstraints:
   - pattern: /login
