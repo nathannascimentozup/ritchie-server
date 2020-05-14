@@ -261,6 +261,8 @@ func treeRoleUser() server.Tree {
         "version": "1.0.0"
       }`
 	var s server.Tree
-	json.Unmarshal([]byte(js), &s)
+	if err := json.Unmarshal([]byte(js), &s); err != nil {
+		log.Fatal(err)
+	}
 	return s
 }
