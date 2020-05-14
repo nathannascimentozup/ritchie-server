@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"testing"
 
+	log "github.com/sirupsen/logrus"
+
 	"ritchie-server/server"
 )
 
@@ -313,7 +315,9 @@ func treeRoleUser() server.Tree {
         "version": "1.0.0"
       }`
 	var s server.Tree
-	json.Unmarshal([]byte(js), &s)
+	if err := json.Unmarshal([]byte(js), &s); err != nil {
+		log.Fatal("error Unmarshal tree")
+	}
 	return s
 }
 

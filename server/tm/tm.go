@@ -52,7 +52,9 @@ func TreeRemoteAllow(sec server.Constraints, bToken, org, tPath string, repo ser
 
 func FormulaAllow(sec server.Constraints, fPath, token, org string, repo server.Repository) (bool, error) {
 	tr, err := TreeRemoteAllow(sec, token, org, repo.TreePath, repo)
-
+	if err != nil {
+		return false, err
+	}
 	roles, err := sec.ListRealmRoles(token, org)
 	if err != nil {
 		return false, err

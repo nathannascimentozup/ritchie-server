@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -225,9 +226,13 @@ func TestHandler_Handler(t *testing.T) {
 
 			if g.Code == 200 {
 				var got configDummy
-				json.Unmarshal(g.Body.Bytes(), &got)
+				if err := json.Unmarshal(g.Body.Bytes(), &got); err != nil {
+					log.Fatal("Error unmarshal configDummy")
+				}
 				var out configDummy
-				json.Unmarshal(w.Body.Bytes(), &out)
+				if err := json.Unmarshal(w.Body.Bytes(), &out); err != nil {
+					log.Fatal("Error unmarshal configDummy")
+				}
 				if !reflect.DeepEqual(got, out) {
 					t.Errorf("Handler returned wrong body: got %v \n want %v", g.Body, w.Body)
 				}

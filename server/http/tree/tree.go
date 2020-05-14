@@ -42,7 +42,7 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	if repos == nil || len(repos) == 0 {
+	if len(repos) == 0 {
 		log.Println("No repository config found")
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -58,10 +58,12 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 	bt := r.Header.Get(authorizationHeader)
 	finalTree, err := tm.TreeRemoteAllow(lh.Authorization, bt, org, r.URL.Path, repo)
 	if err != nil {
-		log.Printf("error load tree: %v", err)
+		log.Fatal("Error unmarshal configDummy")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(finalTree)
+	if err := json.NewEncoder(w).Encode(finalTree); err != nil {
+		log.Fatalf("Error encode finalTree: %v", finalTree)
+	}
 }
