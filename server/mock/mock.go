@@ -72,7 +72,7 @@ func DummyConfigMap(args ...string) map[string]*server.ConfigFile {
 					Priority:       0,
 					TreePath:       "/tree/tree.json",
 					Remote:         "http://localhost:8882",
-					ServerUrl:      "http://localhost:8882",
+					ServerUrl:      "http://localhost:3000",
 					ReplaceRepoUrl: "http://localhost:3000/formulas",
 					Username:       "",
 					Password:       "",
@@ -82,7 +82,7 @@ func DummyConfigMap(args ...string) map[string]*server.ConfigFile {
 					Priority:       1,
 					TreePath:       "/tree/tree-test1.json",
 					Remote:         "http://localhost:8882",
-					ServerUrl:      "http://localhost:8882",
+					ServerUrl:      "http://localhost:3000",
 					ReplaceRepoUrl: "http://localhost:3000/formulas",
 					Username:       "",
 					Password:       "",
@@ -202,6 +202,30 @@ func (v VaultMock) Delete(string) error {
 }
 func (v VaultMock) Start(*api.Client) {
 }
+
+type AuthorizationMock struct {
+	B bool
+	E error
+	R []string
+}
+
+func (d AuthorizationMock) AuthorizationPath(bearerToken, path, method, org string) (bool, error) {
+	return d.B, d.E
+}
+func (d AuthorizationMock) ValidatePublicConstraints(path, method string) bool {
+	return d.B
+}
+func (d AuthorizationMock) ListRealmRoles(bearerToken, org string) ([]interface{}, error) {
+	if d.E != nil {
+		return nil, d.E
+	}
+	new := make([]interface{}, len(d.R))
+	for i, v := range d.R {
+		new[i] = v
+	}
+	return new, d.E
+}
+
 
 func getEnv(key, def string) string {
 	value := os.Getenv(key)

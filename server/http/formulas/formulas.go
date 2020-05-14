@@ -7,12 +7,12 @@ import (
 	"net/url"
 
 	"ritchie-server/server"
-	"ritchie-server/server/security"
 	"ritchie-server/server/tm"
 )
 
 type Handler struct {
-		Config server.Config
+	Config        server.Config
+	Authorization server.Constraints
 }
 
 
@@ -21,8 +21,8 @@ const (
 	authorizationHeader = "Authorization"
 )
 
-func NewConfigHandler(config server.Config) server.DefaultHandler {
-	return Handler{Config: config}
+func NewConfigHandler(config server.Config, auth server.Constraints) server.DefaultHandler {
+	return Handler{Config: config, Authorization: auth}
 }
 
 func (lh Handler) Handler() http.HandlerFunc {
@@ -45,7 +45,7 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if repos == nil {
-		log.Println("No repository config found")
+		log.Println("No repository configDummy found")
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -58,8 +58,7 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bt := r.Header.Get(authorizationHeader)
-	sec := security.NewAuthorization(lh.Config)
-	allow, err := tm.FormulaAllow(sec, r.URL.Path, bt, org, repo)
+	allow, err := tm.FormulaAllow(lh.Authorization, r.URL.Path, bt, org, repo)
 	if err != nil {
 		log.Printf("error try allow access: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)

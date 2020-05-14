@@ -1,4 +1,4 @@
-package tree
+package formulas
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"ritchie-server/server"
@@ -14,12 +15,37 @@ import (
 	"ritchie-server/server/mock"
 )
 
+// Config type that represents formula configDummy
+type configDummy struct {
+	Name        string  `json:"name"`
+	Command     string  `json:"command"`
+	Description string  `json:"description"`
+	Language    string  `json:"language"`
+	Inputs      []input `json:"inputs"`
+}
+
+// Input type that represents input configDummy
+type input struct {
+	Name    string   `json:"name"`
+	Type    string   `json:"type"`
+	Default string   `json:"default"`
+	Label   string   `json:"label"`
+	Items   []string `json:"items"`
+	Cache   cache    `json:"cache"`
+}
+
+type cache struct {
+	Active   bool   `json:"active"`
+	Qtd      int    `json:"qtd"`
+	NewLabel string `json:"newLabel"`
+}
+
 func TestHandler_Handler(t *testing.T) {
 	type fields struct {
 		config   server.Config
 		auth     server.Constraints
-		path     string
 		method   string
+		path     string
 		org      string
 		repoName string
 	}
@@ -29,16 +55,16 @@ func TestHandler_Handler(t *testing.T) {
 		want   http.HandlerFunc
 	}{
 		{
-			name: "tree allow user",
+			name:   "allow config",
 			fields: fields{
-				config: mock.DummyConfig(),
+				config:   mock.DummyConfig(),
 				auth: mock.AuthorizationMock{
 					B: true,
 					E: nil,
 					R: []string{"USER"},
 				},
-				path:     "/tree/tree.json",
 				method:   http.MethodGet,
+				path:     "/formulas/aws/terraform/config.json",
 				org:      "zup",
 				repoName: "commons",
 			},
@@ -46,7 +72,7 @@ func TestHandler_Handler(t *testing.T) {
 				return func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
 					w.Header().Set("Content-type", "application/json")
-					err := json.NewEncoder(w).Encode(treeRoleUser())
+					err := json.NewEncoder(w).Encode(configJsonWant())
 					if err != nil {
 						fmt.Sprintln("Error in Encode Json ")
 						return
@@ -55,16 +81,36 @@ func TestHandler_Handler(t *testing.T) {
 			}(),
 		},
 		{
-			name: "not found post",
+			name:   "not allow config",
 			fields: fields{
-				config: mock.DummyConfig(),
+				config:   mock.DummyConfig(),
 				auth: mock.AuthorizationMock{
 					B: true,
 					E: nil,
 					R: []string{"USER"},
 				},
-				path:     "/tree/tree.json",
+				method:   http.MethodGet,
+				path:     "/formulas/kafka/config.json",
+				org:      "zup",
+				repoName: "commons",
+			},
+			want: func() http.HandlerFunc {
+				return func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(http.StatusUnauthorized)
+				}
+			}(),
+		},
+		{
+			name:   "not found post",
+			fields: fields{
+				config:   mock.DummyConfig(),
+				auth: mock.AuthorizationMock{
+					B: true,
+					E: nil,
+					R: []string{"USER"},
+				},
 				method:   http.MethodPost,
+				path:     "/formulas/aws/terraform/config.json",
 				org:      "zup",
 				repoName: "commons",
 			},
@@ -83,7 +129,7 @@ func TestHandler_Handler(t *testing.T) {
 					E: nil,
 					R: []string{"USER"},
 				},
-				path:     "/tree/tree.json",
+				path:     "/formulas/aws/terraform/config.json",
 				method:   http.MethodGet,
 				org:      "zup",
 				repoName: "commons",
@@ -103,7 +149,7 @@ func TestHandler_Handler(t *testing.T) {
 					E: nil,
 					R: []string{"USER"},
 				},
-				path:     "/tree/tree.json",
+				path:     "/formulas/aws/terraform/config.json",
 				method:   http.MethodGet,
 				org:      "no",
 				repoName: "commons",
@@ -123,7 +169,7 @@ func TestHandler_Handler(t *testing.T) {
 					E: nil,
 					R: []string{"USER"},
 				},
-				path:     "/tree/tree.json",
+				path:     "/formulas/aws/terraform/config.json",
 				method:   http.MethodGet,
 				org:      "zup",
 				repoName: "not found",
@@ -143,7 +189,7 @@ func TestHandler_Handler(t *testing.T) {
 					E: errors.New("error"),
 					R: []string{"USER"},
 				},
-				path:     "/tree/tree.json",
+				path:     "/formulas/aws/terraform/config.json",
 				method:   http.MethodGet,
 				org:      "zup",
 				repoName: "commons",
@@ -177,19 +223,13 @@ func TestHandler_Handler(t *testing.T) {
 				t.Errorf("Handler returned wrong status code: got %v want %v", g.Code, w.Code)
 			}
 
-			if g.Code == http.StatusOK {
-				var got server.Tree
+			if g.Code == 200 {
+				var got configDummy
 				json.Unmarshal(g.Body.Bytes(), &got)
-				var out server.Tree
+				var out configDummy
 				json.Unmarshal(w.Body.Bytes(), &out)
-				commands := make(map[string]*server.Command)
-				for _, c := range got.Commands {
-					commands[c.Parent+c.Usage] = &c
-				}
-				for _, c := range out.Commands {
-					if commands[c.Parent+c.Usage] == nil {
-						t.Errorf("Commands receive in tree error gotT = %v, outT %v", got, out)
-					}
+				if !reflect.DeepEqual(got, out) {
+					t.Errorf("Handler returned wrong body: got %v \n want %v", g.Body, w.Body)
 				}
 			}
 		})
@@ -204,58 +244,50 @@ func configEmptyRepo() server.Config {
 	}
 }
 
-func treeRoleUser() server.Tree {
-	js := `{
-        "commands": [
+func configJsonWant() configDummy {
+	cj :=  `{
+        "description": "Apply terraform on AWS",
+        "inputs": [
           {
-            "usage": "aws",
-            "help": "Apply Aws objects",
-            "parent": "root",
-            "roles" : ["USER"]
+            "name": "repository",
+            "type": "text",
+            "default": "https://github.com/zup/terraform-mock",
+            "label": "Select your repository URL: ",
+            "items": [
+              "https://github.com/zup/mock-1",
+              "https://github.com/zup/mock-2"
+            ]
           },
           {
-            "usage": "apply",
-            "help": "Apply Aws objects",
-            "parent": "root_aws",
-            "roles" : ["USER"]
+            "name": "terraform_path",
+            "type": "text",
+            "default": "src",
+            "label": "Type your terraform files path [src]: "
           },
           {
-            "usage": "terraform",
-            "help": "Apply Aws terraform objects",
-            "formula": {
-              "path": "aws/terraform",
-              "bin": "terraform-cli-${so}",
-              "bundle": "${so}.zip",
-              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
-            },
-            "parent": "root_aws_apply",
-            "roles" : ["USER"]
+            "name": "environment",
+            "type": "text",
+            "label": "Type your environment name: [ex.: qa, prod]"
           },
           {
-            "usage": "scaffold",
-            "help": "Manipulate scaffold objects",
-            "parent": "root"
+            "name": "git_user",
+            "type": "CREDENTIAL_GITHUB_USERNAME"
           },
           {
-            "usage": "generate",
-            "help": "Generates a scaffold by some template",
-            "parent": "root_scaffold"
+            "name": "git_token",
+            "type": "CREDENTIAL_GITHUB_TOKEN"
           },
           {
-            "usage": "coffee-go",
-            "help": "Generates a project by coffee template in Go",
-            "formula": {
-              "path": "scaffold/coffee-go",
-              "bin": "coffee-go-${so}",
-              "bundle": "${so}.zip",
-              "repoUrl": "https://commons-repo.ritchiecli.io/formulas"
-            },
-            "parent": "root_scaffold_generate"
+            "name": "aws_access_key_id",
+            "type": "CREDENTIAL_AWS_ACCESSKEYID"
+          },
+          {
+            "name": "aws_secret_access_key",
+            "type": "CREDENTIAL_AWS_SECRETACCESSKEY"
           }
-        ],
-        "version": "1.0.0"
+        ]
       }`
-	var s server.Tree
-	json.Unmarshal([]byte(js), &s)
-	return s
+	var c configDummy
+	json.Unmarshal([]byte(cj), &c)
+	return c
 }

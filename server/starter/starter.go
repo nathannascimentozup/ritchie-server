@@ -104,7 +104,8 @@ func (c Configurator) LoadTreeHandler() server.DefaultHandler {
 }
 
 func (c Configurator) LoadFormulasHandler() server.DefaultHandler {
-	return formulas.NewConfigHandler(c.conf)
+	sa := security.NewAuthorization(c.conf)
+	return formulas.NewConfigHandler(c.conf, sa)
 }
 
 func (c Configurator) LoadMiddlewareHandler() server.MiddlewareHandler {

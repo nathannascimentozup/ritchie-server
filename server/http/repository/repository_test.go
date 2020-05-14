@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"testing"
+
 	"ritchie-server/server"
 	"ritchie-server/server/config"
 	"ritchie-server/server/mock"
-	"testing"
 )
 
 func TestHandler_Handler(t *testing.T) {
@@ -118,7 +119,18 @@ func TestHandler_Handler(t *testing.T) {
 	}
 }
 
-func repositoryConfigWant() []server.Repository {
+func repositoryConfigWant() []response {
+	var resp []response
 	conf, _ := mock.DummyConfig().ReadRepositoryConfig("zup")
-	return conf
+	for _,r := range conf {
+		r := response{
+			Name:     r.Name,
+			Priority: r.Priority,
+			TreePath: r.ServerUrl + r.TreePath,
+			Username: r.Username,
+			Password: r.Password,
+		}
+		resp = append(resp, r)
+	}
+	return resp
 }
