@@ -9,30 +9,8 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"ritchie-server/server"
+	"ritchie-server/server/mock"
 )
-
-type dummy struct {
-	b bool
-	e error
-	r []string
-}
-
-func (d dummy) AuthorizationPath(bearerToken, path, method, org string) (bool, error) {
-	return d.b, d.e
-}
-func (d dummy) ValidatePublicConstraints(path, method string) bool {
-	return d.b
-}
-func (d dummy) ListRealmRoles(bearerToken, org string) ([]interface{}, error) {
-	if d.e != nil {
-		return nil, d.e
-	}
-	new := make([]interface{}, len(d.r))
-	for i, v := range d.r {
-		new[i] = v
-	}
-	return new, d.e
-}
 
 func TestTreeRemoteAllow(t *testing.T) {
 	type args struct {
@@ -51,15 +29,15 @@ func TestTreeRemoteAllow(t *testing.T) {
 		{
 			name: "response tree with allow commands",
 			in: args{
-				sec: dummy{
-					b: true,
-					e: nil,
-					r: []string{"USER"},
+				sec: mock.AuthorizationMock{
+					B: true,
+					E: nil,
+					R: []string{"USER"},
 				},
 				bToken: "",
 				org:    "",
 				tPath:  "/tree/tree.json",
-				repo:   dummyRepo("http://localhost:8882"),
+				repo:   mock.DummyRepo(),
 			},
 			out:    treeRoleUser(),
 			outErr: false,
@@ -67,15 +45,15 @@ func TestTreeRemoteAllow(t *testing.T) {
 		{
 			name: "list roles error",
 			in: args{
-				sec: dummy{
-					b: false,
-					e: errors.New("error"),
-					r: nil,
+				sec: mock.AuthorizationMock{
+					B: false,
+					E: errors.New("error"),
+					R: nil,
 				},
 				bToken: "",
 				org:    "",
 				tPath:  "/tree/tree.json",
-				repo:   dummyRepo("http://localhost:8882"),
+				repo:   mock.DummyRepo(),
 			},
 			out:    server.Tree{},
 			outErr: true,
@@ -83,15 +61,15 @@ func TestTreeRemoteAllow(t *testing.T) {
 		{
 			name: "tree not found",
 			in: args{
-				sec: dummy{
-					b: true,
-					e: nil,
-					r: []string{"USER"},
+				sec: mock.AuthorizationMock{
+					B: true,
+					E: nil,
+					R: []string{"USER"},
 				},
 				bToken: "",
 				org:    "",
 				tPath:  "/tree/tree-notfound.json",
-				repo:   dummyRepo("http://localhost:8882"),
+				repo:   mock.DummyRepo(),
 			},
 			out:    server.Tree{},
 			outErr: true,
@@ -134,15 +112,15 @@ func TestFormulaAllow(t *testing.T) {
 		{
 			name:   "allow",
 			in:     args{
-				sec: dummy{
-					b: true,
-					e: nil,
-					r: []string{"USER"},
+				sec: mock.AuthorizationMock{
+					B: true,
+					E: nil,
+					R: []string{"USER"},
 				},
 				fPath: "/formulas/aws/terraform/config.json",
 				token: "",
 				org:   "",
-				repo:  dummyRepo("http://localhost:8882"),
+				repo:  mock.DummyRepo(),
 			},
 			out:    true,
 			outErr: false,
@@ -150,15 +128,15 @@ func TestFormulaAllow(t *testing.T) {
 		{
 			name:   "not allow",
 			in:     args{
-				sec: dummy{
-					b: true,
-					e: nil,
-					r: []string{"NO_RULE"},
+				sec: mock.AuthorizationMock{
+					B: true,
+					E: nil,
+					R: []string{"NO_RULE"},
 				},
 				fPath: "/formulas/aws/terraform/config.json",
 				token: "",
 				org:   "",
-				repo:  dummyRepo("http://localhost:8882"),
+				repo:  mock.DummyRepo(),
 			},
 			out:    false,
 			outErr: false,
@@ -166,15 +144,15 @@ func TestFormulaAllow(t *testing.T) {
 		{
 			name:   "load roles error",
 			in:     args{
-				sec: dummy{
-					b: true,
-					e: errors.New("error"),
-					r: []string{},
+				sec: mock.AuthorizationMock{
+					B: true,
+					E: errors.New("error"),
+					R: []string{},
 				},
 				fPath: "/formulas/aws/terraform/config.json",
 				token: "",
 				org:   "",
-				repo:  dummyRepo("http://localhost:8882"),
+				repo:  mock.DummyRepo(),
 			},
 			out:    false,
 			outErr: true,
@@ -182,15 +160,15 @@ func TestFormulaAllow(t *testing.T) {
 		{
 			name:   "allow formula without role",
 			in:     args{
-				sec: dummy{
-					b: true,
-					e: nil,
-					r: []string{"USER"},
+				sec: mock.AuthorizationMock{
+					B: true,
+					E: nil,
+					R: []string{"USER"},
 				},
 				fPath: "/formulas/scaffold/coffee-go/config.json",
 				token: "",
 				org:   "",
-				repo:  dummyRepo("http://localhost:8882"),
+				repo:  mock.DummyRepo(),
 			},
 			out:    true,
 			outErr: false,
@@ -224,25 +202,16 @@ func TestFindRepo(t *testing.T) {
 		{
 			name: "find commons",
 			in: args{
-				repos:    dummyRepoList(),
+				repos:    mock.DummyRepoList(),
 				repoName: "commons",
 			},
-			out: server.Repository{
-				Name:           "commons",
-				Priority:       0,
-				TreePath:       "/tree/tree.json",
-				Remote:         "http://localhost:8882",
-				ServerUrl:      "http://localhost:8882",
-				ReplaceRepoUrl: "http://localhost:3000/formulas",
-				Username:       "",
-				Password:       "",
-			},
+			out: mock.DummyRepoList()[0],
 			outErr: false,
 		},
 		{
 			name: "repo not found",
 			in: args{
-				repos:    dummyRepoList(),
+				repos:    mock.DummyRepoList(),
 				repoName: "notfound",
 			},
 			out: server.Repository{},
@@ -319,53 +288,5 @@ func treeRoleUser() server.Tree {
 		log.Fatal("error Unmarshal tree")
 	}
 	return s
-}
-
-func dummyRepo(remote string) server.Repository {
-	return server.Repository{
-		Name:           "commons",
-		Priority:       0,
-		TreePath:       "/tree/tree.json",
-		Remote:         remote,
-		ServerUrl:      "http://localhost:3000",
-		ReplaceRepoUrl: "http://localhost:3000/formulas",
-		Username:       "",
-		Password:       "",
-	}
-}
-
-func dummyRepoList() []server.Repository {
-	return []server.Repository{
-		{
-			Name:           "commons",
-			Priority:       0,
-			TreePath:       "/tree/tree.json",
-			Remote:         "http://localhost:8882",
-			ServerUrl:      "http://localhost:8882",
-			ReplaceRepoUrl: "http://localhost:3000/formulas",
-			Username:       "",
-			Password:       "",
-		},
-		{
-			Name:           "test1",
-			Priority:       1,
-			TreePath:       "/tree/tree-test1.json",
-			Remote:         "http://localhost:8882",
-			ServerUrl:      "http://localhost:8882",
-			ReplaceRepoUrl: "http://localhost:3000/formulas",
-			Username:       "",
-			Password:       "",
-		},
-		{
-			Name:           "test2",
-			Priority:       2,
-			TreePath:       "/tree/tree-test2.json",
-			Remote:         "http://localhost:8882",
-			ServerUrl:      "http://localhost:8882",
-			ReplaceRepoUrl: "http://localhost:3000/formulas",
-			Username:       "",
-			Password:       "",
-		},
-	}
 }
 

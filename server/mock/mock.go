@@ -166,6 +166,56 @@ func DummyCredentialBadRequest() string {
 	}`
 }
 
+func DummyRepo() server.Repository {
+	remote := getEnv(remoteUrl, "http://localhost:8882")
+	return server.Repository{
+		Name:           "commons",
+		Priority:       0,
+		TreePath:       "/tree/tree.json",
+		Remote:         remote,
+		ServerUrl:      "http://localhost:3000",
+		ReplaceRepoUrl: "http://localhost:3000/formulas",
+		Username:       "",
+		Password:       "",
+	}
+}
+
+func DummyRepoList() []server.Repository {
+	remote := getEnv(remoteUrl, "http://localhost:8882")
+	return []server.Repository{
+		{
+			Name:           "commons",
+			Priority:       0,
+			TreePath:       "/tree/tree.json",
+			Remote:         remote,
+			ServerUrl:      "http://localhost:3000",
+			ReplaceRepoUrl: "http://localhost:3000/formulas",
+			Username:       "",
+			Password:       "",
+		},
+		{
+			Name:           "test1",
+			Priority:       1,
+			TreePath:       "/tree/tree-test1.json",
+			Remote:         remote,
+			ServerUrl:      "http://localhost:3000",
+			ReplaceRepoUrl: "http://localhost:3000/formulas",
+			Username:       "",
+			Password:       "",
+		},
+		{
+			Name:           "test2",
+			Priority:       2,
+			TreePath:       "/tree/tree-test2.json",
+			Remote:         remote,
+			ServerUrl:      "http://localhost:3000",
+			ReplaceRepoUrl: "http://localhost:3000/formulas",
+			Username:       "",
+			Password:       "",
+		},
+	}
+}
+
 //server.KeycloakManager mock
 type KeycloakMock struct {
 	Token string
