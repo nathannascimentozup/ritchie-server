@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -179,9 +180,13 @@ func TestHandler_Handler(t *testing.T) {
 
 			if g.Code == http.StatusOK {
 				var got server.Tree
-				json.Unmarshal(g.Body.Bytes(), &got)
+				if err := json.Unmarshal(g.Body.Bytes(), &got); err != nil {
+					log.Fatal("Error Unmarshal server.Tree")
+				}
 				var out server.Tree
-				json.Unmarshal(w.Body.Bytes(), &out)
+				if err := json.Unmarshal(w.Body.Bytes(), &out); err != nil {
+					log.Fatal("Error Unmarshal server.Tree")
+				}
 				commands := make(map[string]*server.Command)
 				for _, c := range got.Commands {
 					commands[c.Parent+c.Usage] = &c

@@ -293,6 +293,8 @@ func configJsonWant() configDummy {
         ]
       }`
 	var c configDummy
-	json.Unmarshal([]byte(cj), &c)
+	if err := json.Unmarshal([]byte(cj), &c); err != nil {
+		log.Fatal("Error Unmarshal")
+	}
 	return c
 }
