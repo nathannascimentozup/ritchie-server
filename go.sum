@@ -6,6 +6,8 @@ github.com/Nerzal/gocloak/v4 v4.3.1 h1:v6LQbalKh5/DXVD8HbhvEOErWSvC6+rfO07bflmfL
 github.com/Nerzal/gocloak/v4 v4.3.1/go.mod h1:/7LwujSlsqBA3haXobPxOPVZMP9iQ9zlQJAbP0ZhO4I=
 github.com/ZupIT/go-vault-session v1.0.0-beta h1:0hMi+w3OWvXn9KN19P8/apM/OVTQFs/Ib6tlnR3HQ5A=
 github.com/ZupIT/go-vault-session v1.0.0-beta/go.mod h1:4QZ8hxnN9VqGAV/UmN9h/xgz0npsxG67pRCOXB16b1Q=
+github.com/ZupIT/go-vault-session v1.0.0-beta.2 h1:dqY+suZEC2Doft4ve/7/3DMU/zDLs520P6aYAwlPvd8=
+github.com/ZupIT/go-vault-session v1.0.0-beta.2/go.mod h1:9lHeO96Q1V8iCx0szdMdCIGq2Wk7qss2SAonZnEYYBM=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
