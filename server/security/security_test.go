@@ -1,10 +1,12 @@
 package security
 
 import (
+	"testing"
+
 	"github.com/Nerzal/gocloak"
+
 	"ritchie-server/server"
 	"ritchie-server/server/mock"
-	"testing"
 )
 
 func TestAuthorization_AuthorizationPath(t *testing.T) {

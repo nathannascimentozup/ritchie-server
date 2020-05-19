@@ -2,10 +2,12 @@ package vault
 
 import (
 	"fmt"
+	"os"
+
 	vlogin "github.com/ZupIT/go-vault-session/pkg/login"
 	"github.com/ZupIT/go-vault-session/pkg/token"
 	"github.com/hashicorp/vault/api"
-	"os"
+
 	"ritchie-server/server"
 	"ritchie-server/server/slicer"
 
@@ -80,10 +82,19 @@ func (vm Manager) List(key string) ([]interface{}, error) {
 
 func (vm Manager) Start(c *api.Client) {
 	l := vlogin.NewHandler(c)
-	s := l.HandleLogin()
+	s := l.Handle()
 
-	r := token.NewRenewalHandler(c, s)
-	r.HandleRenewal()
+	ch := make(chan string)
+	r := token.NewHandler(c, s, ch)
+
+	r.Handle()
+	go func() {
+		for {
+			msg := <-ch
+			log.Info(msg)
+		}
+	}()
+
 }
 
 func (vm Manager) setToken() {

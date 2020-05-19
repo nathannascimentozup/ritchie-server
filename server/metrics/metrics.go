@@ -23,6 +23,7 @@ func Metric(path string) *prometheus.CounterVec {
 	if metric == nil {
 		name := strings.ReplaceAll(path, "/", "_")
 		name = strings.ReplaceAll(name, "-", "_")
+		name = strings.ReplaceAll(name, ".", "_")
 		metric = promauto.NewCounterVec(prometheus.CounterOpts{
 			Name: "http_request" + name,
 			Help: "The total number service calls to path " + path,

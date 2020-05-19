@@ -244,7 +244,7 @@ func buildClient() *api.Client {
 	c, _ := api.NewClient(cfg)
 
 	l := login.NewHandler(c)
-	l.HandleLogin()
+	l.Handle()
 
 	return c
 }
