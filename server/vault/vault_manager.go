@@ -90,10 +90,8 @@ func (vm Manager) Start(c *api.Client) {
 	r.Handle()
 	go func() {
 		for {
-			select {
-			case msg := <-ch:
-				log.Info(msg)
-			}
+			msg := <-ch
+			log.Info(msg)
 		}
 	}()
 
