@@ -11,12 +11,14 @@ import (
 	"ritchie-server/server/config"
 	"ritchie-server/server/http/cliversion"
 	"ritchie-server/server/http/credential"
+	"ritchie-server/server/http/formulas"
 	"ritchie-server/server/http/health"
 	"ritchie-server/server/http/hello"
 	configHttp "ritchie-server/server/http/keycloak"
 	"ritchie-server/server/http/login"
 	"ritchie-server/server/http/oauth"
 	"ritchie-server/server/http/repository"
+	"ritchie-server/server/http/tree"
 	"ritchie-server/server/http/usagelogger"
 	"ritchie-server/server/http/user"
 	"ritchie-server/server/keycloak"
@@ -94,6 +96,16 @@ func (c Configurator) LoadCliVersionHandler() server.DefaultHandler {
 
 func (c Configurator) LoadRepositoryHandler() server.DefaultHandler {
 	return repository.NewConfigHandler(c.conf)
+}
+
+func (c Configurator) LoadTreeHandler() server.DefaultHandler {
+	sa := security.NewAuthorization(c.conf)
+	return tree.NewConfigHandler(c.conf, sa)
+}
+
+func (c Configurator) LoadFormulasHandler() server.DefaultHandler {
+	sa := security.NewAuthorization(c.conf)
+	return formulas.NewConfigHandler(c.conf, sa)
 }
 
 func (c Configurator) LoadMiddlewareHandler() server.MiddlewareHandler {

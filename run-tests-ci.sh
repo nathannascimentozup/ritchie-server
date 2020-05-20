@@ -16,6 +16,7 @@ export FILE_CONFIG="$(pwd)/server/resources/file_config_ci.json"
 export KEYCLOAK_URL=http://keycloak:8080
 export OAUTH_URL=http://keycloak:8080/auth/realms/ritchie
 export CLI_VERSION_URL=http://stubby4j:8882/s3-version-mock
+export REMOTE_URL=http://stubby4j:8882
 
 gotestsum --format=short-verbose --junitfile "$TEST_RESULTS_DIR"/gotestsum-report.xml -- -p 2 -coverprofile=coverage.txt $(go list ./... | grep -v vendor/)
 

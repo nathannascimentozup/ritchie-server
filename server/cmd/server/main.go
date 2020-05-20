@@ -20,9 +20,11 @@ type Handler struct {
 	UsageLoggerHandler      server.DefaultHandler
 	CliVersionHandler       server.DefaultHandler
 	RepositoryHandler       server.DefaultHandler
+	TreeHandler             server.DefaultHandler
+	FormulasHandler         server.DefaultHandler
 	MiddlewareHandler       server.MiddlewareHandler
 	CredentialHandler       server.CredentialHandler
-	HelloHandler			server.DefaultHandler
+	HelloHandler            server.DefaultHandler
 }
 
 func init() {
@@ -40,16 +42,17 @@ func init() {
 		UsageLoggerHandler:      i.LoadUsageLoggerHandler(),
 		CliVersionHandler:       i.LoadCliVersionHandler(),
 		RepositoryHandler:       i.LoadRepositoryHandler(),
+		TreeHandler:             i.LoadTreeHandler(),
+		FormulasHandler:         i.LoadFormulasHandler(),
 		MiddlewareHandler:       i.LoadMiddlewareHandler(),
 		CredentialHandler:       i.LoadCredentialHandler(),
-		HelloHandler: i.LoadHelloHandler(),
+		HelloHandler:            i.LoadHelloHandler(),
 	}
 }
 
 func main() {
 
 	log.Info("Starting server")
-	http.Handle("/", h.MiddlewareHandler.Filter(h.HelloHandler.Handler()))
 	http.Handle("/login", h.MiddlewareHandler.Filter(h.LoginHandler.Handler()))
 	http.Handle("/keycloak", h.MiddlewareHandler.Filter(h.KeycloakHandler.Handler()))
 	http.Handle("/users", h.MiddlewareHandler.Filter(h.UserHandler.Handler()))
@@ -64,5 +67,8 @@ func main() {
 	http.Handle("/oauth", h.MiddlewareHandler.Filter(h.OauthHandler.Handler()))
 	http.Handle("/cli-version", h.MiddlewareHandler.Filter(h.CliVersionHandler.Handler()))
 	http.Handle("/repositories", h.MiddlewareHandler.Filter(h.RepositoryHandler.Handler()))
+	http.Handle("/tree/", h.MiddlewareHandler.Filter(h.TreeHandler.Handler()))
+	http.Handle("/formulas/", h.MiddlewareHandler.Filter(h.FormulasHandler.Handler()))
+	http.Handle("/", h.MiddlewareHandler.Filter(h.HelloHandler.Handler()))
 	log.Fatal(http.ListenAndServe(":3000", nil))
 }

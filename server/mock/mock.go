@@ -11,6 +11,7 @@ const (
 	keycloakUrl = "KEYCLOAK_URL"
 	oauthUrl = "OAUTH_URL"
 	cliVersionUrl = "CLI_VERSION_URL"
+	remoteUrl =  "REMOTE_URL"
 )
 
 func DummyConfig(args ...string) server.Config {
@@ -31,6 +32,7 @@ func DummyConfig(args ...string) server.Config {
 
 func DummyConfigMap(args ...string) map[string]*server.ConfigFile {
 	keycloakUrl := getEnv(keycloakUrl, "http://localhost:8080")
+	remoteUrl := getEnv(remoteUrl, "http://localhost:8882")
 	realm := "ritchie"
 	clientId := "user-login"
 	clientSecret := "user-login"
@@ -68,18 +70,24 @@ func DummyConfigMap(args ...string) map[string]*server.ConfigFile {
 			},
 			RepositoryConfig: []server.Repository{
 				{
-					Name:     "local",
-					Priority: 0,
-					TreePath: "path_whatever",
-					Username: "",
-					Password: "",
+					Name:           "commons",
+					Priority:       0,
+					TreePath:       "/tree/tree.json",
+					Remote:         remoteUrl,
+					ServerUrl:      "http://localhost:3000",
+					ReplaceRepoUrl: "http://localhost:3000/formulas",
+					Username:       "",
+					Password:       "",
 				},
 				{
-					Name:     "repository1",
-					Priority: 1,
-					TreePath: "path_whatever_repository1",
-					Username: "optional",
-					Password: "optional",
+					Name:           "test1",
+					Priority:       1,
+					TreePath:       "/tree/tree-test1.json",
+					Remote:         remoteUrl,
+					ServerUrl:      "http://localhost:3000",
+					ReplaceRepoUrl: "http://localhost:3000/formulas",
+					Username:       "",
+					Password:       "",
 				},
 			},
 		}}
@@ -158,6 +166,56 @@ func DummyCredentialBadRequest() string {
 	}`
 }
 
+func DummyRepo() server.Repository {
+	remote := getEnv(remoteUrl, "http://localhost:8882")
+	return server.Repository{
+		Name:           "commons",
+		Priority:       0,
+		TreePath:       "/tree/tree.json",
+		Remote:         remote,
+		ServerUrl:      "http://localhost:3000",
+		ReplaceRepoUrl: "http://localhost:3000/formulas",
+		Username:       "",
+		Password:       "",
+	}
+}
+
+func DummyRepoList() []server.Repository {
+	remote := getEnv(remoteUrl, "http://localhost:8882")
+	return []server.Repository{
+		{
+			Name:           "commons",
+			Priority:       0,
+			TreePath:       "/tree/tree.json",
+			Remote:         remote,
+			ServerUrl:      "http://localhost:3000",
+			ReplaceRepoUrl: "http://localhost:3000/formulas",
+			Username:       "",
+			Password:       "",
+		},
+		{
+			Name:           "test1",
+			Priority:       1,
+			TreePath:       "/tree/tree-test1.json",
+			Remote:         remote,
+			ServerUrl:      "http://localhost:3000",
+			ReplaceRepoUrl: "http://localhost:3000/formulas",
+			Username:       "",
+			Password:       "",
+		},
+		{
+			Name:           "test2",
+			Priority:       2,
+			TreePath:       "/tree/tree-test2.json",
+			Remote:         remote,
+			ServerUrl:      "http://localhost:3000",
+			ReplaceRepoUrl: "http://localhost:3000/formulas",
+			Username:       "",
+			Password:       "",
+		},
+	}
+}
+
 //server.KeycloakManager mock
 type KeycloakMock struct {
 	Token string
@@ -196,6 +254,30 @@ func (v VaultMock) Delete(string) error {
 }
 func (v VaultMock) Start(*api.Client) {
 }
+
+type AuthorizationMock struct {
+	B bool
+	E error
+	R []string
+}
+
+func (d AuthorizationMock) AuthorizationPath(bearerToken, path, method, org string) (bool, error) {
+	return d.B, d.E
+}
+func (d AuthorizationMock) ValidatePublicConstraints(path, method string) bool {
+	return d.B
+}
+func (d AuthorizationMock) ListRealmRoles(bearerToken, org string) ([]interface{}, error) {
+	if d.E != nil {
+		return nil, d.E
+	}
+	new := make([]interface{}, len(d.R))
+	for i, v := range d.R {
+		new[i] = v
+	}
+	return new, d.E
+}
+
 
 func getEnv(key, def string) string {
 	value := os.Getenv(key)

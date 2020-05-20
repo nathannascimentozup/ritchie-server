@@ -80,20 +80,26 @@ constraints:
       rit_user:
         - POST
 
+  - pattern: /tree/*
+    roles:
+      user:
+        - GET
+      rit_user:
+        - GET
+
+  - pattern: /formulas/*
+    roles:
+      user:
+        - GET
+      rit_user:
+        - GET
+
 publicConstraints:
   - pattern: /login
     methods:
       - POST
       
   - pattern: /metrics
-    methods:
-      - GET
-
-  - pattern: /auto-complete/bash
-    methods:
-      - GET
-
-  - pattern: /auto-complete/zsh
     methods:
       - GET
 

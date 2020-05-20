@@ -15,14 +15,21 @@
        {
          "name": "commons",
          "priority": 0,
-         "treePath": "https://ritchie-cli-bucket234376412767550.s3-sa-east-1.amazonaws.com/tree/tree.json"
+         "treePath": "/tree/tree.json",
+         "remote" : "http://localhost:8882",
+         "serverUrl" : "http://localhost:3000",
+         "replaceRepoUrl" : "http://localhost:3000/formulas"
        },
        {
          "name": "zup",
          "priority": 1,
-         "treePath": "https://ritchie-cli-bucket234376412767550.s3-sa-east-1.amazonaws.com/tree/tree-zup.json"
+         "treePath": "/tree/tree-zup.json",
+         "remote" : "http://localhost:8882",
+         "serverUrl" : "http://localhost:3000",
+         "replaceRepoUrl" : "http://localhost:3000/formulas"
        }
      ],
+
     "oauth" :{
       "url" : "http://localhost:8080/auth/realms/ritchie",
       "clientId" : "oauth"

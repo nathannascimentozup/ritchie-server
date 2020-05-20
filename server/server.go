@@ -15,26 +15,40 @@ const (
 type (
 	Org     string
 	Ctx     string
+
+	Repository struct {
+		Name           string `json:"name"`
+		Priority       int    `json:"priority"`
+		TreePath       string `json:"treePath"`
+		Remote         string `json:"remote,omitempty"`
+		ServerUrl      string `json:"serverUrl,omitempty"`
+		ReplaceRepoUrl string `json:"replaceRepoUrl,omitempty"`
+		Username       string `json:"username,omitempty"`
+		Password       string `json:"password,omitempty"`
+	}
+
+	Tree struct {
+		Commands []Command `json:"commands"`
+		Version  string    `json:"version"`
+	}
+
 	Command struct {
 		Usage   string   `json:"usage"`
 		Help    string   `json:"help"`
-		Formula *Formula `json:"formula,omitempty"`
+		Formula *formula `json:"formula,omitempty"`
 		Parent  string   `json:"parent"`
+		Roles   []string `json:"roles,omitempty"`
 	}
 
-	Repository struct {
-		Name     string `json:"name"`
-		Priority int    `json:"priority"`
-		TreePath string `json:"treePath"`
-		Username string `json:"username,omitempty"`
-		Password string `json:"password,omitempty"`
-	}
-
-	Formula struct {
-		Path    string `json:"path"`
-		Bin     string `json:"bin"`
-		Config  string `json:"config"`
-		RepoUrl string `json:"repoUrl"`
+	formula struct {
+		Path       string `json:"path"`
+		Bin        string `json:"bin,omitempty"`
+		BinWindows string `json:"binWindows,omitempty"`
+		BinDarwin  string `json:"binDarwin,omitempty"`
+		BinLinux   string `json:"binLinux,omitempty"`
+		Bundle     string `json:"bundle,omitempty"`
+		Config     string `json:"config,omitempty"`
+		RepoUrl    string `json:"repoUrl"`
 	}
 
 	Credential struct {
@@ -104,6 +118,7 @@ type (
 type Constraints interface {
 	AuthorizationPath(bearerToken, path, method, org string) (bool, error)
 	ValidatePublicConstraints(path, method string) bool
+	ListRealmRoles(bearerToken, org string) ([]interface{}, error)
 }
 
 type ConfigHealth interface {
@@ -186,6 +201,8 @@ type Configurator interface {
 	LoadUsageLoggerHandler() DefaultHandler
 	LoadCliVersionHandler() DefaultHandler
 	LoadRepositoryHandler() DefaultHandler
+	LoadTreeHandler() DefaultHandler
+	LoadFormulasHandler() DefaultHandler
 	LoadMiddlewareHandler() MiddlewareHandler
 	LoadCredentialHandler() CredentialHandler
 	LoadHelloHandler() DefaultHandler

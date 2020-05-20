@@ -6,20 +6,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"ritchie-server/server"
+	"ritchie-server/server/mock"
+
 	"testing"
 )
-
-type authorizationMock struct {
-	boolResp  bool
-	errorResp error
-}
-
-func (a authorizationMock) AuthorizationPath(bearerToken, path, method, org string) (bool, error) {
-	return a.boolResp, a.errorResp
-}
-func (a authorizationMock) ValidatePublicConstraints(path, method string) bool {
-	return a.boolResp
-}
 
 func TestHandler_Filter(t *testing.T) {
 
@@ -46,9 +36,9 @@ func TestHandler_Filter(t *testing.T) {
 					Methods: []string{"GET"},
 				}},
 			},
-				Authorization: authorizationMock{
-					boolResp:  true,
-					errorResp: nil,
+				Authorization: mock.AuthorizationMock{
+					B:  true,
+					E: nil,
 				},
 			},
 			in: args{next: func() http.HandlerFunc {
@@ -78,9 +68,9 @@ func TestHandler_Filter(t *testing.T) {
 					}},
 					PublicConstraints: []server.PermitMatcher{},
 				},
-				Authorization: authorizationMock{
-					boolResp:  true,
-					errorResp: nil,
+				Authorization: mock.AuthorizationMock{
+					B:  true,
+					E: nil,
 				},
 			},
 			in: args{next: func() http.HandlerFunc {
@@ -108,9 +98,9 @@ func TestHandler_Filter(t *testing.T) {
 					}},
 					PublicConstraints: []server.PermitMatcher{},
 				},
-				Authorization: authorizationMock{
-					boolResp:  false,
-					errorResp: nil,
+				Authorization: mock.AuthorizationMock{
+					B:  false,
+					E: nil,
 				},
 			},
 			in: args{next: func() http.HandlerFunc {
@@ -138,9 +128,9 @@ func TestHandler_Filter(t *testing.T) {
 					}},
 					PublicConstraints: []server.PermitMatcher{},
 				},
-				Authorization: authorizationMock{
-					boolResp:  false,
-					errorResp: errors.New("error"),
+				Authorization: mock.AuthorizationMock{
+					B:  false,
+					E: errors.New("error"),
 				},
 			},
 			in: args{next: func() http.HandlerFunc {
