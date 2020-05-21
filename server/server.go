@@ -198,8 +198,9 @@ type MiddlewareHandler interface {
 }
 
 type ProviderHandler interface {
-	TreeAllow() (Tree, error)
-	FilesFormulasAllow() ([]byte, error)
+	TreeAllow(path, bToken, org string, repo Repository) (Tree, error)
+	FilesFormulasAllow(path, bToken, org string, repo Repository) ([]byte, error)
+	FindRepo(repos []Repository, repoName string) (Repository, error)
 }
 
 type Configurator interface {

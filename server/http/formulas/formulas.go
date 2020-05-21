@@ -5,8 +5,6 @@ import (
 	"net/http"
 
 	"ritchie-server/server"
-	"ritchie-server/server/provider"
-	"ritchie-server/server/tm"
 )
 
 type Handler struct {
@@ -49,7 +47,7 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	repoName := r.Header.Get(repoNameHeader)
-	repo, err := tm.FindRepo(repos, repoName)
+	repo, err := lh.provider.FindRepo(repos, repoName)
 	if err != nil {
 		log.Printf("no repo for org %s, with name %s, error: %v", org, repoName, err)
 		w.WriteHeader(http.StatusNotFound)
@@ -57,8 +55,7 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bt := r.Header.Get(authorizationHeader)
-	ph := provider.NewProviderHandler(lh.Authorization, r.URL.Path, bt, org, repo)
-	buf, err := ph.FilesFormulasAllow()
+	buf, err := lh.provider.FilesFormulasAllow(r.URL.Path, bt, org, repo)
 	if err != nil {
 		log.Printf("error try allow access: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)

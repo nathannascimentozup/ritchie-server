@@ -23,30 +23,21 @@ const (
 )
 
 type Handler struct {
-	sec    server.Constraints
-	bToken string
-	org    string
-	path   string
-	repo   server.Repository
+	authorization server.Constraints
 }
 
-
-func NewProviderHandler(sec server.Constraints, bToken, org, path string, repo server.Repository) server.ProviderHandler {
+func NewProviderHandler(a server.Constraints) server.ProviderHandler {
 	return Handler{
-		sec:    sec,
-		bToken: bToken,
-		org:    org,
-		path:   path,
-		repo:   repo,
+		authorization: a,
 	}
 }
 
-func (hp Handler) TreeAllow() (server.Tree, error) {
-	rTree, err := treeRemote(hp.path, hp.repo)
+func (hp Handler) TreeAllow(path, bToken, org string, repo server.Repository) (server.Tree, error) {
+	rTree, err := treeRemote(path, repo)
 	if err != nil {
 		return rTree, err
 	}
-	roles, err := hp.sec.ListRealmRoles(hp.bToken, hp.org)
+	roles, err := hp.authorization.ListRealmRoles(bToken, org)
 	if err != nil {
 		return rTree, err
 	}
@@ -67,11 +58,11 @@ func (hp Handler) TreeAllow() (server.Tree, error) {
 			ft.Commands = append(ft.Commands, c)
 		}
 	}
-	if hp.repo.ReplaceRepoUrl != "" {
+	if repo.ReplaceRepoUrl != "" {
 		for _, c := range ft.Commands {
 			if c.Formula != nil {
 				if c.Formula.RepoUrl != "" {
-					c.Formula.RepoUrl = hp.repo.ReplaceRepoUrl
+					c.Formula.RepoUrl = repo.ReplaceRepoUrl
 				}
 			}
 		}
@@ -79,12 +70,12 @@ func (hp Handler) TreeAllow() (server.Tree, error) {
 	return ft, nil
 }
 
-func (hp Handler) FilesFormulasAllow() ([]byte, error) {
-	tr, err := hp.TreeAllow()
+func (hp Handler) FilesFormulasAllow(path, bToken, org string, repo server.Repository) ([]byte, error) {
+	tr, err := hp.TreeAllow(path, bToken, org, repo)
 	if err != nil {
 		return nil, err
 	}
-	roles, err := hp.sec.ListRealmRoles(hp.bToken, hp.org)
+	roles, err := hp.authorization.ListRealmRoles(bToken, org)
 	if err != nil {
 		return nil, err
 	}
@@ -93,23 +84,37 @@ func (hp Handler) FilesFormulasAllow() ([]byte, error) {
 	for _, r := range roles {
 		rfind[strings.ToUpper(r.(string))] = r
 	}
-	p := strings.Replace(hp.path, "/formulas/", "", 1)
+	p := strings.Replace(path, "/formulas/", "", 1)
 	s := strings.Split(p, "/")
 	key := strings.ReplaceAll(p, "/"+s[len(s)-1], "")
 	for _, c := range tr.Commands {
 		if c.Formula != nil {
 			if c.Formula.Path == key {
-				return hp.bufProvider()
+				return bufProvider(path, repo)
 			}
 		}
 	}
 	return nil, nil
 }
 
-func (hp Handler) bufProvider() ([]byte, error) {
-	switch hp.repo.Provider.Type {
+func (hp Handler) FindRepo(repos []server.Repository, repoName string) (server.Repository, error) {
+	var repository server.Repository
+	for _, r := range repos {
+		if r.Name == repoName {
+			repository = r
+			break
+		}
+	}
+	if repository.Name == "" {
+		return repository, fmt.Errorf("No repo with name %s\n", repoName)
+	}
+	return repository, nil
+}
+
+func bufProvider(path string, repo server.Repository) ([]byte, error) {
+	switch repo.Provider.Type {
 	case providerHttp:
-		url := fmt.Sprintf("%s%s", hp.repo.Provider.Remote, hp.path)
+		url := fmt.Sprintf("%s%s", repo.Provider.Remote, path)
 		resp, err := http.Get(url)
 		if err != nil {
 			return nil, err
@@ -121,7 +126,7 @@ func (hp Handler) bufProvider() ([]byte, error) {
 		return bodyBytes, nil
 	case providerS3:
 		sess, err := session.NewSession(&aws.Config{
-			Region: aws.String(hp.repo.Provider.Region)},
+			Region: aws.String(repo.Provider.Region)},
 		)
 		if err != nil {
 			return nil, err
@@ -129,8 +134,8 @@ func (hp Handler) bufProvider() ([]byte, error) {
 		buf := &aws.WriteAtBuffer{}
 		downloader := s3manager.NewDownloader(sess)
 		s3obj := s3.GetObjectInput{
-			Bucket: aws.String(hp.repo.Provider.Bucket),
-			Key:    aws.String(hp.path),
+			Bucket: aws.String(repo.Provider.Bucket),
+			Key:    aws.String(path),
 		}
 		_, err = downloader.Download(buf,
 			&s3obj)
@@ -139,7 +144,7 @@ func (hp Handler) bufProvider() ([]byte, error) {
 		}
 		return buf.Bytes(), nil
 	default:
-		return nil, errors.New(fmt.Sprintf("provider %s, not valid. Verify our repo config. Repo name: %s", hp.repo.Provider.Type, hp.repo.Name))
+		return nil, errors.New(fmt.Sprintf("provider %s, not valid. Verify our repo config. Repo name: %s", repo.Provider.Type, repo.Name))
 	}
 }
 
