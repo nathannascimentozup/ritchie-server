@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"ritchie-server/server"
-	"ritchie-server/server/tm"
 )
 
 type Handler struct {

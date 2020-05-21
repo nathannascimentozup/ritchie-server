@@ -41,7 +41,7 @@
                 "replaceRepoUrl" : "http://localhost:3000/formulas",
                 "provider": {
                     "type": "S3",
-                    "bucket": "ritchie-test-bucket234376412767550",
+                    "bucket": "local",
                     "region" : "sa-east-1"
                 }
             }
