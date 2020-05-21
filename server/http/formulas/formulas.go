@@ -10,18 +10,18 @@ import (
 )
 
 type Handler struct {
-	Config        server.Config
-	Authorization server.Constraints
+	config        server.Config
+	authorization server.Constraints
+	provider      server.ProviderHandler
 }
 
-
 const (
-	repoNameHeader = "x-repo-name"
+	repoNameHeader      = "x-repo-name"
 	authorizationHeader = "Authorization"
 )
 
-func NewConfigHandler(config server.Config, auth server.Constraints) server.DefaultHandler {
-	return Handler{Config: config, Authorization: auth}
+func NewConfigHandler(c server.Config, a server.Constraints, p server.ProviderHandler) server.DefaultHandler {
+	return Handler{config: c, authorization: a, provider: p}
 }
 
 func (lh Handler) Handler() http.HandlerFunc {
@@ -37,7 +37,7 @@ func (lh Handler) Handler() http.HandlerFunc {
 
 func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 	org := r.Header.Get(server.OrganizationHeader)
-	repos, err := lh.Config.ReadRepositoryConfig(org)
+	repos, err := lh.config.ReadRepositoryConfig(org)
 	if err != nil {
 		log.Printf("Error while processing %v's repository configuration: %v", org, err)
 		w.WriteHeader(http.StatusNotFound)
