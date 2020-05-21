@@ -65,7 +65,7 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = w.Write(buf.Bytes())
+	_, err = w.Write(buf)
 	if err != nil {
 		log.Printf("Failed to path: %s, error: %v", r.URL.Path, err)
 		w.WriteHeader(http.StatusInternalServerError)
