@@ -3,7 +3,6 @@ package server
 import (
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/hashicorp/vault/api"
 )
 
@@ -200,7 +199,7 @@ type MiddlewareHandler interface {
 
 type ProviderHandler interface {
 	TreeAllow() (Tree, error)
-	FilesFormulasAllow() (*aws.WriteAtBuffer, error)
+	FilesFormulasAllow() ([]byte, error)
 }
 
 type Configurator interface {
