@@ -2,14 +2,26 @@ package tm
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+
 	"ritchie-server/server"
 )
+
+const (
+	providerHttp = "HTTP"
+	providerS3 = "S3"
+)
+
 
 func TreeRemoteAllow(sec server.Constraints, bToken, org, tPath string, repo server.Repository) (server.Tree, error) {
 	rTree, err := treeRemote(tPath, repo)
@@ -92,16 +104,18 @@ func FindRepo(repos []server.Repository, repoName string) (server.Repository, er
 }
 
 func treeRemote(tPath string, repo server.Repository) (server.Tree, error) {
-	var tree server.Tree
-	tURL := fmt.Sprintf("%s%s", repo.Remote, tPath)
-	t, err := loadTreeFile(tURL)
-	if err != nil {
-		return tree, err
+	switch repo.Provider.Type {
+	case providerHttp:
+		return loadTreeFileHttp(tPath, repo)
+	case providerS3 :
+		return loadTreeFileS3(tPath, repo)
+	default:
+		return server.Tree{}, errors.New(fmt.Sprintf("provider %s, not valid. Verify our repo config. Repo name: %s", repo.Provider.Type, repo.Name))
 	}
-	return t, nil
 }
 
-func loadTreeFile(url string) (server.Tree, error) {
+func loadTreeFileHttp(path string, repo server.Repository) (server.Tree, error) {
+	url := fmt.Sprintf("%s%s", repo.Provider.Remote, path)
 	var response server.Tree
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -123,6 +137,31 @@ func loadTreeFile(url string) (server.Tree, error) {
 		return response, err
 	}
 	if err := json.Unmarshal(bodyBytes, &response); err != nil {
+		return response, err
+	}
+	return response, nil
+}
+
+func loadTreeFileS3(path string, repo server.Repository) (server.Tree, error) {
+	var response server.Tree
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(repo.Provider.Region)},
+	)
+	if err != nil {
+		return response, err
+	}
+	buf := &aws.WriteAtBuffer{}
+	downloader := s3manager.NewDownloader(sess)
+	_, err = downloader.Download(buf,
+		&s3.GetObjectInput{
+			Bucket: aws.String(repo.Provider.Bucket),
+			Key:    aws.String(path),
+		})
+	if err != nil {
+		return response, err
+	}
+
+	if err := json.Unmarshal(buf.Bytes(), &response); err != nil {
 		return response, err
 	}
 	return response, nil

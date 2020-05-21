@@ -3,10 +3,9 @@ package formulas
 import (
 	"log"
 	"net/http"
-	"net/http/httputil"
-	"net/url"
 
 	"ritchie-server/server"
+	"ritchie-server/server/provider"
 	"ritchie-server/server/tm"
 )
 
@@ -58,23 +57,17 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bt := r.Header.Get(authorizationHeader)
-	allow, err := tm.FormulaAllow(lh.Authorization, r.URL.Path, bt, org, repo)
+	ph := provider.NewProviderHandler(lh.Authorization, r.URL.Path, bt, org, repo)
+	buf, err := ph.FilesFormulasAllow()
 	if err != nil {
 		log.Printf("error try allow access: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	if !allow {
-		log.Printf("Not allow access path: %s", r.URL.Path)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
+	_, err = w.Write(buf.Bytes())
+	if err != nil {
+		log.Printf("Failed to path: %s, error: %v", r.URL.Path, err)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
-	u, _ := url.Parse(repo.Remote)
-	proxy := httputil.NewSingleHostReverseProxy(u)
-	r.URL.Host = u.Host
-	r.URL.Scheme = u.Scheme
-	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
-	r.Host = u.Host
-	proxy.ServeHTTP(w, r)
 }

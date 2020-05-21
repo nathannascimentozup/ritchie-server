@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/hashicorp/vault/api"
 )
 
@@ -13,18 +14,24 @@ const (
 )
 
 type (
-	Org     string
-	Ctx     string
+	Org string
+	Ctx string
 
 	Repository struct {
-		Name           string `json:"name"`
-		Priority       int    `json:"priority"`
-		TreePath       string `json:"treePath"`
-		Remote         string `json:"remote,omitempty"`
-		ServerUrl      string `json:"serverUrl,omitempty"`
-		ReplaceRepoUrl string `json:"replaceRepoUrl,omitempty"`
-		Username       string `json:"username,omitempty"`
-		Password       string `json:"password,omitempty"`
+		Name           string   `json:"name"`
+		Priority       int      `json:"priority"`
+		TreePath       string   `json:"treePath"`
+		ServerUrl      string   `json:"serverUrl,omitempty"`
+		ReplaceRepoUrl string   `json:"replaceRepoUrl,omitempty"`
+		Username       string   `json:"username,omitempty"`
+		Password       string   `json:"password,omitempty"`
+		Provider       Provider `json:"provider,omitempty"`
+	}
+	Provider struct {
+		Type   string `json:"type"`
+		Bucket string `json:"bucket,omitempty"`
+		Region string `json:"region,omitempty"`
+		Remote string `json:"remote,omitempty"`
 	}
 
 	Tree struct {
@@ -189,6 +196,11 @@ type CredentialHandler interface {
 
 type MiddlewareHandler interface {
 	Filter(next http.Handler) http.Handler
+}
+
+type ProviderHandler interface {
+	TreeAllow() (Tree, error)
+	FilesFormulasAllow() (*aws.WriteAtBuffer, error)
 }
 
 type Configurator interface {

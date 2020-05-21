@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"ritchie-server/server"
+	"ritchie-server/server/provider"
 	"ritchie-server/server/tm"
 )
 
@@ -56,7 +57,8 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bt := r.Header.Get(authorizationHeader)
-	finalTree, err := tm.TreeRemoteAllow(lh.Authorization, bt, org, r.URL.Path, repo)
+	ph := provider.NewProviderHandler(lh.Authorization, bt, org, r.URL.Path, repo)
+	finalTree, err := ph.TreeAllow()
 	if err != nil {
 		log.Printf("Error load final tree. Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
