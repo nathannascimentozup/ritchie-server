@@ -1,8 +1,10 @@
 package mock
 
 import (
-	"github.com/hashicorp/vault/api"
 	"os"
+
+	"github.com/hashicorp/vault/api"
+
 	"ritchie-server/server"
 	"ritchie-server/server/config"
 )
@@ -180,8 +182,12 @@ func DummyCredentialBadRequest() string {
 	}`
 }
 
-func DummyRepo() server.Repository {
+func DummyRepo(args ...string) server.Repository {
 	remote := getEnv(remoteUrl, "http://localhost:8882")
+	tp := "HTTP"
+	if len(args) > 0 {
+		tp = args[0]
+	}
 	return server.Repository{
 		Name:           "commons",
 		Priority:       0,
@@ -189,7 +195,7 @@ func DummyRepo() server.Repository {
 		ServerUrl:      "http://localhost:3000",
 		ReplaceRepoUrl: "http://localhost:3000/formulas",
 		Provider: server.Provider{
-			Type:   "HTTP",
+			Type:   tp,
 			Remote: remote,
 		},
 	}

@@ -2,7 +2,6 @@ package ph
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -71,7 +70,7 @@ func (hp Handler) TreeAllow(path, bToken, org string, repo server.Repository) (s
 }
 
 func (hp Handler) FilesFormulasAllow(path, bToken, org string, repo server.Repository) ([]byte, error) {
-	tr, err := hp.TreeAllow(path, bToken, org, repo)
+	tr, err := hp.TreeAllow(repo.TreePath, bToken, org, repo)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +89,12 @@ func (hp Handler) FilesFormulasAllow(path, bToken, org string, repo server.Repos
 	for _, c := range tr.Commands {
 		if c.Formula != nil {
 			if c.Formula.Path == key {
-				return bufProvider(path, repo)
+				switch repo.Provider.Type {
+				case providerHttp:
+					return processHttp(path, repo)
+				case providerS3:
+					return processS3(path, repo)
+				}
 			}
 		}
 	}
@@ -111,41 +115,38 @@ func (hp Handler) FindRepo(repos []server.Repository, repoName string) (server.R
 	return repository, nil
 }
 
-func bufProvider(path string, repo server.Repository) ([]byte, error) {
-	switch repo.Provider.Type {
-	case providerHttp:
-		url := fmt.Sprintf("%s%s", repo.Provider.Remote, path)
-		resp, err := http.Get(url)
-		if err != nil {
-			return nil, err
-		}
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		return bodyBytes, nil
-	case providerS3:
-		sess, err := session.NewSession(&aws.Config{
-			Region: aws.String(repo.Provider.Region)},
-		)
-		if err != nil {
-			return nil, err
-		}
-		buf := &aws.WriteAtBuffer{}
-		downloader := s3manager.NewDownloader(sess)
-		s3obj := s3.GetObjectInput{
-			Bucket: aws.String(repo.Provider.Bucket),
-			Key:    aws.String(path),
-		}
-		_, err = downloader.Download(buf,
-			&s3obj)
-		if err != nil {
-			return nil, err
-		}
-		return buf.Bytes(), nil
-	default:
-		return nil, errors.New(fmt.Sprintf("provider %s, not valid. Verify our repo config. Repo name: %s", repo.Provider.Type, repo.Name))
+func processS3(path string, repo server.Repository) ([]byte, error) {
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(repo.Provider.Region)},
+	)
+	if err != nil {
+		return nil, err
 	}
+	buf := &aws.WriteAtBuffer{}
+	downloader := s3manager.NewDownloader(sess)
+	s3obj := s3.GetObjectInput{
+		Bucket: aws.String(repo.Provider.Bucket),
+		Key:    aws.String(path),
+	}
+	_, err = downloader.Download(buf,
+		&s3obj)
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+func processHttp(path string, repo server.Repository) ([]byte, error) {
+	url := fmt.Sprintf("%s%s", repo.Provider.Remote, path)
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return bodyBytes, nil
 }
 
 func treeRemote(tPath string, repo server.Repository) (server.Tree, error) {
@@ -155,7 +156,7 @@ func treeRemote(tPath string, repo server.Repository) (server.Tree, error) {
 	case providerS3:
 		return loadTreeFileS3(tPath, repo)
 	default:
-		return server.Tree{}, errors.New(fmt.Sprintf("provider %s, not valid. Verify our repo config. Repo name: %s", repo.Provider.Type, repo.Name))
+		return server.Tree{}, fmt.Errorf("provider %q, not valid. Verify our repo config. Repo name: %q", repo.Provider.Type, repo.Name)
 	}
 }
 
