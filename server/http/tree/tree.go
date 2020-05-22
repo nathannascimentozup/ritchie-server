@@ -60,7 +60,7 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bt := r.Header.Get(authorizationHeader)
-	finalTree, err := lh.provider.TreeAllow(bt, org, r.URL.Path, repo)
+	finalTree, err := lh.provider.TreeAllow(r.URL.Path, bt, org, repo)
 	if err != nil {
 		log.Printf("Error load final tree. Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
