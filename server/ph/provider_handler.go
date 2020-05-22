@@ -1,4 +1,4 @@
-package provider
+package ph
 
 import (
 	"encoding/json"
