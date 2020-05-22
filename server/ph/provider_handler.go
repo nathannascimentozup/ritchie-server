@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -168,8 +167,7 @@ func loadTreeFileHttp(path string, repo server.Repository) (server.Tree, error) 
 		return response, err
 	}
 
-	hc := &http.Client{Timeout: 5 * time.Second}
-	resp, err := hc.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return response, err
 	}
