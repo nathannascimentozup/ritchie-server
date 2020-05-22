@@ -42,7 +42,7 @@ func (lh Handler) processGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if repos == nil {
-		log.Println("No repository configDummy found")
+		log.Println("No repository config found")
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
