@@ -10,6 +10,11 @@ const (
 	OrganizationHeader = "x-org"
 	ContextHeader      = "x-ctx"
 	FileConfig         = "FILE_CONFIG"
+	BadRequest         = 400
+	UserUnauthorized   = 401
+	UserNotFound       = 404
+	UserForbidden      = 403
+	UserError          = 500
 )
 
 type (
@@ -77,28 +82,16 @@ type (
 		PublicConstraints []PermitMatcher `yaml:"publicConstraints"`
 	}
 
-	KeycloakConfig struct {
-		Url          string `json:"url"`
-		Realm        string `json:"realm"`
-		ClientId     string `json:"clientId"`
-		ClientSecret string `json:"clientSecret"`
-	}
-
-	OauthConfig struct {
-		Url      string `json:"url"`
-		ClientId string `json:"clientId"`
-	}
 	CredentialConfig struct {
 		Field string `json:"field"`
 		Type  string `json:"type"`
 	}
 
 	ConfigFile struct {
-		KeycloakConfig   *KeycloakConfig               `json:"keycloak"`
-		OauthConfig      *OauthConfig                  `json:"oauth"`
 		CredentialConfig map[string][]CredentialConfig `json:"credentials"`
 		CliVersionConfig CliVersionConfig              `json:"cliVersionPath"`
 		RepositoryConfig []Repository                  `json:"repositories"`
+		SPConfig         map[string]string             `json:"securityProviderConfig"`
 	}
 
 	CliVersionConfig struct {
@@ -108,8 +101,7 @@ type (
 	}
 
 	HealthEndpoints struct {
-		KeycloakURL string
-		VaultURL    string
+		VaultURL string
 	}
 
 	CreateUser struct {
@@ -118,6 +110,16 @@ type (
 		FirstName string `json:"firstName"`
 		LastName  string `json:"lastName"`
 		Email     string `json:"email"`
+	}
+
+	UserInfo struct {
+		Name     string
+		Username string
+		Email    string
+	}
+
+	SecurityProviders struct {
+		Providers map[string]SecurityManager
 	}
 )
 
@@ -135,14 +137,6 @@ type ConfigCredential interface {
 	ReadCredentialConfigs(org string) (map[string][]CredentialConfig, error)
 }
 
-type ConfigKeycloak interface {
-	ReadKeycloakConfigs(org string) (*KeycloakConfig, error)
-}
-
-type ConfigOauth interface {
-	ReadOauthConfig(org string) (*OauthConfig, error)
-}
-
 type ConfigCliVersion interface {
 	ReadCliVersionConfigs(org string) (CliVersionConfig, error)
 }
@@ -155,14 +149,17 @@ type ConfigSecurityConstraints interface {
 	ReadSecurityConstraints() SecurityConstraints
 }
 
+type ConfigSecurityProvider interface {
+	ReadConfigSecurityProvider(org string) (map[string]string, error)
+}
+
 type Config interface {
 	ConfigHealth
 	ConfigCredential
-	ConfigKeycloak
-	ConfigOauth
 	ConfigCliVersion
 	ConfigRepository
 	ConfigSecurityConstraints
+	ConfigSecurityProvider
 }
 
 type VaultManager interface {
@@ -201,6 +198,20 @@ type ProviderHandler interface {
 	TreeAllow(path, bToken, org string, repo Repository) (Tree, error)
 	FilesFormulasAllow(path, bToken, org string, repo Repository) ([]byte, error)
 	FindRepo(repos []Repository, repoName string) (Repository, error)
+}
+
+type SecurityManager interface {
+	Login(username, password string) (User, LoginError)
+}
+
+type LoginError interface {
+	GetError() error
+	GetCode() int
+}
+
+type User interface {
+	GetRoles() []string
+	GetUserInfo() UserInfo
 }
 
 type Configurator interface {

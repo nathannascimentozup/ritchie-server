@@ -1,6 +1,7 @@
 {
     "zup": {
-        "keycloak": {
+        "securityProviderConfig": {
+            "type" : "keycloak",
             "url": "http://localhost:8080",
             "realm": "ritchie",
             "clientId": "user-login",
@@ -46,10 +47,6 @@
                 }
             }
         ],
-        "oauth": {
-            "url": "http://localhost:8080/auth/realms/ritchie",
-            "clientId": "oauth"
-        },
         "credentials": {
             "github": [
                 {
