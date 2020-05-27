@@ -52,17 +52,14 @@ func DummyConfigMap(args ...string) map[string]*server.ConfigFile {
 	}
 	return map[string]*server.ConfigFile{
 		"zup": {
-			KeycloakConfig: &server.KeycloakConfig{
-				Url:          keycloakUrl,
-				Realm:        realm,
-				ClientId:     clientId,
-				ClientSecret: clientSecret,
+			SPConfig: map[string]string {
+				"type" : "keycloak",
+				"url": keycloakUrl,
+				"realm": realm,
+				"clientId": clientId,
+				"clientSecret": clientSecret,
 			},
-			OauthConfig: &server.OauthConfig{
-				Url:      getEnv(oauthUrl, "http://localhost:8080/auth/realms/ritchie"),
-				ClientId: "oauth",
-			},
-			CredentialConfig: map[string][]server.CredentialConfig{
+			CredentialConfig: map[string][]server.CredentialConfig {
 				"credential1": {{Field: "Field", Type: "type"}},
 				"credential2": {{Field: "field2", Type: "type"}},
 			},
@@ -277,6 +274,13 @@ func (v VaultMock) Delete(string) error {
 	return v.Err
 }
 func (v VaultMock) Start(*api.Client) {
+}
+
+func (v VaultMock) Encrypt(data, key string) (string, error) {
+	return "", nil
+}
+func (v VaultMock) Decrypt(data, key string) (string, error) {
+	return "", nil
 }
 
 type AuthorizationMock struct {

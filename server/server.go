@@ -10,11 +10,6 @@ const (
 	OrganizationHeader = "x-org"
 	ContextHeader      = "x-ctx"
 	FileConfig         = "FILE_CONFIG"
-	BadRequest         = 400
-	UserUnauthorized   = 401
-	UserNotFound       = 404
-	UserForbidden      = 403
-	UserError          = 500
 )
 
 type (
@@ -113,20 +108,27 @@ type (
 	}
 
 	UserInfo struct {
-		Name     string
-		Username string
-		Email    string
+		Name     string `json:"name"`
+		Username string `json:"username"`
+		Email    string `json:"email"`
 	}
 
 	SecurityProviders struct {
 		Providers map[string]SecurityManager
+	}
+
+	UserLogged struct {
+		UserInfo UserInfo `json:"userInfo"`
+		Roles    []string `json:"roles"`
+		TTL      int64    `json:"ttl"`
+		Org      string   `json:"org"`
 	}
 )
 
 type Constraints interface {
 	AuthorizationPath(bearerToken, path, method, org string) (bool, error)
 	ValidatePublicConstraints(path, method string) bool
-	ListRealmRoles(bearerToken, org string) ([]interface{}, error)
+	ListRealmRoles(bearerToken, org string) ([]string, error)
 }
 
 type ConfigHealth interface {
@@ -168,12 +170,8 @@ type VaultManager interface {
 	List(key string) ([]interface{}, error)
 	Delete(key string) error
 	Start(*api.Client)
-}
-
-type KeycloakManager interface {
-	CreateUser(user CreateUser, org string) (string, error)
-	DeleteUser(org, email string) error
-	Login(org, user, password string) (string, int, error)
+	Encrypt(data, key string) (string, error)
+	Decrypt(data, key string) (string, error)
 }
 
 type VaultConfig interface {
@@ -216,11 +214,8 @@ type User interface {
 
 type Configurator interface {
 	LoadLoginHandler() DefaultHandler
-	LoadConfigHandler() DefaultHandler
-	LoadUserHandler() DefaultHandler
 	LoadCredentialConfigHandler() DefaultHandler
 	LoadConfigHealth() DefaultHandler
-	LoadOauthHandler() DefaultHandler
 	LoadUsageLoggerHandler() DefaultHandler
 	LoadCliVersionHandler() DefaultHandler
 	LoadRepositoryHandler() DefaultHandler

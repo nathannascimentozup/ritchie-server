@@ -40,7 +40,6 @@ func (ch ConfigHealth) Handler() http.HandlerFunc {
 			var err error
 
 			for key, h := range ch.Config.ReadHealthConfigs() {
-				keycloakCheck, err = healthCheckUrl(h.KeycloakURL)
 				if err != nil {
 					log.Error("Keycloak health checking error ", err)
 				}
@@ -49,7 +48,6 @@ func (ch ConfigHealth) Handler() http.HandlerFunc {
 					log.Error("Vault health checking error ", err)
 				}
 				orgX := org{key, healthStruct{Services: []service{
-					{ServiceType: "KEYCLOAK", Health: healthCheckStatus(keycloakCheck)},
 					{ServiceType: "VAULT", Health: healthCheckStatus(vaultCheck)},
 				}, Status: healthCheckStatus(keycloakCheck && vaultCheck)}}
 				orgs = append(orgs, orgX)
