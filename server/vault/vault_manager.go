@@ -18,6 +18,7 @@ import (
 const vaultPath = "ritchie/credential/%s"
 const vaultEncrypt = "ritchie/transit/encrypt/%s"
 const vaultDecrypt = "ritchie/transit/decrypt/%s"
+const ritKey = "ritchie_key"
 
 type Manager struct {
 	client *api.Client
@@ -100,9 +101,9 @@ func (vm Manager) Start(c *api.Client) {
 
 }
 
-func (vm Manager) Encrypt(data, key string) (string, error) {
+func (vm Manager) Encrypt(data string) (string, error) {
 	vm.setToken()
-	path := fmt.Sprintf(vaultEncrypt, key)
+	path := fmt.Sprintf(vaultEncrypt, ritKey)
 	body := make(map[string]interface{})
 	body["plaintext"] = base64.StdEncoding.EncodeToString([]byte(data))
 	res, err := vm.client.Logical().Write(path, body)
@@ -113,9 +114,9 @@ func (vm Manager) Encrypt(data, key string) (string, error) {
 	return res.Data["ciphertext"].(string), nil
 }
 
-func (vm Manager) Decrypt(data, key string) (string, error) {
+func (vm Manager) Decrypt(data string) (string, error) {
 	vm.setToken()
-	path := fmt.Sprintf(vaultDecrypt, key)
+	path := fmt.Sprintf(vaultDecrypt, ritKey)
 	body := make(map[string]interface{})
 	body["ciphertext"] = data
 	res, err := vm.client.Logical().Write(path, body)

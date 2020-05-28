@@ -10,6 +10,8 @@ const (
 	OrganizationHeader = "x-org"
 	ContextHeader      = "x-ctx"
 	FileConfig         = "FILE_CONFIG"
+	RepoNameHeader      = "x-repo-name"
+	AuthorizationHeader = "x-rit-authorization"
 )
 
 type (
@@ -170,8 +172,8 @@ type VaultManager interface {
 	List(key string) ([]interface{}, error)
 	Delete(key string) error
 	Start(*api.Client)
-	Encrypt(data, key string) (string, error)
-	Decrypt(data, key string) (string, error)
+	Encrypt(data string) (string, error)
+	Decrypt(data string) (string, error)
 }
 
 type VaultConfig interface {

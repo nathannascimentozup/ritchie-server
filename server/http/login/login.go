@@ -89,7 +89,7 @@ func (lh Handler) processPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (lh Handler) createResponse(user server.User, org string) response {
-	ttl := time.Now().Unix() + (10 * 60 * 60)
+	ttl := time.Now().Unix() + (10 * 60 * 60) //TODO: Buscar TTL da config
 	userLogged := server.UserLogged{
 		UserInfo: user.GetUserInfo(),
 		Roles:    user.GetRoles(),
@@ -98,7 +98,7 @@ func (lh Handler) createResponse(user server.User, org string) response {
 	}
 	jb, _ := json.Marshal(userLogged)
 	js := string(jb)
-	cipher, err := lh.vaultManager.Encrypt(js, "ritchie_key")
+	cipher, err := lh.vaultManager.Encrypt(js)
 	cipherB64 := base64.StdEncoding.EncodeToString([]byte(cipher))
 	if err != nil {
 		log.Fatal(err)

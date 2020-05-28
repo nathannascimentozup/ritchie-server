@@ -89,19 +89,19 @@ func (c Configurator) LoadRepositoryHandler() server.DefaultHandler {
 }
 
 func (c Configurator) LoadTreeHandler() server.DefaultHandler {
-	sa := security.NewAuthorization(c.conf)
+	sa := security.NewAuthorization(c.conf, c.vaultManager)
 	ph := ph.NewProviderHandler(sa)
 	return tree.NewConfigHandler(c.conf, sa, ph)
 }
 
 func (c Configurator) LoadFormulasHandler() server.DefaultHandler {
-	sa := security.NewAuthorization(c.conf)
+	sa := security.NewAuthorization(c.conf, c.vaultManager)
 	ph := ph.NewProviderHandler(sa)
 	return formulas.NewConfigHandler(c.conf, sa, ph)
 }
 
 func (c Configurator) LoadMiddlewareHandler() server.MiddlewareHandler {
-	sa := security.NewAuthorization(c.conf)
+	sa := security.NewAuthorization(c.conf, c.vaultManager)
 	return middleware.NewMiddlewareHandler(sa)
 }
 
