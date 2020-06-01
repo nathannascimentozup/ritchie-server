@@ -256,7 +256,6 @@ func TestManager_Encrypt(t *testing.T) {
 	}
 	type args struct {
 		data string
-		key  string
 	}
 	tests := []struct {
 		name         string
@@ -270,7 +269,6 @@ func TestManager_Encrypt(t *testing.T) {
 			fields: fields{client: buildClient()},
 			args: args{
 				data: "test",
-				key:  "ritchie_key",
 			},
 			wantContains: "vault:v1:",
 			wantErr:      false,
@@ -281,7 +279,7 @@ func TestManager_Encrypt(t *testing.T) {
 			vm := &Manager{
 				client: tt.fields.client,
 			}
-			got, err := vm.Encrypt(tt.args.data, tt.args.key)
+			got, err := vm.Encrypt(tt.args.data)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Encrypt() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -299,7 +297,6 @@ func TestManager_Decrypt(t *testing.T) {
 	}
 	type args struct {
 		data string
-		key  string
 	}
 	tests := []struct {
 		name    string
@@ -312,8 +309,7 @@ func TestManager_Decrypt(t *testing.T) {
 			name:   "decrypt",
 			fields: fields{client: buildClient()},
 			args: args{
-				data: "vault:v1:4f6dQGn5lu+0KG6l09v+twYwNr62uxcibf69qTQl4go=",
-				key:  "ritchie_key",
+				data: "vault:v1:P6vz1PeaZ8OzG/WiMOUxCkWvtwgTvqOhhXQ0JcBA6hcLcfIVxQaGhXtIfFuJs8Q6Dduu4WSwOA51SDq4o2pIerMfBv0sI2jKjHLpYdjcbZqmLinf+QjjmIgQ1ydwLCMxIt/x6mPCmhoj55sd4rlGDud1n2RtK1apchcZJQupTIrCSCGhs5TdYxq4tu08d+/qmGyD8SYdsmBlAuMMiSkNLUY5mTTya0qfaSuK+XmBtjjXjfQhW2waCwdhdEjBLF3zFlc=",
 			},
 			want:    "test",
 			wantErr: false,
@@ -324,7 +320,7 @@ func TestManager_Decrypt(t *testing.T) {
 			vm := &Manager{
 				client: tt.fields.client,
 			}
-			got, err := vm.Decrypt(tt.args.data, tt.args.key)
+			got, err := vm.Decrypt(tt.args.data)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Decrypt() error = %v, wantErr %v", err, tt.wantErr)
 				return

@@ -114,6 +114,8 @@ func ctx(r *http.Request) server.Ctx {
 }
 
 func loadUser(r http.Request) user {
+
+	//TODO: Adjust
 	authorizationToken := r.Header.Get(authorizationHeader)
 	jwtString := strings.Replace(authorizationToken, bearer, "", -1)
 	token, _ := jwt.Parse(jwtString, func(token *jwt.Token) (interface{}, error) {
