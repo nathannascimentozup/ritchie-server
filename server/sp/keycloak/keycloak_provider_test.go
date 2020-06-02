@@ -50,16 +50,16 @@ func Test_keycloakConfig_Login(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			k := NewKeycloakProvider(tt.fields.config)
 			gotUser, gotError := k.Login(tt.args.username, tt.args.password)
-			if !reflect.DeepEqual(gotUser.GetUserInfo(), tt.outUser.GetUserInfo()) {
-				t.Errorf("Login() gotUser.GetUserInfo() = %v, want %v", gotUser.GetUserInfo(), tt.outUser.GetUserInfo())
+			if !reflect.DeepEqual(gotUser.UserInfo(), tt.outUser.UserInfo()) {
+				t.Errorf("Login() gotUser.UserInfo() = %v, want %v", gotUser.UserInfo(), tt.outUser.UserInfo())
 			}
 			roles := make(map[string]string)
-			for _, c := range gotUser.GetRoles() {
+			for _, c := range gotUser.Roles() {
 				roles[c] = c
 			}
-			for _, c := range tt.outUser.GetRoles() {
+			for _, c := range tt.outUser.Roles() {
 				if roles[c] == "" {
-					t.Errorf("Error roles gotUser.GetRoles() = %v, want %v", gotUser.GetRoles(), tt.outUser.GetRoles())
+					t.Errorf("Error roles gotUser.Roles() = %v, want %v", gotUser.Roles(), tt.outUser.Roles())
 				}
 			}
 			if !reflect.DeepEqual(gotError, tt.outError) {

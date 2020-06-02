@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -74,11 +73,11 @@ func (lh Handler) processPost(w http.ResponseWriter, r *http.Request) {
 	}
 	lu, le := sp.Login(l.Username, l.Password)
 	if le != nil {
-		log.Printf("error login: %v", le.GetError())
-		w.WriteHeader(le.GetCode())
+		log.Printf("error login: %v", le.Error())
+		w.WriteHeader(le.Code())
 		return
 	}
-	resp := lh.createResponse(lu, organizationHeader)
+	resp := lh.createResponse(lu, organizationHeader, sp.TTL())
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(&resp)
@@ -88,11 +87,10 @@ func (lh Handler) processPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (lh Handler) createResponse(user server.User, org string) response {
-	ttl := time.Now().Unix() + (10 * 60 * 60) //TODO: Buscar TTL da config
+func (lh Handler) createResponse(user server.User, org string, ttl int64) response {
 	userLogged := server.UserLogged{
-		UserInfo: user.GetUserInfo(),
-		Roles:    user.GetRoles(),
+		UserInfo: user.UserInfo(),
+		Roles:    user.Roles(),
 		TTL:      ttl,
 		Org:      org,
 	}

@@ -202,16 +202,17 @@ type ProviderHandler interface {
 
 type SecurityManager interface {
 	Login(username, password string) (User, LoginError)
+	TTL() int64
 }
 
 type LoginError interface {
-	GetError() error
-	GetCode() int
+	Error() error
+	Code() int
 }
 
 type User interface {
-	GetRoles() []string
-	GetUserInfo() UserInfo
+	Roles() []string
+	UserInfo() UserInfo
 }
 
 type Configurator interface {

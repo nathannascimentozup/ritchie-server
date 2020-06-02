@@ -15,6 +15,7 @@ const (
 	realm        = "realm"
 	clientId     = "clientId"
 	clientSecret = "clientSecret"
+	ttl          = "ttl"
 )
 
 type keycloakConfig struct {
@@ -27,6 +28,7 @@ type kConfig struct {
 	realm        string
 	clientId     string
 	clientSecret string
+	ttl          int64
 }
 
 type keycloakError struct {
@@ -40,17 +42,23 @@ type keycloakUser struct {
 }
 
 func NewKeycloakProvider(config map[string]string) server.SecurityManager {
+	ttl, _ := strconv.ParseInt(config[ttl], 10, 64)
 	kc := kConfig{
 		url:          config[url],
 		realm:        config[realm],
 		clientId:     config[clientId],
 		clientSecret: config[clientSecret],
+		ttl:          ttl,
 	}
 	c := gocloak.NewClient(kc.url)
 	return keycloakConfig{
 		client: c,
 		config: kc,
 	}
+}
+
+func (k keycloakConfig) TTL() int64 {
+	return k.config.ttl
 }
 
 func (k keycloakConfig) Login(username, password string) (server.User, server.LoginError) {
@@ -96,16 +104,16 @@ func (k keycloakConfig) Login(username, password string) (server.User, server.Lo
 	return ku, nil
 }
 
-func (ke keycloakError) GetError() error {
+func (ke keycloakError) Error() error {
 	return ke.err
 }
-func (ke keycloakError) GetCode() int {
+func (ke keycloakError) Code() int {
 	return ke.code
 }
 
-func (ui keycloakUser) GetRoles() []string {
+func (ui keycloakUser) Roles() []string {
 	return ui.roles
 }
-func (ui keycloakUser) GetUserInfo() server.UserInfo {
+func (ui keycloakUser) UserInfo() server.UserInfo {
 	return ui.userInfo
 }

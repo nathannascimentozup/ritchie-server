@@ -22,7 +22,7 @@ import (
 	"ritchie-server/server/http/usagelogger"
 	"ritchie-server/server/logger"
 	"ritchie-server/server/middleware"
-	"ritchie-server/server/ph"
+	"ritchie-server/server/fph"
 	"ritchie-server/server/security"
 	"ritchie-server/server/sp/keycloak"
 	"ritchie-server/server/vault"
@@ -90,13 +90,13 @@ func (c Configurator) LoadRepositoryHandler() server.DefaultHandler {
 
 func (c Configurator) LoadTreeHandler() server.DefaultHandler {
 	sa := security.NewAuthorization(c.conf, c.vaultManager)
-	ph := ph.NewProviderHandler(sa)
+	ph := fph.NewProviderHandler(sa)
 	return tree.NewConfigHandler(c.conf, sa, ph)
 }
 
 func (c Configurator) LoadFormulasHandler() server.DefaultHandler {
 	sa := security.NewAuthorization(c.conf, c.vaultManager)
-	ph := ph.NewProviderHandler(sa)
+	ph := fph.NewProviderHandler(sa)
 	return formulas.NewConfigHandler(c.conf, sa, ph)
 }
 
