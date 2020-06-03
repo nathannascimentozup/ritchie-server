@@ -17,28 +17,29 @@ func Test_keycloakConfig_Login(t *testing.T) {
 		password string
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		outUser   server.User
-		outError  server.LoginError
+		name     string
+		fields   fields
+		args     args
+		outUser  server.User
+		outError server.LoginError
 	}{
 		{
-			name:     "login success",
-			fields:   fields{config: map[string]string{
-				"type" : "keycloak",
-				"url": "http://localhost:8080",
-				"realm": "ritchie",
-				"clientId": "user-login",
-				"clientSecret": "user-login",
-				"ttl" : "36000",
-			}},
-			args:     args{
+			name: "login success",
+			fields: fields{
+				config: map[string]string{
+					"type":         "keycloak",
+					"url":          "http://localhost:8080",
+					"realm":        "ritchie",
+					"clientId":     "user-login",
+					"clientSecret": "user-login",
+					"ttl":          "36000",
+				}},
+			args: args{
 				username: "user",
 				password: "admin",
 			},
-			outUser:  keycloakUser{
-				roles:    []string{"admin", "offline_access", "uma_authorization", "user"},
+			outUser: keycloakUser{
+				roles: []string{"admin", "offline_access", "uma_authorization", "user"},
 				userInfo: server.UserInfo{
 					Name:     "user user",
 					Username: "user",
@@ -48,20 +49,20 @@ func Test_keycloakConfig_Login(t *testing.T) {
 			outError: nil,
 		},
 		{
-			name:     "login failed",
-			fields:   fields{config: map[string]string{
-				"type" : "keycloak",
-				"url": "http://localhost:8080",
-				"realm": "ritchie",
-				"clientId": "user-login",
+			name: "login failed",
+			fields: fields{config: map[string]string{
+				"type":         "keycloak",
+				"url":          "http://localhost:8080",
+				"realm":        "ritchie",
+				"clientId":     "user-login",
 				"clientSecret": "user-login",
-				"ttl" : "36000",
+				"ttl":          "36000",
 			}},
-			args:     args{
+			args: args{
 				username: "user",
 				password: "failed",
 			},
-			outUser:  nil,
+			outUser: nil,
 			outError: keycloakError{
 				code: 401,
 				err:  nil,
@@ -106,17 +107,17 @@ func Test_keycloakConfig_TTL(t *testing.T) {
 		want   int64
 	}{
 		{
-			name:   "success",
+			name: "success",
 			fields: fields{
-				config: map[string]string {
-				"type" : "keycloak",
-				"url": "http://localhost:8080",
-				"realm": "ritchie",
-				"clientId": "user-login",
-				"clientSecret": "user-login",
-				"ttl" : "36000",
-			}},
-			want:   36000,
+				config: map[string]string{
+					"type":         "keycloak",
+					"url":          "http://localhost:8080",
+					"realm":        "ritchie",
+					"clientId":     "user-login",
+					"clientSecret": "user-login",
+					"ttl":          "36000",
+				}},
+			want: 36000,
 		},
 	}
 	for _, tt := range tests {

@@ -72,7 +72,7 @@ func NewLdapProvider(config map[string]string) server.SecurityManager {
 }
 
 func loadClient(cf lConfig) *ldap.LDAPClient {
-	att := []string{cf.attributeName, cf.attributeUsername, cf.attributeUsername}
+	att := []string{cf.attributeName, cf.attributeUsername, cf.attributeEmail}
 	return &ldap.LDAPClient{
 		Base:         cf.base,
 		Host:         cf.host,
@@ -115,10 +115,6 @@ func loadLConfig(config map[string]string) lConfig {
 	}
 }
 
-func (k ldapConfig) TTL() int64 {
-	return k.config.ttl
-}
-
 func (k ldapConfig) Login(username, password string) (server.User, server.LoginError) {
 	defer k.client.Close()
 	ok, user, err := k.client.Authenticate(username, password)
@@ -144,47 +140,17 @@ func (k ldapConfig) Login(username, password string) (server.User, server.LoginE
 	lu := ldapUser {
 		roles: groups,
 		userInfo: server.UserInfo{
-			Name:     user[attributeName],
+			Name:     user[k.config.attributeName],
 			Username: username,
-			Email:    user[attributeEmail],
+			Email:    user[k.config.attributeEmail],
 		},
 	}
 	return lu, nil
 }
 
-/*func main() {
-	client := &ldap.LDAPClient{
-		Base:         "dc=example,dc=org",
-		Host:         "localhost",
-		ServerName:   "ldap.example.org",
-		InsecureSkipVerify: false,
-		Port:         389,
-		UseSSL:       false,
-		SkipTLS:      true,
-		BindDN:       "cn=admin,dc=example,dc=org",
-		BindPassword: "admin",
-		UserFilter:   "(uid=%s)",
-		GroupFilter:  "(memberUid=%s)",
-		Attributes:   []string{"givenName", "sn", "mail", "uid"},
-	}
-	// It is the responsibility of the caller to close the connection
-	defer client.Close()
-
-	ok, user, err := client.Authenticate("user", "user")
-	if err != nil {
-		log.Fatalf("Error authenticating user %s: %+v", "user", err)
-	}
-	if !ok {
-		log.Fatalf("Authenticating failed for user %s", "user")
-	}
-	log.Printf("User: %+v", user)
-
-	groups, err := client.GetGroupsOfUser("user")
-	if err != nil {
-		log.Fatalf("Error getting groups for user %s: %+v", "user", err)
-	}
-	log.Printf("Groups: %+v", groups)
-}*/
+func (k ldapConfig) TTL() int64 {
+	return k.config.ttl
+}
 
 func (le ldapError) Error() error {
 	return le.err
