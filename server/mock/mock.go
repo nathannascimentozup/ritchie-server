@@ -295,13 +295,13 @@ func (d AuthorizationMock) AuthorizationPath(bearerToken, path, method, org stri
 func (d AuthorizationMock) ValidatePublicConstraints(path, method string) bool {
 	return d.B
 }
-func (d AuthorizationMock) ListRealmRoles(bearerToken, org string) ([]interface{}, error) {
+func (d AuthorizationMock) ListRealmRoles(bearerToken, org string) ([]string, error) {
 	if d.E != nil {
 		return nil, d.E
 	}
-	new := make([]interface{}, len(d.R))
-	for i, v := range d.R {
-		new[i] = v
+	var new []string
+	for _, v := range d.R {
+		new = append(new, v)
 	}
 	return new, d.E
 }
