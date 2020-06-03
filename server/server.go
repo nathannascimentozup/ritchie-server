@@ -153,17 +153,12 @@ type ConfigSecurityConstraints interface {
 	ReadSecurityConstraints() SecurityConstraints
 }
 
-type ConfigSecurityProvider interface {
-	ReadConfigSecurityProvider(org string) (map[string]string, error)
-}
-
 type Config interface {
 	ConfigHealth
 	ConfigCredential
 	ConfigCliVersion
 	ConfigRepository
 	ConfigSecurityConstraints
-	ConfigSecurityProvider
 }
 
 type VaultManager interface {

@@ -63,15 +63,6 @@ func (c Configuration) ReadSecurityConstraints() server.SecurityConstraints {
 	return c.SecurityConstraints
 }
 
-func (c Configuration) ReadConfigSecurityProvider(org string) (map[string]string, error) {
-	config, err := c.getConfig(org)
-	if err != nil {
-		return nil, err
-	}
-
-	return config.SPConfig, nil
-}
-
 func (c Configuration) getConfig(org string) (*server.ConfigFile, error) {
 	config := c.Configs[org]
 	if config == nil {
