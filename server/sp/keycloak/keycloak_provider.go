@@ -3,6 +3,7 @@ package keycloak
 import (
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Nerzal/gocloak"
 	"github.com/dgrijalva/jwt-go"
@@ -43,12 +44,13 @@ type keycloakUser struct {
 
 func NewKeycloakProvider(config map[string]string) server.SecurityManager {
 	ttl, _ := strconv.ParseInt(config[ttl], 10, 64)
+	ttlF := time.Now().Unix() + ttl
 	kc := kConfig{
 		url:          config[url],
 		realm:        config[realm],
 		clientId:     config[clientId],
 		clientSecret: config[clientSecret],
-		ttl:          ttl,
+		ttl:          ttlF,
 	}
 	c := gocloak.NewClient(kc.url)
 	return keycloakConfig{

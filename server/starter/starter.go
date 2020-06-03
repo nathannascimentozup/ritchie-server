@@ -25,6 +25,7 @@ import (
 	"ritchie-server/server/fph"
 	"ritchie-server/server/security"
 	"ritchie-server/server/sp/keycloak"
+	"ritchie-server/server/sp/ldap"
 	"ritchie-server/server/vault"
 )
 
@@ -141,6 +142,9 @@ func loadSecurityProviders(config map[string]*server.ConfigFile) server.Security
 		switch config.SPConfig["type"] {
 		case "keycloak":
 			sm[org] = keycloak.NewKeycloakProvider(config.SPConfig)
+		case "ldap":
+			sm[org] = ldap.NewLdapProvider(config.SPConfig)
+
 		}
 	}
 	return server.SecurityProviders{Providers: sm}

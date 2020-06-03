@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/jtblin/go-ldap-client"
 
@@ -94,6 +95,7 @@ func loadLConfig(config map[string]string) lConfig {
 	st, _ := strconv.ParseBool(config[skipTLS])
 	isv, _ := strconv.ParseBool(config[insecureSkipVerify])
 	ttl, _ := strconv.ParseInt(config[ttl], 10, 64)
+	ttlF := time.Now().Unix() + ttl
 	return lConfig{
 		base:               config[base],
 		host:               config[host],
@@ -109,7 +111,7 @@ func loadLConfig(config map[string]string) lConfig {
 		attributeUsername:  config[attributeUsername],
 		attributeName:      config[attributeName],
 		attributeEmail:     config[attributeEmail],
-		ttl:                ttl,
+		ttl:                ttlF,
 	}
 }
 
