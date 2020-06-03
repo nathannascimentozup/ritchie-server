@@ -11,7 +11,7 @@ const (
 	ContextHeader      = "x-ctx"
 	FileConfig         = "FILE_CONFIG"
 	RepoNameHeader      = "x-repo-name"
-	AuthorizationHeader = "x-rit-authorization"
+	AuthorizationHeader = "x-authorization"
 )
 
 type (
