@@ -42,3 +42,10 @@ func (v vaultManagerMock) Delete(key string) error {
 
 func (v vaultManagerMock) Start(*api.Client) {
 }
+
+func (v vaultManagerMock) Encrypt(data string) (string, error) {
+	return "", nil
+}
+func (v vaultManagerMock) Decrypt(data string) (string, error) {
+	return "", nil
+}
