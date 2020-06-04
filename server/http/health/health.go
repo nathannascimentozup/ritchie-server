@@ -36,7 +36,7 @@ func (ch ConfigHealth) Handler() http.HandlerFunc {
 			http.NotFound(w, r)
 		} else {
 			orgs := []org{}
-			var keycloakCheck, vaultCheck bool
+			var vaultCheck bool
 			var err error
 
 			for key, h := range ch.Config.ReadHealthConfigs() {
@@ -49,12 +49,12 @@ func (ch ConfigHealth) Handler() http.HandlerFunc {
 				}
 				orgX := org{key, healthStruct{Services: []service{
 					{ServiceType: "VAULT", Health: healthCheckStatus(vaultCheck)},
-				}, Status: healthCheckStatus(keycloakCheck && vaultCheck)}}
+				}, Status: healthCheckStatus(vaultCheck)}}
 				orgs = append(orgs, orgX)
 			}
 
 			resp, _ := json.Marshal(orgs)
-			if !(keycloakCheck && vaultCheck) {
+			if !vaultCheck {
 				w.WriteHeader(http.StatusInternalServerError)
 			}
 			fmt.Fprint(w, string(resp))

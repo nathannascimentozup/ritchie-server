@@ -11,7 +11,6 @@ import (
 
 const (
 	keycloakUrl = "KEYCLOAK_URL"
-	oauthUrl = "OAUTH_URL"
 	cliVersionUrl = "CLI_VERSION_URL"
 	remoteUrl =  "REMOTE_URL"
 )
