@@ -2,6 +2,7 @@ package vault
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 	"strings"
 	"testing"
@@ -309,7 +310,7 @@ func TestManager_Decrypt(t *testing.T) {
 			name:   "decrypt",
 			fields: fields{client: buildClient()},
 			args: args{
-				data: "vault:v1:P6vz1PeaZ8OzG/WiMOUxCkWvtwgTvqOhhXQ0JcBA6hcLcfIVxQaGhXtIfFuJs8Q6Dduu4WSwOA51SDq4o2pIerMfBv0sI2jKjHLpYdjcbZqmLinf+QjjmIgQ1ydwLCMxIt/x6mPCmhoj55sd4rlGDud1n2RtK1apchcZJQupTIrCSCGhs5TdYxq4tu08d+/qmGyD8SYdsmBlAuMMiSkNLUY5mTTya0qfaSuK+XmBtjjXjfQhW2waCwdhdEjBLF3zFlc=",
+				data: encryptTest(buildClient()),
 			},
 			want:    "test",
 			wantErr: false,
@@ -331,3 +332,15 @@ func TestManager_Decrypt(t *testing.T) {
 		})
 	}
 }
+
+func encryptTest(client *api.Client) string {
+	vm := &Manager{
+		client: client,
+	}
+	d, err := vm.Encrypt("test")
+	if err != nil {
+		log.Fatal("erro vm.Encrypt(\"test\")")
+	}
+	return d
+}
+
