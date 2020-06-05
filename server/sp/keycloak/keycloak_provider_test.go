@@ -1,6 +1,7 @@
 package keycloak
 
 import (
+	"os"
 	"reflect"
 	"testing"
 	"time"
@@ -8,7 +9,7 @@ import (
 	"ritchie-server/server"
 )
 
-func Test_keycloakConfig_Login(t *testing.T) {
+func Test_keycloak_Login(t *testing.T) {
 	type fields struct {
 		config map[string]string
 	}
@@ -26,14 +27,8 @@ func Test_keycloakConfig_Login(t *testing.T) {
 		{
 			name: "login success",
 			fields: fields{
-				config: map[string]string{
-					"type":         "keycloak",
-					"url":          "http://localhost:8080",
-					"realm":        "ritchie",
-					"clientId":     "user-login",
-					"clientSecret": "user-login",
-					"ttl":          "36000",
-				}},
+				config: dummyConfigKeycloak(),
+			},
 			args: args{
 				username: "user",
 				password: "admin",
@@ -50,14 +45,9 @@ func Test_keycloakConfig_Login(t *testing.T) {
 		},
 		{
 			name: "login failed",
-			fields: fields{config: map[string]string{
-				"type":         "keycloak",
-				"url":          "http://localhost:8080",
-				"realm":        "ritchie",
-				"clientId":     "user-login",
-				"clientSecret": "user-login",
-				"ttl":          "36000",
-			}},
+			fields: fields{
+				config: dummyConfigKeycloak(),
+			},
 			args: args{
 				username: "user",
 				password: "failed",
@@ -97,7 +87,7 @@ func Test_keycloakConfig_Login(t *testing.T) {
 	}
 }
 
-func Test_keycloakConfig_TTL(t *testing.T) {
+func Test_keycloak_TTL(t *testing.T) {
 	type fields struct {
 		config map[string]string
 	}
@@ -109,14 +99,8 @@ func Test_keycloakConfig_TTL(t *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				config: map[string]string{
-					"type":         "keycloak",
-					"url":          "http://localhost:8080",
-					"realm":        "ritchie",
-					"clientId":     "user-login",
-					"clientSecret": "user-login",
-					"ttl":          "36000",
-				}},
+				config: dummyConfigKeycloak(),
+			},
 			want: 36000,
 		},
 	}
@@ -128,5 +112,20 @@ func Test_keycloakConfig_TTL(t *testing.T) {
 				t.Errorf("TTL() = %v, want %v", ttl, tt.want)
 			}
 		})
+	}
+}
+
+func dummyConfigKeycloak() map[string]string {
+	value := os.Getenv("KEYCLOAK_URL")
+	if value == "" {
+		value = "http://localhost:8080"
+	}
+	return map[string]string{
+		"type":         "keycloak",
+		"url":          value,
+		"realm":        "ritchie",
+		"clientId":     "user-login",
+		"clientSecret": "user-login",
+		"ttl":          "36000",
 	}
 }
