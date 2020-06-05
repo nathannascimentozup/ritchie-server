@@ -1,4 +1,4 @@
-package usagelogger
+package ul
 
 import (
 	"encoding/json"

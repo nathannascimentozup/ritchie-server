@@ -19,7 +19,7 @@ import (
 	"ritchie-server/server/http/login"
 	"ritchie-server/server/http/repository"
 	"ritchie-server/server/http/tree"
-	"ritchie-server/server/http/usagelogger"
+	"ritchie-server/server/http/ul"
 	"ritchie-server/server/logger"
 	"ritchie-server/server/middleware"
 	"ritchie-server/server/fph"
@@ -78,7 +78,7 @@ func (c Configurator) LoadConfigHealth() server.DefaultHandler {
 }
 
 func (c Configurator) LoadUsageLoggerHandler() server.DefaultHandler {
-	return usagelogger.NewUsageLoggerHandler()
+	return ul.NewUsageLoggerHandler()
 }
 
 func (c Configurator) LoadCliVersionHandler() server.DefaultHandler {
