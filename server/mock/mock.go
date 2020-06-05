@@ -236,22 +236,45 @@ func DummyRepoList() []server.Repository {
 	}
 }
 
-//server.KeycloakManager mock
-type KeycloakMock struct {
-	Token string
-	Code  int
-	Err   error
+//server.SecurityManager mock
+type SecurityManagerMock struct {
+	U server.User
+	L server.LoginError
+	T int64
+}
+func (s SecurityManagerMock) Login(username, password string) (server.User, server.LoginError) {
+	return s.U, s.L
+}
+func (s SecurityManagerMock) TTL() int64 {
+	return s.T
 }
 
-func (k KeycloakMock) CreateUser(server.CreateUser, string) (string, error) {
-	return k.Token, k.Err
+type LoginErrorMock struct {
+	E error
+	C int
 }
-func (k KeycloakMock) DeleteUser(string, string) error {
-	return k.Err
+
+func (le LoginErrorMock) Error() error {
+	return le.E
 }
-func (k KeycloakMock) Login(string, string, string) (string, int, error) {
-	return k.Token, k.Code, k.Err
+
+func (le LoginErrorMock) Code() int {
+	return le.C
 }
+
+type UserMock struct {
+	R []string
+	U server.UserInfo
+}
+
+func (u UserMock) Roles() []string {
+	return u.R
+}
+
+func (u UserMock) UserInfo() server.UserInfo {
+	return u.U
+}
+
 
 //server.ValtManager mock
 type VaultMock struct {
@@ -275,10 +298,10 @@ func (v VaultMock) Delete(string) error {
 func (v VaultMock) Start(*api.Client) {
 }
 
-func (v VaultMock) Encrypt(data, key string) (string, error) {
+func (v VaultMock) Encrypt(data string) (string, error) {
 	return "", nil
 }
-func (v VaultMock) Decrypt(data, key string) (string, error) {
+func (v VaultMock) Decrypt(data string) (string, error) {
 	return "", nil
 }
 
