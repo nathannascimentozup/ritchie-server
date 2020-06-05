@@ -70,25 +70,28 @@ func (auth Authorization) validateConstraints(path, method string, roles []strin
 }
 
 func (auth Authorization) ListRealmRoles(token, org string) ([]string, error) {
-	t, err := base64.StdEncoding.DecodeString(token)
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("failed decode token, error: %v", err))
+	if token != "" {
+		t, err := base64.StdEncoding.DecodeString(token)
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("failed decode token, error: %v", err))
+		}
+		tf, err := auth.vaultManager.Decrypt(string(t))
+		if err != nil {
+			return nil, errors.New("failed decrypt token")
+		}
+		var ul server.UserLogged
+		err = json.Unmarshal([]byte(tf), &ul)
+		if err != nil {
+			return nil, errors.New("failed unmarshal token to user info")
+		}
+		if org != ul.Org {
+			return nil, errors.New("receive org not equal token")
+		}
+		tokenTime := time.Unix(ul.TTL, 0)
+		if time.Since(tokenTime).Seconds() > 0 {
+			return nil, errors.New("token expired")
+		}
+		return ul.Roles, nil
 	}
-	tf, err := auth.vaultManager.Decrypt(string(t))
-	if err != nil {
-		return nil, errors.New("failed decrypt token")
-	}
-	var ul server.UserLogged
-	err = json.Unmarshal([]byte(tf), &ul)
-	if err != nil {
-		return nil, errors.New("failed unmarshal token to user info")
-	}
-	if org != ul.Org {
-		return nil, errors.New("receive org not equal token")
-	}
-	tokenTime := time.Unix(ul.TTL, 0)
-	if time.Since(tokenTime).Seconds() > 0 {
-		return nil, errors.New("token expired")
-	}
-	return ul.Roles, nil
+	return nil, errors.New("token is empty")
 }
