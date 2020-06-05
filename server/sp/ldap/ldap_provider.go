@@ -1,7 +1,6 @@
 package ldap
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -127,14 +126,14 @@ func (k ldapConfig) Login(username, password string) (server.User, server.LoginE
 	if !ok {
 		return nil, ldapError {
 			code: 401,
-			err:  errors.New(fmt.Sprintf("Authenticating failed for user %s", username)),
+			err:  fmt.Errorf("Authenticating failed for user %s", username),
 		}
 	}
 	groups, err := k.client.GetGroupsOfUser(username)
 	if err != nil {
 		return nil, ldapError {
 			code: 500,
-			err:  errors.New(fmt.Sprintf("Error getting groups for user %s", username)),
+			err:  fmt.Errorf("Error getting groups for user %s", username),
 		}
 	}
 	lu := ldapUser {

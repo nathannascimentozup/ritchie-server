@@ -73,7 +73,7 @@ func (auth Authorization) ListRealmRoles(token, org string) ([]string, error) {
 	if token != "" {
 		t, err := base64.StdEncoding.DecodeString(token)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("failed decode token, error: %v", err))
+			return nil, fmt.Errorf("failed decode token, error: %v", err)
 		}
 		tf, err := auth.vaultManager.Decrypt(string(t))
 		if err != nil {

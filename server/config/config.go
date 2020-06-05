@@ -19,7 +19,7 @@ func (c Configuration) ReadHealthConfigs() map[string]server.HealthEndpoints {
 
 	m := make(map[string]server.HealthEndpoints)
 
-	for orgName, _ := range c.Configs {
+	for orgName := range c.Configs {
 		if orgName != "default" {
 			vaultConfig := api.DefaultConfig()
 			_ = vaultConfig.ReadEnvironment()

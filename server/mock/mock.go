@@ -323,9 +323,7 @@ func (d AuthorizationMock) ListRealmRoles(bearerToken, org string) ([]string, er
 		return nil, d.E
 	}
 	var new []string
-	for _, v := range d.R {
-		new = append(new, v)
-	}
+	new = append(new, d.R...)
 	return new, d.E
 }
 
