@@ -282,13 +282,14 @@ type VaultMock struct {
 	ErrList error
 	Keys    []interface{}
 	Data    string
+	ReturnMap  map[string]interface{}
 }
 
 func (v VaultMock) Write(string, map[string]interface{}) error {
 	return v.Err
 }
 func (v VaultMock) Read(string) (map[string]interface{}, error) {
-	return nil, v.Err
+	return v.ReturnMap, v.Err
 }
 func (v VaultMock) List(string) ([]interface{}, error) {
 	return v.Keys, v.ErrList
@@ -300,10 +301,10 @@ func (v VaultMock) Start(*api.Client) {
 }
 
 func (v VaultMock) Encrypt(data string) (string, error) {
-	return v.Data, v.Err
+	return v.Data, nil
 }
 func (v VaultMock) Decrypt(data string) (string, error) {
-	return v.Data, v.Err
+	return v.Data, nil
 }
 
 type AuthorizationMock struct {

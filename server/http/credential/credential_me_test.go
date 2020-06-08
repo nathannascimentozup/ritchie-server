@@ -2,7 +2,9 @@ package credential
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -36,10 +38,9 @@ func TestHandler_HandlerMe(t *testing.T) {
 		},
 		{
 			name: "get credential success",
-			fields: fields{method: http.MethodGet, v: vaultManagerMock{
-				Error:      nil,
+			fields: fields{method: http.MethodGet, v: mock.VaultMock{
 				ReturnMap:  map[string]interface{}{"a": "b"},
-				ReturnList: nil,
+				Data: userLoggedJson(),
 			}},
 			out: func() http.HandlerFunc {
 				return func(w http.ResponseWriter, r *http.Request) {
@@ -49,10 +50,9 @@ func TestHandler_HandlerMe(t *testing.T) {
 		},
 		{
 			name: "post credential success",
-			fields: fields{method: http.MethodPost, v: vaultManagerMock{
-				Error:      nil,
+			fields: fields{method: http.MethodPost, v: mock.VaultMock{
 				ReturnMap:  map[string]interface{}{"a": "b"},
-				ReturnList: nil,
+				Data: userLoggedJson(),
 			},
 				payload: mock.DummyCredential(),
 				ctx:     "default",
@@ -67,10 +67,9 @@ func TestHandler_HandlerMe(t *testing.T) {
 		},
 		{
 			name: "post credential invalid json",
-			fields: fields{method: http.MethodPost, v: vaultManagerMock{
-				Error:      nil,
+			fields: fields{method: http.MethodPost, v: mock.VaultMock{
 				ReturnMap:  map[string]interface{}{"a": "b"},
-				ReturnList: nil,
+				Data: userLoggedJson(),
 			},
 				payload: "failed",
 				ctx:     "default",
@@ -85,10 +84,9 @@ func TestHandler_HandlerMe(t *testing.T) {
 		},
 		{
 			name: "post credential bad request",
-			fields: fields{method: http.MethodPost, v: vaultManagerMock{
-				Error:      nil,
+			fields: fields{method: http.MethodPost, v: mock.VaultMock{
 				ReturnMap:  map[string]interface{}{"a": "b"},
-				ReturnList: nil,
+				Data: userLoggedJson(),
 			},
 				payload: mock.DummyCredentialBadRequest(),
 				ctx:     "default",
@@ -104,10 +102,10 @@ func TestHandler_HandlerMe(t *testing.T) {
 		},
 		{
 			name: "post credential error write",
-			fields: fields{method: http.MethodPost, v: vaultManagerMock{
-				Error:      errors.New("error"),
+			fields: fields{method: http.MethodPost, v: mock.VaultMock{
+				Err:      errors.New("error"),
 				ReturnMap:  map[string]interface{}{"a": "b"},
-				ReturnList: nil,
+				Data: userLoggedJson(),
 			},
 				payload: mock.DummyCredential(),
 				ctx:     "default",
@@ -122,10 +120,9 @@ func TestHandler_HandlerMe(t *testing.T) {
 		},
 		{
 			name: "get credential error",
-			fields: fields{method: http.MethodGet, v: vaultManagerMock{
-				Error:      errors.New("error"),
-				ReturnMap:  nil,
-				ReturnList: nil,
+			fields: fields{method: http.MethodGet, v: mock.VaultMock{
+				Err:      errors.New("error"),
+				Data: userLoggedJson(),
 			}},
 			out: func() http.HandlerFunc {
 				return func(w http.ResponseWriter, r *http.Request) {
@@ -135,11 +132,7 @@ func TestHandler_HandlerMe(t *testing.T) {
 		},
 		{
 			name: "get credential not found",
-			fields: fields{method: http.MethodGet, v: vaultManagerMock{
-				Error:      nil,
-				ReturnMap:  nil,
-				ReturnList: nil,
-			}},
+			fields: fields{method: http.MethodGet, v: mock.VaultMock{Data: userLoggedJson()}},
 			out: func() http.HandlerFunc {
 				return func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusNotFound)
@@ -155,7 +148,7 @@ func TestHandler_HandlerMe(t *testing.T) {
 				b = append(b, []byte(tt.fields.payload)...)
 			}
 			r, _ := http.NewRequest(tt.fields.method, "/test", bytes.NewReader(b))
-			r.Header.Add(authorizationHeader, "Bearer "+bearerTest)
+			r.Header.Add(server.AuthorizationHeader, "dGVzdA==")
 			r.Header.Add(server.ContextHeader, tt.fields.ctx)
 			r.Header.Add(server.OrganizationHeader, tt.fields.org)
 			r.Header.Add("Content-Type", "application/json")
@@ -177,4 +170,22 @@ func TestHandler_HandlerMe(t *testing.T) {
 			}
 		})
 	}
+}
+
+func userLoggedJson() string {
+	u := server.UserLogged{
+		UserInfo: server.UserInfo{
+			Name:     "test",
+			Username: "test",
+			Email:    "test@test.com",
+		},
+		Roles: []string{"rit_user", "rit_admin"},
+		TTL:   0,
+		Org:   "zup",
+	}
+	b, err := json.Marshal(u)
+	if err != nil {
+		log.Fatal("error json.Marshal(u)")
+	}
+	return string(b)
 }
