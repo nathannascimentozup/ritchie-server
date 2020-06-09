@@ -278,11 +278,12 @@ func (u UserMock) UserInfo() server.UserInfo {
 
 // server.ValtManager mock
 type VaultMock struct {
-	Err     error
-	ErrList error
-	Keys    []interface{}
-	Data    string
+	Err        error
+	ErrList    error
+	Keys       []interface{}
+	Data       string
 	ReturnMap  map[string]interface{}
+	ErrDecrypt error
 }
 
 func (v VaultMock) Write(string, map[string]interface{}) error {
@@ -304,7 +305,7 @@ func (v VaultMock) Encrypt(data string) (string, error) {
 	return v.Data, nil
 }
 func (v VaultMock) Decrypt(data string) (string, error) {
-	return v.Data, nil
+	return v.Data, v.ErrDecrypt
 }
 
 type AuthorizationMock struct {
