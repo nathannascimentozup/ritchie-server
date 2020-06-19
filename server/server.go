@@ -153,17 +153,12 @@ type ConfigSecurityConstraints interface {
 	ReadSecurityConstraints() SecurityConstraints
 }
 
-type ConfigOrganization interface {
-	CheckOrganizationExistence(org string) bool
-}
-
 type Config interface {
 	ConfigHealth
 	ConfigCredential
 	ConfigCliVersion
 	ConfigRepository
 	ConfigSecurityConstraints
-	ConfigOrganization
 }
 
 type VaultManager interface {

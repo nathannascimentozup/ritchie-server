@@ -11,17 +11,15 @@ import (
 
 type Handler struct {
 	securityProviders server.SecurityProviders
-	configuration server.Config
 }
 
 type response struct {
 	Otp bool `json:"otp"`
 }
 
-func NewOtpHandler(sp server.SecurityProviders, c server.Config) server.DefaultHandler {
+func NewOtpHandler(sp server.SecurityProviders) server.DefaultHandler {
 	return Handler{
 		securityProviders: sp,
-		configuration: c,
 	}
 }
 
@@ -36,7 +34,8 @@ func (oh Handler) Handler() http.HandlerFunc {
 
 func (oh Handler) processRequest(w http.ResponseWriter, r *http.Request) {
 	org := r.Header.Get("x-org")
-	if oh.configuration.CheckOrganizationExistence(org) != true {
+	_, existence := oh.securityProviders.Providers[org]
+	if existence == false {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
