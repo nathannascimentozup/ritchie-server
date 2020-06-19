@@ -80,13 +80,7 @@ func (lh Handler) processPost(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(le.Code())
 
 		err := map[string]string{"loginError": le.Error().Error()}
-		er := json.NewEncoder(w).Encode(err)
-
-		if er != nil {
-			log.Printf("Error in Json Encode ")
-			return
-		}
-
+		_ = json.NewEncoder(w).Encode(err)
 		return
 	}
 	resp := lh.createResponse(lu, organizationHeader, sp.TTL())
