@@ -241,6 +241,7 @@ type SecurityManagerMock struct {
 	U server.User
 	L server.LoginError
 	T int64
+	O bool
 }
 
 func (s SecurityManagerMock) Login(username, password string) (server.User, server.LoginError) {
@@ -248,6 +249,10 @@ func (s SecurityManagerMock) Login(username, password string) (server.User, serv
 }
 func (s SecurityManagerMock) TTL() int64 {
 	return s.T
+}
+
+func (s SecurityManagerMock) Otp() bool {
+	return s.O
 }
 
 type LoginErrorMock struct {
