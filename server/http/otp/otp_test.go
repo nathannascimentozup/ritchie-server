@@ -1,8 +1,11 @@
 package otp
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"ritchie-server/server"
@@ -21,7 +24,7 @@ func TestHandler_Handler(t *testing.T) {
 		out    http.HandlerFunc
 	}{
 		{
-			name: "success",
+			name: "success true",
 			fields: fields{
 				securityProviders: server.SecurityProviders{
 					Providers: map[string]server.SecurityManager{
@@ -36,6 +39,45 @@ func TestHandler_Handler(t *testing.T) {
 			out: func() http.HandlerFunc {
 				return func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
+					w.Header().Set("Content-type", "application/json")
+					err := json.NewEncoder(w).Encode(
+						struct{
+							Otp bool `json:"otp"`
+						}{
+							Otp: true,
+						})
+					if err != nil {
+						fmt.Sprintln("Error in Encode Json")
+					}
+				}
+			}(),
+		},
+		{
+			name: "success false",
+			fields: fields{
+				securityProviders: server.SecurityProviders{
+					Providers: map[string]server.SecurityManager{
+						"zup": mock.SecurityManagerMock{
+							O: false,
+						},
+					},
+				},
+				method: http.MethodGet,
+				org:    "zup",
+			},
+			out: func() http.HandlerFunc {
+				return func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(http.StatusOK)
+					w.Header().Set("Content-type", "application/json")
+					err := json.NewEncoder(w).Encode(
+						struct{
+							Otp bool `json:"otp"`
+						}{
+							Otp: false,
+						})
+					if err != nil {
+						fmt.Sprintln("Error in Encode Json")
+					}
 				}
 			}(),
 		},
@@ -95,6 +137,11 @@ func TestHandler_Handler(t *testing.T) {
 
 			if g.Code != w.Code {
 				t.Errorf("Handler returned wrong status code: got %v want %v\", g.Code, w.Code", g.Code, w.Code)
+			}
+			if g.Code == http.StatusOK {
+				if !reflect.DeepEqual(g.Body, w.Body) {
+					t.Errorf("Handler returned wrong body: got %v \n want %v", g.Body, w.Body)
+				}
 			}
 		})
 	}
