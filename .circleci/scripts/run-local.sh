@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./create-vault-approle.sh . http://0.0.0.0:8200
+./.circleci/scripts/create-vault-approle.sh . http://0.0.0.0:8200
 
 export VAULT_ADDR=http://localhost:8200
 export VAULT_AUTHENTICATION=APPROLE
