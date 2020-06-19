@@ -2,11 +2,11 @@
 
 cd /home/application
 
-./.circleci/scripts/wait-for-it.sh "stubby4j:8882" && echo "stubby4j is up"
-./.circleci/scripts/wait-for-it.sh "vault:8200" && echo "vault is up"
-./.circleci/scripts/wait-for-it.sh "keycloak:8080" && echo "keycloak is up"
+./wait-for-it.sh "stubby4j:8882" && echo "stubby4j is up"
+./wait-for-it.sh "vault:8200" && echo "vault is up"
+./wait-for-it.sh "keycloak:8080" && echo "keycloak is up"
 
-./.circleci/scripts/create-vault-approle.sh . http://vault:8200
+./create-vault-approle.sh . http://vault:8200
 
 export VAULT_ADDR=http://vault:8200
 export VAULT_AUTHENTICATION=APPROLE
