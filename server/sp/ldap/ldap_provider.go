@@ -26,6 +26,7 @@ const (
 	attributeName      = "attributeName"
 	attributeEmail     = "attributeEmail"
 	ttl                = "ttl"
+	otp                = "otp"
 )
 
 type ldapError struct {
@@ -54,6 +55,7 @@ type lConfig struct {
 	attributeName      string
 	attributeEmail     string
 	ttl                int64
+	otp                bool
 }
 
 type ldapConfig struct {
@@ -73,18 +75,18 @@ func NewLdapProvider(config map[string]string) server.SecurityManager {
 func loadClient(cf lConfig) *ldap.LDAPClient {
 	att := []string{cf.attributeName, cf.attributeUsername, cf.attributeEmail}
 	return &ldap.LDAPClient{
-		Base:         cf.base,
-		Host:         cf.host,
-		ServerName:   cf.serverName,
+		Base:               cf.base,
+		Host:               cf.host,
+		ServerName:         cf.serverName,
 		InsecureSkipVerify: cf.insecureSkipVerify,
-		Port:         cf.port,
-		UseSSL:       cf.useSSL,
-		SkipTLS:      cf.skipTLS,
-		BindDN:       cf.bindDN,
-		BindPassword: cf.bindPassword,
-		UserFilter:   cf.userFilter,
-		GroupFilter:  cf.groupFilter,
-		Attributes:   att,
+		Port:               cf.port,
+		UseSSL:             cf.useSSL,
+		SkipTLS:            cf.skipTLS,
+		BindDN:             cf.bindDN,
+		BindPassword:       cf.bindPassword,
+		UserFilter:         cf.userFilter,
+		GroupFilter:        cf.groupFilter,
+		Attributes:         att,
 	}
 }
 
@@ -94,6 +96,7 @@ func loadLConfig(config map[string]string) lConfig {
 	st, _ := strconv.ParseBool(config[skipTLS])
 	isv, _ := strconv.ParseBool(config[insecureSkipVerify])
 	ttl, _ := strconv.ParseInt(config[ttl], 10, 64)
+	otp, _ := strconv.ParseBool(config[otp])
 	return lConfig{
 		base:               config[base],
 		host:               config[host],
@@ -110,44 +113,49 @@ func loadLConfig(config map[string]string) lConfig {
 		attributeName:      config[attributeName],
 		attributeEmail:     config[attributeEmail],
 		ttl:                ttl,
+		otp:                otp,
 	}
 }
 
-func (k ldapConfig) Login(username, password string) (server.User, server.LoginError) {
-	defer k.client.Close()
-	ok, user, err := k.client.Authenticate(username, password)
+func (l ldapConfig) Otp() bool {
+	return l.config.otp
+}
+
+func (l ldapConfig) Login(username, password string) (server.User, server.LoginError) {
+	defer l.client.Close()
+	ok, user, err := l.client.Authenticate(username, password)
 	if err != nil {
-		return nil, ldapError {
+		return nil, ldapError{
 			code: 401,
 			err:  err,
 		}
 	}
 	if !ok {
-		return nil, ldapError {
+		return nil, ldapError{
 			code: 401,
 			err:  fmt.Errorf("Authenticating failed for user %s", username),
 		}
 	}
-	groups, err := k.client.GetGroupsOfUser(username)
+	groups, err := l.client.GetGroupsOfUser(username)
 	if err != nil {
-		return nil, ldapError {
+		return nil, ldapError{
 			code: 500,
 			err:  fmt.Errorf("Error getting groups for user %s", username),
 		}
 	}
-	lu := ldapUser {
+	lu := ldapUser{
 		roles: groups,
 		userInfo: server.UserInfo{
-			Name:     user[k.config.attributeName],
+			Name:     user[l.config.attributeName],
 			Username: username,
-			Email:    user[k.config.attributeEmail],
+			Email:    user[l.config.attributeEmail],
 		},
 	}
 	return lu, nil
 }
 
-func (k ldapConfig) TTL() int64 {
-	ttlF := time.Now().Unix() + k.config.ttl
+func (l ldapConfig) TTL() int64 {
+	ttlF := time.Now().Unix() + l.config.ttl
 	return ttlF
 }
 

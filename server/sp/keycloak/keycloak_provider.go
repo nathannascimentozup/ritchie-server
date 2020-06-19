@@ -17,6 +17,7 @@ const (
 	clientId     = "clientId"
 	clientSecret = "clientSecret"
 	ttl          = "ttl"
+	otp          = "otp"
 )
 
 type keycloakConfig struct {
@@ -30,6 +31,7 @@ type kConfig struct {
 	clientId     string
 	clientSecret string
 	ttl          int64
+	otp          bool
 }
 
 type keycloakError struct {
@@ -44,18 +46,24 @@ type keycloakUser struct {
 
 func NewKeycloakProvider(config map[string]string) server.SecurityManager {
 	ttl, _ := strconv.ParseInt(config[ttl], 10, 64)
+	otp, _ := strconv.ParseBool(config[otp])
 	kc := kConfig{
 		url:          config[url],
 		realm:        config[realm],
 		clientId:     config[clientId],
 		clientSecret: config[clientSecret],
 		ttl:          ttl,
+		otp:          otp,
 	}
 	c := gocloak.NewClient(kc.url)
 	return keycloakConfig{
 		client: c,
 		config: kc,
 	}
+}
+
+func (k keycloakConfig) Otp() bool {
+	return k.config.otp
 }
 
 func (k keycloakConfig) TTL() int64 {
