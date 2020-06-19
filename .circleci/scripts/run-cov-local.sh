@@ -9,5 +9,4 @@ export KEYCLOAK_URL=http://localhost:8080
 
 mkdir -p bin
 go test -v -coverprofile=bin/cov.out $1
-rm testdata/file_config_test.json
 go tool cover -html=bin/cov.out
