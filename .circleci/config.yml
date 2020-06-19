@@ -235,7 +235,7 @@ workflows:
   beta:
     triggers:
       - schedule:
-          cron: "0 11 * * 1,4"
+          cron: "0 11 * * 2,4"
           filters:
             branches:
               only:
@@ -248,16 +248,16 @@ workflows:
       - lint:
           filters:
             <<: *FILTERS_CHECK_CODE
-#      - horus:
-#          filters:
-#            <<: *FILTERS_CHECK_CODE
-#          requires:
-#            - lint
+      - horus:
+          filters:
+            <<: *FILTERS_CHECK_CODE
+          requires:
+            - lint
       - unit_test:
           filters:
             <<: *FILTERS_CHECK_CODE
           requires:
-            - lint #TODO add horus
+            - horus
       - build:
           filters:
             <<: *FILTERS_CHECK_CODE

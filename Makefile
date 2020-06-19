@@ -37,7 +37,7 @@ delivery-ecr:
 	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
 
 delivery-hub:
-	$(shell echo "${DOCKERHUB_PASS}" | ${DOCKERLOGIN} --username ${DOCKERHUB_USERNAME} --password-stdin)
+	$(shell echo "${DOCKERHUB_PASS}" | ${DOCKER_LOGIN} --username ${DOCKERHUB_USERNAME} --password-stdin)
 	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
 
 test:
