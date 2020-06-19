@@ -6,6 +6,7 @@ references:
     python: &PYTHON_IMAGE circleci/python:2.7-stretch
     ci_machine: &CI_MACHINE_IMAGE ubuntu-1604:201903-01
     horus: &HORUS_IMAGE library/docker:dind
+    ruby: &RUBY_IMAGE cimg/ruby:2.6.5
 
   paths:
     test-results: &TEST_RESULTS_DIR bin
@@ -53,6 +54,12 @@ executors:
       - image: *GOLANG_IMAGE
         user: root
     working_directory: ~/workspace
+
+  release-executor:
+    docker:
+      - image: *RUBY_IMAGE
+        user: root
+    working_directory: /workspace
 
   delivery-executor:
     docker:
