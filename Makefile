@@ -18,6 +18,9 @@ DOCKERBUILD=${DOCKERCMD} build
 DOCKERPUSH=${DOCKERCMD} push
 DOCKERTAG=${DOCKERCMD} tag
 
+GONNA_RELEASE=$(shell ./.circleci/scripts/gonna_release.sh)
+VERSION_TO_CHECK_AGAINST=$(shell echo $VERSION_PLACEHOLDER | sed "s/PLACEHOLDER//")
+
 all: test build
 
 build-local-mac:
@@ -26,8 +29,12 @@ build-local-mac:
 build-local:
 	${GOBUILD} -o ./${BINARY_NAME} -v ${CMD_PATH}
 
-publish:
+delivery-ecr:
 	$(shell aws ecr get-login --region ${DOCKER_AWS_REGION} --no-include-email | sed 's/https:\/\///')
+	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
+
+delivery-hub:
+    $(shell echo "${DOCKERHUB_PASS}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin)
 	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
 
 test:
@@ -48,7 +55,6 @@ release:
 	git push $(GIT_REMOTE) $(RELEASE_VERSION)
 	curl --user $(GIT_USERNAME):$(GIT_PASSWORD) -X POST https://api.github.com/repos/ZupIT/ritchie-server/pulls -H 'Content-Type: application/json' -d '{ "title": "Release $(RELEASE_VERSION) merge", "body": "Release $(RELEASE_VERSION) merge with master", "head": "release-$(RELEASE_VERSION)", "base": "master" }'
 
-
 build:
 	mkdir bin
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 ${GOBUILD} -o ./bin/${BINARY_NAME} -v ${CMD_PATH}
@@ -56,3 +62,23 @@ build:
 build-container:
 	cp bin/$(BINARY_NAME) server
 	$(DOCKERBUILD) -t "${REGISTRY}/${BINARY_NAME}:${RELEASE}" ./server
+
+release-creator:
+ifeq "$(GONNA_RELEASE)" "RELEASE"
+	git config --global user.email "$(GIT_EMAIL)"
+	git config --global user.name "$(GIT_NAME)"
+	git checkout -b "release-$(VERSION_TO_CHECK_AGAINST)"
+	git add .
+	git commit --allow-empty -m "release-$(VERSION_TO_CHECK_AGAINST)"
+	git push $(GIT_REMOTE) HEAD:release-$(VERSION_TO_CHECK_AGAINST)
+endif
+
+rebase-beta:
+	git config --global user.email "$(GIT_EMAIL)"
+	git config --global user.name "$(GIT_NAME)"
+	git push $(GIT_REMOTE) --delete beta | true
+	git checkout -b beta
+	git reset --hard master
+	git add .
+	git commit --allow-empty -m "beta"
+	git push $(GIT_REMOTE) HEAD:beta
