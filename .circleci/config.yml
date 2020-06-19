@@ -172,35 +172,35 @@ jobs:
 
   delivery_hub:
     executor: ritchie-server-executor
-      environment:
-        <<: *ENVIRONMENT
-      steps:
-        - checkout
-        - attach_workspace:
-            at: ~/workspace
-        - run:
-            name: Pushing docker image to registry DOCKERHUB
-            command: |
-              . ./version.sh
-              . ./registry.sh
-              . ./credentials.sh
-              make delivery-hub
+    environment:
+      <<: *ENVIRONMENT
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/workspace
+      - run:
+          name: Pushing docker image to registry DOCKERHUB
+          command: |
+            . ./version.sh
+            . ./registry.sh
+            . ./credentials.sh
+            make delivery-hub
 
   delivery_ecr:
     executor: ritchie-server-executor
-      environment:
-        <<: *ENVIRONMENT
-      steps:
-        - checkout
-        - attach_workspace:
-            at: ~/workspace
-        - run:
-            name: Pushing docker image to registry ECR
-            command: |
-              . ./version.sh
-              . ./registry.sh
-              . ./credentials.sh
-              make delivery-ecr
+    environment:
+      <<: *ENVIRONMENT
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/workspace
+      - run:
+          name: Pushing docker image to registry ECR
+          command: |
+            . ./version.sh
+            . ./registry.sh
+            . ./credentials.sh
+            make delivery-ecr
 
   release:
     environment:
