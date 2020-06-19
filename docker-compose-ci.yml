@@ -8,7 +8,6 @@ services:
     volumes:
       - .:/home/application
     command: ["/home/application/.circleci/scripts/run-tests-ci.sh"]
-#    command: ["ls","/home/application/testdata"]
     user: root
     depends_on:
       - stubby4j
