@@ -95,7 +95,7 @@ func Test_ldapConfig_Login(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			k := NewLdapProvider(tt.fields.config)
-			gotUser, gotError := k.Login(tt.args.username, tt.args.password)
+			gotUser, gotError := k.Login(tt.args.username, tt.args.password, "")
 			if gotUser != nil && tt.outUser != nil {
 				if !reflect.DeepEqual(gotUser.UserInfo(), tt.outUser.UserInfo()) {
 					t.Errorf("Login() gotUser.UserInfo() = %v, want %v", gotUser.UserInfo(), tt.outUser.UserInfo())
