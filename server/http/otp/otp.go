@@ -50,6 +50,5 @@ func (oh Handler) processRequest(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Error in Json Encode")
 	}
-	log.Println(org, hasOtp)
 	return
 }
