@@ -20,8 +20,9 @@ DOCKERTAG=${DOCKERCMD} tag
 DOCKERLOGIN=${DOCKERCMD} login
 
 GONNA_RELEASE=$(shell ./.circleci/scripts/gonna_release.sh)
-VERSION_TO_CHECK_AGAINST=$(shell echo $VERSION_PLACEHOLDER | sed "s/PLACEHOLDER//")
 NEXT_VERSION=$(shell ./.circleci/scripts/next-version.sh)
+
+BUCKET="ritchie-cli-bucket152849730126474"
 
 all: test build
 
@@ -73,6 +74,9 @@ ifeq "$(GONNA_RELEASE)" "RELEASE"
 	git add .
 	git commit --allow-empty -m "release-$(NEXT_VERSION)"
 	git push $(GIT_REMOTE) HEAD:release-$(NEXT_VERSION)
+	echo $(BUCKET)
+	echo -n "$(NEXT_VERSION)" > stable-server.txt
+	aws s3 sync . s3://$(BUCKET)/ --exclude "*" --include "stable-server.txt"
 endif
 
 rebase-beta:
