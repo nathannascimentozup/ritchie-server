@@ -157,18 +157,18 @@ jobs:
 
   build_container:
     executor: ritchie-server-executor
-      environment:
-        <<: *ENVIRONMENT
-      steps:
-        - checkout
-        - attach_workspace:
-            at: ~/workspace
-        - run:
-            name: Creating docker image
-            command: |
-              . ./version.sh
-              . ./registry.sh
-              make build-container
+    environment:
+      <<: *ENVIRONMENT
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/workspace
+      - run:
+          name: Creating docker image
+          command: |
+            . ./version.sh
+            . ./registry.sh
+            make build-container
 
   delivery_hub:
     executor: ritchie-server-executor
