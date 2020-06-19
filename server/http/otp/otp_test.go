@@ -58,12 +58,30 @@ func TestHandler_Handler(t *testing.T) {
 				}
 			}(),
 		},
+		{
+			name: "method not found",
+			fields: fields{
+				securityProviders: server.SecurityProviders{
+					Providers: map[string]server.SecurityManager{
+						"zup": mock.SecurityManagerMock{
+							O: true,
+						},
+					},
+				},
+				method: http.MethodPost,
+				org:    "zup",
+			},
+			out: func() http.HandlerFunc {
+				return func(w http.ResponseWriter, r *http.Request) {
+					http.NotFound(w, r)
+				}
+			}(),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			oh := Handler{
-				securityProviders: tt.fields.securityProviders,
-			}
+			oh := NewOtpHandler(tt.fields.securityProviders)
+
 			r, _ := http.NewRequest(tt.fields.method, "/otp", nil)
 			r.Header.Add(server.OrganizationHeader, tt.fields.org)
 
