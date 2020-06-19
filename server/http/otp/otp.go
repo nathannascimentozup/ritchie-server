@@ -36,7 +36,7 @@ func (oh Handler) Handler() http.HandlerFunc {
 func (oh Handler) processRequest(w http.ResponseWriter, r *http.Request) {
 	org := r.Header.Get(server.OrganizationHeader)
 	_, existence := oh.securityProviders.Providers[org]
-	if existence == false {
+	if !existence {
 		log.Printf("Organization {%s} not found", org)
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -51,5 +51,4 @@ func (oh Handler) processRequest(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Error("Error in Json Encode")
 	}
-	return
 }
