@@ -63,6 +63,11 @@ func (c Configuration) ReadSecurityConstraints() server.SecurityConstraints {
 	return c.SecurityConstraints
 }
 
+func (c Configuration) CheckOrganizationExistence(org string) bool {
+	_, existence := c.Configs[org]
+	return existence
+}
+
 func (c Configuration) getConfig(org string) (*server.ConfigFile, error) {
 	config := c.Configs[org]
 	if config == nil {

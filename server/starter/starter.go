@@ -11,18 +11,19 @@ import (
 
 	"ritchie-server/server"
 	"ritchie-server/server/config"
+	"ritchie-server/server/fph"
 	"ritchie-server/server/http/cliversion"
 	"ritchie-server/server/http/credential"
 	"ritchie-server/server/http/formulas"
 	"ritchie-server/server/http/health"
 	"ritchie-server/server/http/hello"
 	"ritchie-server/server/http/login"
+	"ritchie-server/server/http/otp"
 	"ritchie-server/server/http/repository"
 	"ritchie-server/server/http/tree"
 	"ritchie-server/server/http/ul"
 	"ritchie-server/server/logger"
 	"ritchie-server/server/middleware"
-	"ritchie-server/server/fph"
 	"ritchie-server/server/security"
 	"ritchie-server/server/sp/keycloak"
 	"ritchie-server/server/sp/ldap"
@@ -63,6 +64,10 @@ func NewConfiguration() (server.Configurator, error) {
 		vaultManager:      vm,
 		securityProviders: sp,
 	}, nil
+}
+
+func (c Configurator) LoadOtpHandler() server.DefaultHandler {
+	return otp.NewOtpHandler(c.securityProviders, c.conf)
 }
 
 func (c Configurator) LoadLoginHandler() server.DefaultHandler {
@@ -144,7 +149,6 @@ func loadSecurityProviders(config map[string]*server.ConfigFile) server.Security
 			sm[org] = keycloak.NewKeycloakProvider(config.SPConfig)
 		case "ldap":
 			sm[org] = ldap.NewLdapProvider(config.SPConfig)
-
 		}
 	}
 	return server.SecurityProviders{Providers: sm}

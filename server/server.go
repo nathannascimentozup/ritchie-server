@@ -153,12 +153,17 @@ type ConfigSecurityConstraints interface {
 	ReadSecurityConstraints() SecurityConstraints
 }
 
+type ConfigOrganization interface {
+	CheckOrganizationExistence(org string) bool
+}
+
 type Config interface {
 	ConfigHealth
 	ConfigCredential
 	ConfigCliVersion
 	ConfigRepository
 	ConfigSecurityConstraints
+	ConfigOrganization
 }
 
 type VaultManager interface {
@@ -196,6 +201,7 @@ type ProviderHandler interface {
 }
 
 type SecurityManager interface {
+	Otp() bool
 	Login(username, password string) (User, LoginError)
 	TTL() int64
 }
@@ -211,6 +217,7 @@ type User interface {
 }
 
 type Configurator interface {
+	LoadOtpHandler() DefaultHandler
 	LoadLoginHandler() DefaultHandler
 	LoadCredentialConfigHandler() DefaultHandler
 	LoadConfigHealth() DefaultHandler
