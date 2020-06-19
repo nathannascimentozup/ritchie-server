@@ -257,7 +257,7 @@ workflows:
           filters:
             <<: *FILTERS_CHECK_CODE
           requires:
-            - horus
+            - lint #TODO add horus
       - build:
           filters:
             <<: *FILTERS_CHECK_CODE
