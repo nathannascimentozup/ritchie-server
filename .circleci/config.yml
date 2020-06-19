@@ -289,12 +289,12 @@ workflows:
       - build:
           filters:
             <<: *FILTERS_DELIVERY
-      - docker_ecr:
+      - delivery_ecr:
           filters:
             <<: *FILTERS_DELIVERY
           requires:
             - build
-      - docker_hub:
+      - delivery_hub:
           filters:
             <<: *FILTERS_DELIVERY
           requires:
