@@ -282,8 +282,8 @@ workflows:
           filters:
             <<: *FILTERS_RELEASE
           requires:
-            - docker_hub
-            - docker_ecr
+            - delivery_hub
+            - delivery_ecr
   delivery:
     jobs:
       - build:
