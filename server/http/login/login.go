@@ -26,6 +26,7 @@ func NewLoginHandler(s server.SecurityProviders, v server.VaultManager) server.D
 type login struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Totp     string `json:"totp"`
 }
 
 type response struct {
@@ -71,10 +72,21 @@ func (lh Handler) processPost(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	lu, le := sp.Login(l.Username, l.Password)
+	lu, le := sp.Login(l.Username, l.Password, l.Totp)
 	if le != nil {
 		log.Printf("error login: %v", le.Error())
+
+		w.Header().Set("Content-type", "application/json")
 		w.WriteHeader(le.Code())
+
+		err := map[string]string{"loginError": le.Error().Error()}
+		er := json.NewEncoder(w).Encode(err)
+
+		if er != nil {
+			log.Printf("Error in Json Encode ")
+			return
+		}
+
 		return
 	}
 	resp := lh.createResponse(lu, organizationHeader, sp.TTL())

@@ -73,18 +73,18 @@ func NewLdapProvider(config map[string]string) server.SecurityManager {
 func loadClient(cf lConfig) *ldap.LDAPClient {
 	att := []string{cf.attributeName, cf.attributeUsername, cf.attributeEmail}
 	return &ldap.LDAPClient{
-		Base:         cf.base,
-		Host:         cf.host,
-		ServerName:   cf.serverName,
+		Base:               cf.base,
+		Host:               cf.host,
+		ServerName:         cf.serverName,
 		InsecureSkipVerify: cf.insecureSkipVerify,
-		Port:         cf.port,
-		UseSSL:       cf.useSSL,
-		SkipTLS:      cf.skipTLS,
-		BindDN:       cf.bindDN,
-		BindPassword: cf.bindPassword,
-		UserFilter:   cf.userFilter,
-		GroupFilter:  cf.groupFilter,
-		Attributes:   att,
+		Port:               cf.port,
+		UseSSL:             cf.useSSL,
+		SkipTLS:            cf.skipTLS,
+		BindDN:             cf.bindDN,
+		BindPassword:       cf.bindPassword,
+		UserFilter:         cf.userFilter,
+		GroupFilter:        cf.groupFilter,
+		Attributes:         att,
 	}
 }
 
@@ -113,29 +113,29 @@ func loadLConfig(config map[string]string) lConfig {
 	}
 }
 
-func (k ldapConfig) Login(username, password string) (server.User, server.LoginError) {
+func (k ldapConfig) Login(username, password, _ string) (server.User, server.LoginError) {
 	defer k.client.Close()
 	ok, user, err := k.client.Authenticate(username, password)
 	if err != nil {
-		return nil, ldapError {
+		return nil, ldapError{
 			code: 401,
 			err:  err,
 		}
 	}
 	if !ok {
-		return nil, ldapError {
+		return nil, ldapError{
 			code: 401,
 			err:  fmt.Errorf("Authenticating failed for user %s", username),
 		}
 	}
 	groups, err := k.client.GetGroupsOfUser(username)
 	if err != nil {
-		return nil, ldapError {
+		return nil, ldapError{
 			code: 500,
 			err:  fmt.Errorf("Error getting groups for user %s", username),
 		}
 	}
-	lu := ldapUser {
+	lu := ldapUser{
 		roles: groups,
 		userInfo: server.UserInfo{
 			Name:     user[k.config.attributeName],

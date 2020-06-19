@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	OrganizationHeader = "x-org"
-	ContextHeader      = "x-ctx"
-	FileConfig         = "FILE_CONFIG"
+	OrganizationHeader  = "x-org"
+	ContextHeader       = "x-ctx"
+	FileConfig          = "FILE_CONFIG"
 	RepoNameHeader      = "x-repo-name"
 	AuthorizationHeader = "x-authorization"
 )
@@ -196,7 +196,7 @@ type ProviderHandler interface {
 }
 
 type SecurityManager interface {
-	Login(username, password string) (User, LoginError)
+	Login(username, password, totp string) (User, LoginError)
 	TTL() int64
 }
 

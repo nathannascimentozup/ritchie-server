@@ -1,22 +1,25 @@
 package keycloak
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Nerzal/gocloak"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/viniciussousazup/gocloak/v5"
 
 	"ritchie-server/server"
 )
 
 const (
-	url          = "url"
-	realm        = "realm"
-	clientId     = "clientId"
-	clientSecret = "clientSecret"
-	ttl          = "ttl"
+	url           = "url"
+	realm         = "realm"
+	clientId      = "clientId"
+	clientSecret  = "clientSecret"
+	ttl           = "ttl"
+	otp           = "otp"
+	validOtpError = "this realm have enable otp please send a totp value to login"
 )
 
 type keycloakConfig struct {
@@ -30,6 +33,7 @@ type kConfig struct {
 	clientId     string
 	clientSecret string
 	ttl          int64
+	otp          bool
 }
 
 type keycloakError struct {
@@ -44,12 +48,15 @@ type keycloakUser struct {
 
 func NewKeycloakProvider(config map[string]string) server.SecurityManager {
 	ttl, _ := strconv.ParseInt(config[ttl], 10, 64)
+	otp, _ := strconv.ParseBool(config[otp])
+
 	kc := kConfig{
 		url:          config[url],
 		realm:        config[realm],
 		clientId:     config[clientId],
 		clientSecret: config[clientSecret],
 		ttl:          ttl,
+		otp:          otp,
 	}
 	c := gocloak.NewClient(kc.url)
 	return keycloakConfig{
@@ -63,8 +70,16 @@ func (k keycloakConfig) TTL() int64 {
 	return ttlF
 }
 
-func (k keycloakConfig) Login(username, password string) (server.User, server.LoginError) {
-	token, err := k.client.Login(k.config.clientId, k.config.clientSecret, k.config.realm, username, password)
+func (k keycloakConfig) Login(username, password, totp string) (server.User, server.LoginError) {
+
+	if totp == "" && k.config.otp {
+		return nil, keycloakError{
+			code: 400,
+			err:  errors.New(validOtpError),
+		}
+	}
+
+	token, err := k.client.LoginOtp(k.config.clientId, k.config.clientSecret, k.config.realm, username, password, totp)
 	if err != nil {
 		code := strings.Split(err.Error(), " ")[0]
 		codeInt, errConverter := strconv.ParseInt(code, 10, 64)

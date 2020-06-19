@@ -5,9 +5,10 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"testing"
+
 	"ritchie-server/server"
 	"ritchie-server/server/mock"
-	"testing"
 )
 
 func TestHandler_Handler(t *testing.T) {
@@ -113,6 +114,7 @@ func TestHandler_Handler(t *testing.T) {
 			},
 			out: func() http.HandlerFunc {
 				return func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Set("Content-type", "application/json")
 					w.WriteHeader(http.StatusUnauthorized)
 				}
 			}(),

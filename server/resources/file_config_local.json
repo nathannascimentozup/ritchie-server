@@ -1,12 +1,13 @@
 {
     "zup": {
         "securityProviderConfig": {
-            "type" : "keycloak",
+            "type": "keycloak",
             "url": "http://localhost:8080",
             "realm": "ritchie",
             "clientId": "user-login",
             "clientSecret": "user-login",
-            "ttl" : "36000"
+            "ttl": "36000",
+            "otp": "true"
         },
         "cliVersionPath": {
             "provider": "s3",
