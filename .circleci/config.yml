@@ -5,6 +5,8 @@ references:
     go: &GOLANG_IMAGE cimg/go:1.14
     python: &PYTHON_IMAGE circleci/python:2.7-stretch
     ci_machine: &CI_MACHINE_IMAGE ubuntu-1604:201903-01
+    horus: &HORUS_IMAGE library/docker:dind
+    ruby: &RUBY_IMAGE cimg/ruby:2.6.5
 
   paths:
     test-results: &TEST_RESULTS_DIR bin
@@ -15,19 +17,20 @@ references:
     GIT_USERNAME: "zup-ci"
     GIT_NAME: "Zup CI"
     BUILD_IMAGE: *GOLANG_IMAGE
+    VERSION_PLACEHOLDER: 1.0.0-betaPLACEHOLDER
 
-  filters: &FILTERS
+  filters: &FILTERS_DELIVERY
     branches:
       only:
         - /^release-.*/
         - qa
+        - beta
 
-  filters-checks: &FILTERS_CHECK
+  filters-checks: &FILTERS_CHECK_CODE
     branches:
       only:
         - master
-        - /^release-.*/
-        - qa
+        - /^feature.*/
         - /^pull\/.*$/
 
   filters-release: &FILTERS_RELEASE
@@ -41,11 +44,22 @@ executors:
       image: *CI_MACHINE_IMAGE
     working_directory: ~/workspace
 
+  horus-executor:
+    docker:
+      - image: *HORUS_IMAGE
+        user: root
+
   ritchie-executor:
     docker:
       - image: *GOLANG_IMAGE
         user: root
     working_directory: ~/workspace
+
+  release-executor:
+    docker:
+      - image: *RUBY_IMAGE
+        user: root
+    working_directory: /workspace
 
   delivery-executor:
     docker:
@@ -68,7 +82,7 @@ jobs:
           name: lint
           command: |
             go/bin/golangci-lint run
-  test:
+  unit_test:
     executor: ritchie-server-executor
     environment:
       <<: *ENVIRONMENT
@@ -91,14 +105,22 @@ jobs:
           when: always
           command: bash <(curl -s https://codecov.io/bash)
 
-  security_test:
-    machine: true
+  horus:
+    executor: horus-executor
+    environment:
+      <<: *ENVIRONMENT
     steps:
+      - setup_remote_docker
       - run:
-          name: "Horus Security Analysis"
+          name: Horus Security Analysis
           command: |
-            echo "Starting..."
-            docker run --rm -e HORUS_CLIENT_REPO_URL=$HORUS_CLIENT_REPO_URL -e HORUS_CLIENT_REPO_BRANCH=$HORUS_CLIENT_REPO_BRANCH -e HORUS_CLIENT_API_ADDR=$HORUS_CLIENT_API_ADDR -e HORUS_CLIENT_TOKEN=$HORUS_CLIENT_TOKEN -e HORUS_CLIENT_API_USE_HTTPS=$HORUS_CLIENT_API_USE_HTTPS -e HORUS_VULNERABILITY_CHECK=$HORUS_VULNERABILITY_CHECK horuszup/horus-client:latest
+            echo "Starting scan Horus..."
+            docker run --rm -e HORUS_CLIENT_REPO_URL=$HORUS_CLIENT_REPO_URL \
+            -e HORUS_CLIENT_REPO_BRANCH=$HORUS_CLIENT_REPO_BRANCH \
+            -e HORUS_CLIENT_API_ADDR=$HORUS_CLIENT_API_ADDR \
+            -e HORUS_CLIENT_TOKEN=$HORUS_CLIENT_TOKEN \
+            -e HORUS_CLIENT_API_USE_HTTPS=$HORUS_CLIENT_API_USE_HTTPS \
+            -e HORUS_VULNERABILITY_CHECK=$HORUS_VULNERABILITY_CHECK horuszup/horus-client:latest
 
   build:
     executor: ritchie-executor
@@ -118,7 +140,29 @@ jobs:
       - store_artifacts:
           path: *TEST_RESULTS_DIR
 
-  docker:
+  release_creator:
+    environment:
+      <<: *ENVIRONMENT
+    executor: release-executor
+    steps:
+      - checkout
+      - run:
+          name: Checking if we need to release any new features
+          command: |
+            make release-creator
+
+  rebase_beta:
+    environment:
+      <<: *ENVIRONMENT
+    executor: release-executor
+    steps:
+      - checkout
+      - run:
+          name: Rebase Beta
+          command: |
+            make rebase-beta
+
+  build_container:
     executor: ritchie-server-executor
     environment:
       <<: *ENVIRONMENT
@@ -129,16 +173,42 @@ jobs:
       - run:
           name: Creating docker image
           command: |
-            . ./version.sh
-            . ./registry.sh
+            . ./.circleci/scripts/version.sh
+            . ./.circleci/scripts/registry.sh
             make build-container
+
+  delivery_hub:
+    executor: ritchie-server-executor
+    environment:
+      <<: *ENVIRONMENT
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/workspace
       - run:
-          name: Pushing docker image to registry
+          name: Pushing docker image to registry DOCKERHUB
           command: |
-            . ./version.sh
-            . ./registry.sh
-            . ./credentials.sh
-            make publish
+            . ./.circleci/scripts/version.sh
+            . ./.circleci/scripts/registry.sh
+            . ./.circleci/scripts/credentials.sh
+            make delivery-hub
+
+  delivery_ecr:
+    executor: ritchie-server-executor
+    environment:
+      <<: *ENVIRONMENT
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/workspace
+      - run:
+          name: Pushing docker image to registry ECR
+          command: |
+            . ./.circleci/scripts/version.sh
+            . ./.circleci/scripts/registry.sh
+            . ./.circleci/scripts/credentials.sh
+            make delivery-ecr
+
   release:
     environment:
       <<: *ENVIRONMENT
@@ -148,36 +218,84 @@ jobs:
       - run:
           name: Releasing
           command: |
-            . ./version.sh
+            . ./.circleci/scripts/version.sh
             make release
 
-
 workflows:
-  build_and_test:
+  release_trigger:
+    triggers:
+      - schedule:
+          cron: "0 13 * * 1"
+          filters:
+            branches:
+              only:
+                - beta
+    jobs:
+      - release_creator
+  beta:
+    triggers:
+      - schedule:
+          cron: "0 11 * * 2,4"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - rebase_beta:
+          name: release-beta
+  build-for-requests:
     jobs:
       - lint:
           filters:
-            <<: *FILTERS_CHECK
-      - test:
+            <<: *FILTERS_CHECK_CODE
+      - horus:
           filters:
-            <<: *FILTERS_CHECK
-      - security_test:
+            <<: *FILTERS_CHECK_CODE
+          requires:
+            - lint
+      - unit_test:
           filters:
-            <<: *FILTERS_CHECK      
+            <<: *FILTERS_CHECK_CODE
+          requires:
+            - horus
       - build:
           filters:
-            <<: *FILTERS
+            <<: *FILTERS_CHECK_CODE
           requires:
-            - test
-            - lint
-            - security_test  
-      - docker:
+            - unit_test
+  release:
+    jobs:
+      - build:
           filters:
-            <<: *FILTERS
+            <<: *FILTERS_RELEASE
+      - delivery_ecr:
+          filters:
+            <<: *FILTERS_RELEASE
+          requires:
+            - build
+      - delivery_hub:
+          filters:
+            <<: *FILTERS_RELEASE
           requires:
             - build
       - release:
           filters:
             <<: *FILTERS_RELEASE
+          requires:
+            - delivery_hub
+            - delivery_ecr
+  delivery:
+    jobs:
+      - build:
+          filters:
+            <<: *FILTERS_DELIVERY
+      - delivery_ecr:
+          filters:
+            <<: *FILTERS_DELIVERY
+          requires:
+            - build
+      - delivery_hub:
+          filters:
+            <<: *FILTERS_DELIVERY
           requires:
             - build
