@@ -67,7 +67,7 @@ func NewConfiguration() (server.Configurator, error) {
 }
 
 func (c Configurator) LoadOtpHandler() server.DefaultHandler {
-	return otp.NewOtpHandler(c.securityProviders, c.conf)
+	return otp.NewOtpHandler(c.securityProviders)
 }
 
 func (c Configurator) LoadLoginHandler() server.DefaultHandler {
