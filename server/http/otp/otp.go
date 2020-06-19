@@ -25,17 +25,19 @@ func NewOtpHandler(sp server.SecurityProviders) server.DefaultHandler {
 
 func (oh Handler) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/otp" {
+		if r.Method == http.MethodGet {
+			oh.processRequest(w, r)
+		} else {
 			http.NotFound(w, r)
 		}
-		oh.processRequest(w, r)
 	}
 }
 
 func (oh Handler) processRequest(w http.ResponseWriter, r *http.Request) {
-	org := r.Header.Get("x-org")
+	org := r.Header.Get(server.OrganizationHeader)
 	_, existence := oh.securityProviders.Providers[org]
 	if existence == false {
+		log.Printf("Organization {%s} not found", org)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -47,7 +49,7 @@ func (oh Handler) processRequest(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	err := json.NewEncoder(w).Encode(&resp)
 	if err != nil {
-		log.Println("Error in Json Encode")
+		log.Error("Error in Json Encode")
 	}
 	return
 }
