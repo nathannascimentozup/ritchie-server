@@ -82,7 +82,7 @@ jobs:
           name: lint
           command: |
             go/bin/golangci-lint run
-  test:
+  unit_test:
     executor: ritchie-server-executor
     environment:
       <<: *ENVIRONMENT
