@@ -21,8 +21,9 @@ DOCKERLOGIN=${DOCKERCMD} login
 
 GONNA_RELEASE=$(shell ./.circleci/scripts/gonna_release.sh)
 VERSION_TO_CHECK_AGAINST=$(shell echo $VERSION_PLACEHOLDER | sed "s/PLACEHOLDER//")
+NEXT_VERSION=$(shell ./.circleci/scripts/next-version.sh)
 
-#all: test build
+all: test build
 
 build-local-mac:
 	GOOS=darwin GOARCH=amd64 ${GOBUILD} -o ./${BINARY_NAME} -v ${CMD_PATH}
@@ -68,10 +69,10 @@ release-creator:
 ifeq "$(GONNA_RELEASE)" "RELEASE"
 	git config --global user.email "$(GIT_EMAIL)"
 	git config --global user.name "$(GIT_NAME)"
-	git checkout -b "release-$(VERSION_TO_CHECK_AGAINST)"
+	git checkout -b "release-$(NEXT_VERSION)"
 	git add .
-	git commit --allow-empty -m "release-$(VERSION_TO_CHECK_AGAINST)"
-	git push $(GIT_REMOTE) HEAD:release-$(VERSION_TO_CHECK_AGAINST)
+	git commit --allow-empty -m "release-$(NEXT_VERSION)"
+	git push $(GIT_REMOTE) HEAD:release-$(NEXT_VERSION)
 endif
 
 rebase-beta:
