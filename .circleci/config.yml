@@ -173,8 +173,8 @@ jobs:
       - run:
           name: Creating docker image
           command: |
-            . ./version.sh
-            . ./registry.sh
+            . ./.circleci/scripts/version.sh
+            . ./.circleci/scripts/registry.sh
             make build-container
 
   delivery_hub:
@@ -188,9 +188,9 @@ jobs:
       - run:
           name: Pushing docker image to registry DOCKERHUB
           command: |
-            . ./version.sh
-            . ./registry.sh
-            . ./credentials.sh
+            . ./.circleci/scripts/version.sh
+            . ./.circleci/scripts/registry.sh
+            . ./.circleci/scripts/credentials.sh
             make delivery-hub
 
   delivery_ecr:
@@ -204,9 +204,9 @@ jobs:
       - run:
           name: Pushing docker image to registry ECR
           command: |
-            . ./version.sh
-            . ./registry.sh
-            . ./credentials.sh
+            . ./.circleci/scripts/version.sh
+            . ./.circleci/scripts/registry.sh
+            . ./.circleci/scripts/credentials.sh
             make delivery-ecr
 
   release:
@@ -218,7 +218,7 @@ jobs:
       - run:
           name: Releasing
           command: |
-            . ./version.sh
+            . ./.circleci/scripts/version.sh
             make release
 
 workflows:
@@ -299,4 +299,3 @@ workflows:
             <<: *FILTERS_DELIVERY
           requires:
             - build
-

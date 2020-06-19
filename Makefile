@@ -17,11 +17,12 @@ DOCKERCMD=docker
 DOCKERBUILD=${DOCKERCMD} build
 DOCKERPUSH=${DOCKERCMD} push
 DOCKERTAG=${DOCKERCMD} tag
+DOCKERLOGIN=${DOCKERCMD} login
 
 GONNA_RELEASE=$(shell ./.circleci/scripts/gonna_release.sh)
 VERSION_TO_CHECK_AGAINST=$(shell echo $VERSION_PLACEHOLDER | sed "s/PLACEHOLDER//")
 
-all: test build
+#all: test build
 
 build-local-mac:
 	GOOS=darwin GOARCH=amd64 ${GOBUILD} -o ./${BINARY_NAME} -v ${CMD_PATH}
@@ -34,7 +35,7 @@ delivery-ecr:
 	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
 
 delivery-hub:
-#    $(shell echo "${DOCKERHUB_PASS}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin)
+	$(shell echo "${DOCKERHUB_PASS}" | ${DOCKERLOGIN} --username ${DOCKERHUB_USERNAME} --password-stdin)
 	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
 
 test:
@@ -42,7 +43,7 @@ test:
 
 test-local:
 	docker-compose up -d
-	./run-tests.sh
+	./.circleci/scripts/run-tests.sh
 	docker-compose down
 
 release:
