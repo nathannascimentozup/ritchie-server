@@ -1,13 +1,13 @@
 {
     "zup": {
         "securityProviderConfig": {
-            "type" : "keycloak",
+            "type": "keycloak",
             "url": "http://localhost:8080",
             "realm": "ritchie",
             "clientId": "user-login",
             "clientSecret": "user-login",
-            "ttl" : "36000",
-            "otp" : "true"
+            "ttl": "36000",
+            "otp": "true"
         },
         "cliVersionPath": {
             "provider": "s3",
@@ -120,23 +120,23 @@
     },
     "ldap": {
         "securityProviderConfig": {
-            "type" : "ldap",
+            "type": "ldap",
             "base": "dc=example,dc=org",
             "host": "localhost",
-            "serverName" : "ldap.example.org",
+            "serverName": "ldap.example.org",
             "port": "389",
             "useSSL": "false",
             "skipTLS": "true",
-            "insecureSkipVerify" : "false",
+            "insecureSkipVerify": "false",
             "bindDN": "cn=admin,dc=example,dc=org",
             "bindPassword": "admin",
             "userFilter": "(uid=%s)",
             "groupFilter": "(memberUid=%s)",
-            "attributeUsername" : "uid",
-            "attributeName" : "givenName",
-            "attributeEmail" : "mail",
-            "ttl" : "36000",
-            "otp" : "false"
+            "attributeUsername": "uid",
+            "attributeName": "givenName",
+            "attributeEmail": "mail",
+            "ttl": "36000",
+            "otp": "false"
         },
         "cliVersionPath": {
             "provider": "s3",

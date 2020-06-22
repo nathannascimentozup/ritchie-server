@@ -41,7 +41,7 @@ func TestHandler_Handler(t *testing.T) {
 					w.WriteHeader(http.StatusOK)
 					w.Header().Set("Content-type", "application/json")
 					err := json.NewEncoder(w).Encode(
-						struct{
+						struct {
 							Otp bool `json:"otp"`
 						}{
 							Otp: true,
@@ -70,7 +70,7 @@ func TestHandler_Handler(t *testing.T) {
 					w.WriteHeader(http.StatusOK)
 					w.Header().Set("Content-type", "application/json")
 					err := json.NewEncoder(w).Encode(
-						struct{
+						struct {
 							Otp bool `json:"otp"`
 						}{
 							Otp: false,

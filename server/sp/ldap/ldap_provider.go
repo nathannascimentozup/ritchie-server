@@ -121,7 +121,7 @@ func (l ldapConfig) Otp() bool {
 	return l.config.otp
 }
 
-func (l ldapConfig) Login(username, password string) (server.User, server.LoginError) {
+func (l ldapConfig) Login(username, password, _ string) (server.User, server.LoginError) {
 	defer l.client.Close()
 	ok, user, err := l.client.Authenticate(username, password)
 	if err != nil {

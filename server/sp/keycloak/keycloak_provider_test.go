@@ -16,6 +16,7 @@ func Test_keycloak_Login(t *testing.T) {
 	type args struct {
 		username string
 		password string
+		totp     string
 	}
 	tests := []struct {
 		name     string
@@ -58,11 +59,34 @@ func Test_keycloak_Login(t *testing.T) {
 				err:  nil,
 			},
 		},
+		{
+			name: "valid otp",
+			fields: fields{
+				config: map[string]string{
+					"type":         "keycloak",
+					"url":          "any url",
+					"realm":        "ritchie",
+					"clientId":     "user-login",
+					"clientSecret": "user-login",
+					"ttl":          "36000",
+					"otp":          "true",
+				},
+			},
+			args: args{
+				username: "user",
+				password: "failed",
+			},
+			outUser: nil,
+			outError: keycloakError{
+				code: 400,
+				err:  ErrInvalidOpt,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			k := NewKeycloakProvider(tt.fields.config)
-			gotUser, gotError := k.Login(tt.args.username, tt.args.password)
+			gotUser, gotError := k.Login(tt.args.username, tt.args.password, tt.args.totp)
 			if gotUser != nil && tt.outUser != nil {
 				if !reflect.DeepEqual(gotUser.UserInfo(), tt.outUser.UserInfo()) {
 					t.Errorf("Login() gotUser.UserInfo() = %v, want %v", gotUser.UserInfo(), tt.outUser.UserInfo())

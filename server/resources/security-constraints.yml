@@ -102,7 +102,7 @@ publicConstraints:
   - pattern: /login
     methods:
       - POST
-      
+
   - pattern: /metrics
     methods:
       - GET

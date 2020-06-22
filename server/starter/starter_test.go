@@ -3,8 +3,9 @@ package starter
 import (
 	"fmt"
 	"reflect"
-	"ritchie-server/server"
 	"testing"
+
+	"ritchie-server/server"
 )
 
 func TestConfigurator_LoadLoginHandler(t *testing.T) {

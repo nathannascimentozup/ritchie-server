@@ -1,11 +1,12 @@
 package keycloak
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Nerzal/gocloak"
+	"github.com/Nerzal/gocloak/v5"
 	"github.com/dgrijalva/jwt-go"
 
 	"ritchie-server/server"
@@ -18,6 +19,10 @@ const (
 	clientSecret = "clientSecret"
 	ttl          = "ttl"
 	otp          = "otp"
+)
+
+var (
+	ErrInvalidOpt = errors.New("this realm have enable otp please send a totp value to login")
 )
 
 type keycloakConfig struct {
@@ -71,8 +76,16 @@ func (k keycloakConfig) TTL() int64 {
 	return ttlF
 }
 
-func (k keycloakConfig) Login(username, password string) (server.User, server.LoginError) {
-	token, err := k.client.Login(k.config.clientId, k.config.clientSecret, k.config.realm, username, password)
+func (k keycloakConfig) Login(username, password, totp string) (server.User, server.LoginError) {
+
+	if totp == "" && k.config.otp {
+		return nil, keycloakError{
+			code: 400,
+			err:  ErrInvalidOpt,
+		}
+	}
+
+	token, err := k.client.LoginOtp(k.config.clientId, k.config.clientSecret, k.config.realm, username, password, totp)
 	if err != nil {
 		code := strings.Split(err.Error(), " ")[0]
 		codeInt, errConverter := strconv.ParseInt(code, 10, 64)
