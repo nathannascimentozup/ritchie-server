@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/viniciussousazup/gocloak/v5"
+	"github.com/Nerzal/gocloak/v5"
 
 	"ritchie-server/server"
 )
