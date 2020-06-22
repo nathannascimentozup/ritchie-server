@@ -22,7 +22,6 @@ references:
   filters: &FILTERS_DELIVERY
     branches:
       only:
-        - /^release-.*/
         - qa
         - beta
 

@@ -77,6 +77,8 @@ ifeq "$(GONNA_RELEASE)" "RELEASE"
 	echo $(BUCKET)
 	echo -n "$(NEXT_VERSION)" > stable-server.txt
 	aws s3 sync . s3://$(BUCKET)/ --exclude "*" --include "stable-server.txt"
+else
+	@echo "NOT GONNA RELEASE"
 endif
 
 rebase-beta:
