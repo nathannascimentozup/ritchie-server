@@ -13,13 +13,16 @@ import (
 )
 
 const (
-	url           = "url"
-	realm         = "realm"
-	clientId      = "clientId"
-	clientSecret  = "clientSecret"
-	ttl           = "ttl"
-	otp           = "otp"
-	validOtpError = "this realm have enable otp please send a totp value to login"
+	url          = "url"
+	realm        = "realm"
+	clientId     = "clientId"
+	clientSecret = "clientSecret"
+	ttl          = "ttl"
+	otp          = "otp"
+)
+
+var (
+	ErrInvalidOpt = errors.New("this realm have enable otp please send a totp value to login")
 )
 
 type keycloakConfig struct {
@@ -78,7 +81,7 @@ func (k keycloakConfig) Login(username, password, totp string) (server.User, ser
 	if totp == "" && k.config.otp {
 		return nil, keycloakError{
 			code: 400,
-			err:  errors.New(validOtpError),
+			err:  ErrInvalidOpt,
 		}
 	}
 

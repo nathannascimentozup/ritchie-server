@@ -1,7 +1,6 @@
 package keycloak
 
 import (
-	"errors"
 	"os"
 	"reflect"
 	"testing"
@@ -80,7 +79,7 @@ func Test_keycloak_Login(t *testing.T) {
 			outUser: nil,
 			outError: keycloakError{
 				code: 400,
-				err:  errors.New(validOtpError),
+				err:  ErrInvalidOpt,
 			},
 		},
 	}
