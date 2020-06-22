@@ -7,8 +7,7 @@ services:
       TEST_RESULTS_DIR: ${TEST_RESULTS_DIR}
     volumes:
       - .:/home/application
-    command: ["/home/application/run-tests-ci.sh"]
-#    command: ["ls","/home/application/testdata"]
+    command: ["/home/application/.circleci/scripts/run-tests-ci.sh"]
     user: root
     depends_on:
       - stubby4j

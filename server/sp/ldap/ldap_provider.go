@@ -26,6 +26,7 @@ const (
 	attributeName      = "attributeName"
 	attributeEmail     = "attributeEmail"
 	ttl                = "ttl"
+	otp                = "otp"
 )
 
 type ldapError struct {
@@ -54,6 +55,7 @@ type lConfig struct {
 	attributeName      string
 	attributeEmail     string
 	ttl                int64
+	otp                bool
 }
 
 type ldapConfig struct {
@@ -94,6 +96,7 @@ func loadLConfig(config map[string]string) lConfig {
 	st, _ := strconv.ParseBool(config[skipTLS])
 	isv, _ := strconv.ParseBool(config[insecureSkipVerify])
 	ttl, _ := strconv.ParseInt(config[ttl], 10, 64)
+	otp, _ := strconv.ParseBool(config[otp])
 	return lConfig{
 		base:               config[base],
 		host:               config[host],
@@ -110,12 +113,17 @@ func loadLConfig(config map[string]string) lConfig {
 		attributeName:      config[attributeName],
 		attributeEmail:     config[attributeEmail],
 		ttl:                ttl,
+		otp:                otp,
 	}
 }
 
-func (k ldapConfig) Login(username, password, _ string) (server.User, server.LoginError) {
-	defer k.client.Close()
-	ok, user, err := k.client.Authenticate(username, password)
+func (l ldapConfig) Otp() bool {
+	return l.config.otp
+}
+
+func (l ldapConfig) Login(username, password, _ string) (server.User, server.LoginError) {
+	defer l.client.Close()
+	ok, user, err := l.client.Authenticate(username, password)
 	if err != nil {
 		return nil, ldapError{
 			code: 401,
@@ -128,7 +136,7 @@ func (k ldapConfig) Login(username, password, _ string) (server.User, server.Log
 			err:  fmt.Errorf("Authenticating failed for user %s", username),
 		}
 	}
-	groups, err := k.client.GetGroupsOfUser(username)
+	groups, err := l.client.GetGroupsOfUser(username)
 	if err != nil {
 		return nil, ldapError{
 			code: 500,
@@ -138,16 +146,16 @@ func (k ldapConfig) Login(username, password, _ string) (server.User, server.Log
 	lu := ldapUser{
 		roles: groups,
 		userInfo: server.UserInfo{
-			Name:     user[k.config.attributeName],
+			Name:     user[l.config.attributeName],
 			Username: username,
-			Email:    user[k.config.attributeEmail],
+			Email:    user[l.config.attributeEmail],
 		},
 	}
 	return lu, nil
 }
 
-func (k ldapConfig) TTL() int64 {
-	ttlF := time.Now().Unix() + k.config.ttl
+func (l ldapConfig) TTL() int64 {
+	ttlF := time.Now().Unix() + l.config.ttl
 	return ttlF
 }
 

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/Nerzal/gocloak/v5"
+	"github.com/dgrijalva/jwt-go"
 
 	"ritchie-server/server"
 )
@@ -49,7 +49,6 @@ type keycloakUser struct {
 func NewKeycloakProvider(config map[string]string) server.SecurityManager {
 	ttl, _ := strconv.ParseInt(config[ttl], 10, 64)
 	otp, _ := strconv.ParseBool(config[otp])
-
 	kc := kConfig{
 		url:          config[url],
 		realm:        config[realm],
@@ -63,6 +62,10 @@ func NewKeycloakProvider(config map[string]string) server.SecurityManager {
 		client: c,
 		config: kc,
 	}
+}
+
+func (k keycloakConfig) Otp() bool {
+	return k.config.otp
 }
 
 func (k keycloakConfig) TTL() int64 {

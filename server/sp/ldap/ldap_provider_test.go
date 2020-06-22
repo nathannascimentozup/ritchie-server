@@ -163,3 +163,98 @@ func Test_ldapConfig_TTL(t *testing.T) {
 		})
 	}
 }
+
+func Test_ldapConfig_Otp(t *testing.T) {
+	type fields struct {
+		config map[string]string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   bool
+	}{
+		{
+			name: "returned true",
+			fields: fields{
+				config: map[string]string{
+					"type":               "ldap",
+					"base":               "dc=example,dc=org",
+					"host":               "localhost",
+					"serverName":         "ldap.example.org",
+					"port":               "389",
+					"useSSL":             "false",
+					"skipTLS":            "true",
+					"insecureSkipVerify": "false",
+					"bindDN":             "cn=admin,dc=example,dc=org",
+					"bindPassword":       "admin",
+					"userFilter":         "(uid=%s)",
+					"groupFilter":        "(memberUid=%s)",
+					"attributeUsername":  "uid",
+					"attributeName":      "givenName",
+					"attributeEmail":     "mail",
+					"ttl":                "36000",
+					"otp":                "true",
+				},
+			},
+			want: true,
+		},
+		{
+			name: "returned false",
+			fields: fields{
+				config: map[string]string{
+					"type":               "ldap",
+					"base":               "dc=example,dc=org",
+					"host":               "localhost",
+					"serverName":         "ldap.example.org",
+					"port":               "389",
+					"useSSL":             "false",
+					"skipTLS":            "true",
+					"insecureSkipVerify": "false",
+					"bindDN":             "cn=admin,dc=example,dc=org",
+					"bindPassword":       "admin",
+					"userFilter":         "(uid=%s)",
+					"groupFilter":        "(memberUid=%s)",
+					"attributeUsername":  "uid",
+					"attributeName":      "givenName",
+					"attributeEmail":     "mail",
+					"ttl":                "36000",
+					"otp":                "false",
+				},
+			},
+			want: false,
+		},
+		{
+			name: "returned false (empty)",
+			fields: fields{
+				config: map[string]string{
+					"type":               "ldap",
+					"base":               "dc=example,dc=org",
+					"host":               "localhost",
+					"serverName":         "ldap.example.org",
+					"port":               "389",
+					"useSSL":             "false",
+					"skipTLS":            "true",
+					"insecureSkipVerify": "false",
+					"bindDN":             "cn=admin,dc=example,dc=org",
+					"bindPassword":       "admin",
+					"userFilter":         "(uid=%s)",
+					"groupFilter":        "(memberUid=%s)",
+					"attributeUsername":  "uid",
+					"attributeName":      "givenName",
+					"attributeEmail":     "mail",
+					"ttl":                "36000",
+				},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			k := NewLdapProvider(tt.fields.config)
+			otp := k.Otp()
+			if otp != tt.want {
+				t.Errorf("TTL() = %v, want %v", otp, tt.want)
+			}
+		})
+	}
+}

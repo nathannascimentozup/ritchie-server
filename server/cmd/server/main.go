@@ -1,9 +1,11 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
-	"net/http"
+
 	"ritchie-server/server"
 	"ritchie-server/server/starter"
 )
@@ -11,6 +13,7 @@ import (
 var h Handler
 
 type Handler struct {
+	OtpHandler              server.DefaultHandler
 	LoginHandler            server.DefaultHandler
 	CredentialConfigHandler server.DefaultHandler
 	ConfigHealth            server.DefaultHandler
@@ -30,6 +33,7 @@ func init() {
 		log.Fatalf("Failed to load server configuration: %v", err)
 	}
 	h = Handler{
+		OtpHandler:              i.LoadOtpHandler(),
 		LoginHandler:            i.LoadLoginHandler(),
 		CredentialConfigHandler: i.LoadCredentialConfigHandler(),
 		ConfigHealth:            i.LoadConfigHealth(),
@@ -47,6 +51,7 @@ func init() {
 func main() {
 
 	log.Info("Starting server")
+	http.Handle("/otp", h.MiddlewareHandler.Filter(h.OtpHandler.Handler()))
 	http.Handle("/login", h.MiddlewareHandler.Filter(h.LoginHandler.Handler()))
 	http.Handle("/credentials/admin", h.MiddlewareHandler.Filter(h.CredentialHandler.HandleAdmin()))
 	http.Handle("/credentials/org", h.MiddlewareHandler.Filter(h.CredentialHandler.HandleOrg()))

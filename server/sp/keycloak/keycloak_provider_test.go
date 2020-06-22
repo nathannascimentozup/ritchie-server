@@ -29,7 +29,7 @@ func Test_keycloak_Login(t *testing.T) {
 		{
 			name: "login success",
 			fields: fields{
-				config: dummyConfigKeycloak(),
+				config: dummyConfigKeycloak(""),
 			},
 			args: args{
 				username: "user",
@@ -48,7 +48,7 @@ func Test_keycloak_Login(t *testing.T) {
 		{
 			name: "login failed",
 			fields: fields{
-				config: dummyConfigKeycloak(),
+				config: dummyConfigKeycloak(""),
 			},
 			args: args{
 				username: "user",
@@ -124,7 +124,7 @@ func Test_keycloak_TTL(t *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				config: dummyConfigKeycloak(),
+				config: dummyConfigKeycloak(""),
 			},
 			want: 36000,
 		},
@@ -140,7 +140,48 @@ func Test_keycloak_TTL(t *testing.T) {
 	}
 }
 
-func dummyConfigKeycloak() map[string]string {
+func Test_keycloakConfig_Otp(t *testing.T) {
+	type fields struct {
+		config map[string]string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   bool
+	}{
+		{
+			name: "returned true",
+			fields: fields{
+				config: dummyConfigKeycloak("true"),
+			},
+			want: true,
+		},
+		{
+			name: "returned false",
+			fields: fields{
+				config: dummyConfigKeycloak("false"),
+			},
+			want: false,
+		},
+		{
+			name: "returned false (empty)",
+			fields: fields{
+				config: dummyConfigKeycloak(""),
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			k := NewKeycloakProvider(tt.fields.config)
+			if got := k.Otp(); got != tt.want {
+				t.Errorf("Otp() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func dummyConfigKeycloak(otp string) map[string]string {
 	value := os.Getenv("KEYCLOAK_URL")
 	if value == "" {
 		value = "http://localhost:8080"
@@ -152,6 +193,6 @@ func dummyConfigKeycloak() map[string]string {
 		"clientId":     "user-login",
 		"clientSecret": "user-login",
 		"ttl":          "36000",
-		"otp":          "false",
+		"otp":          otp,
 	}
 }

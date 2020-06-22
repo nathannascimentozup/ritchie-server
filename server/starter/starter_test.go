@@ -3,8 +3,9 @@ package starter
 import (
 	"fmt"
 	"reflect"
-	"ritchie-server/server"
 	"testing"
+
+	"ritchie-server/server"
 )
 
 func TestConfigurator_LoadLoginHandler(t *testing.T) {
@@ -32,6 +33,36 @@ func TestConfigurator_LoadLoginHandler(t *testing.T) {
 
 			if got := reflect.TypeOf(c.LoadLoginHandler()); fmt.Sprint(got) != tt.want {
 				t.Errorf("LoadLoginHandler() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestConfigurator_LoadOtpHandler(t *testing.T) {
+	type fields struct {
+		conf         server.Config
+		vaultManager server.VaultManager
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			name:   "correct type",
+			fields: fields{},
+			want:   "otp.Handler",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := Configurator{
+				conf:         tt.fields.conf,
+				vaultManager: tt.fields.vaultManager,
+			}
+
+			if got := reflect.TypeOf(c.LoadOtpHandler()); fmt.Sprint(got) != tt.want {
+				t.Errorf("LoadOtpHandler() = %v, want %v", got, tt.want)
 			}
 		})
 	}
