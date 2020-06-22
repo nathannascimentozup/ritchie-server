@@ -196,6 +196,7 @@ type ProviderHandler interface {
 }
 
 type SecurityManager interface {
+	Otp() bool
 	Login(username, password string) (User, LoginError)
 	TTL() int64
 }
@@ -211,6 +212,7 @@ type User interface {
 }
 
 type Configurator interface {
+	LoadOtpHandler() DefaultHandler
 	LoadLoginHandler() DefaultHandler
 	LoadCredentialConfigHandler() DefaultHandler
 	LoadConfigHealth() DefaultHandler

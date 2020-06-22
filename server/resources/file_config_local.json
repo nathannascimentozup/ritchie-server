@@ -6,7 +6,8 @@
             "realm": "ritchie",
             "clientId": "user-login",
             "clientSecret": "user-login",
-            "ttl" : "36000"
+            "ttl" : "36000",
+            "otp" : "true"
         },
         "cliVersionPath": {
             "provider": "s3",
@@ -134,7 +135,8 @@
             "attributeUsername" : "uid",
             "attributeName" : "givenName",
             "attributeEmail" : "mail",
-            "ttl" : "36000"
+            "ttl" : "36000",
+            "otp" : "false"
         },
         "cliVersionPath": {
             "provider": "s3",

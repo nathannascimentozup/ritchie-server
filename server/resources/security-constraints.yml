@@ -95,6 +95,10 @@ constraints:
         - GET
 
 publicConstraints:
+  - pattern: /otp
+    methods:
+      - GET
+
   - pattern: /login
     methods:
       - POST
