@@ -267,6 +267,9 @@ workflows:
       - build:
           filters:
             <<: *FILTERS_RELEASE
+      - build_container:
+          filters:
+            <<: *FILTERS_RELEASE
       - delivery_ecr:
           filters:
             <<: *FILTERS_RELEASE
@@ -286,6 +289,9 @@ workflows:
   delivery:
     jobs:
       - build:
+          filters:
+            <<: *FILTERS_DELIVERY
+      - build_container:
           filters:
             <<: *FILTERS_DELIVERY
       - delivery_ecr:
