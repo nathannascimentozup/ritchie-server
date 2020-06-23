@@ -38,7 +38,7 @@ delivery-ecr:
 
 delivery-hub:
 	$(shell echo "${DOCKERHUB_PASS}" | ${DOCKER_LOGIN} --username ${DOCKERHUB_USERNAME} --password-stdin)
-	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
+	${DOCKERPUSH} "${DOCKERHUB_USERNAME}/${BINARY_NAME}:${RELEASE}"
 
 test:
 	DOCKER_REGISTRY_BUILDER=${REGISTRY} docker-compose -f docker-compose-ci.yml run server
