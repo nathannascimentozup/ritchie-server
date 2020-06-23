@@ -22,6 +22,8 @@ Currently, this repository is integrated with :
 
 - [Zup Products](https://www.zup.com.br/en/about) 
 
+- [Postman Collection](https://github.com/ZupIT/ritchie-server/blob/master/testdata/postman/collection/README.md)
+
 
 
 ## How to install Ritchie
