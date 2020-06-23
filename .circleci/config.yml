@@ -270,16 +270,18 @@ workflows:
       - build_container:
           filters:
             <<: *FILTERS_RELEASE
+          requires:
+            - build
       - delivery_ecr:
           filters:
             <<: *FILTERS_RELEASE
           requires:
-            - build
+            - build_container
       - delivery_hub:
           filters:
             <<: *FILTERS_RELEASE
           requires:
-            - build
+            - build_container
       - release:
           filters:
             <<: *FILTERS_RELEASE
@@ -294,13 +296,15 @@ workflows:
       - build_container:
           filters:
             <<: *FILTERS_DELIVERY
+          requires:
+            - build
       - delivery_ecr:
           filters:
             <<: *FILTERS_DELIVERY
           requires:
-            - build
+            - build_container
       - delivery_hub:
           filters:
             <<: *FILTERS_DELIVERY
           requires:
-            - build
+            - build_container
