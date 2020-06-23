@@ -1,0 +1,971 @@
+{
+	"info": {
+		"_postman_id": "9c0e4930-bb6c-4ef2-9f1e-a8379c56d697",
+		"name": "ritchie-server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "otp",
+			"item": [
+				{
+					"name": "Get otp",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "869f3bfc-359b-4d79-8c13-33e9f53b1038",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"type": "text",
+								"value": "{{x-org}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{ritchie-server-url}}/otp",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"otp"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "login",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b423f8f2-c35a-4e84-9e3c-011f5c14aa60",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var response = JSON.parse(responseBody);",
+									"tests[\"token should not be null\"] = response.token !== null;",
+									"",
+									"postman.setEnvironmentVariable(\"x-authorization\", response.token);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"type": "text",
+								"value": "{{x-org}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\":\"{{username}}\",\n    \"password\":\"{{password}}\",\n    \"totp\":\"123456\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{ritchie-server-url}}/login",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "credentials",
+			"item": [
+				{
+					"name": "Admin Credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f133b7e9-c9d2-422d-b6b2-8b9e89bae641",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"type": "text",
+								"value": "{{x-org}}"
+							},
+							{
+								"key": "x-authorization",
+								"type": "text",
+								"value": "{{x-authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\":\"github\",\n    \"username\":\"user\",\n    \"credential\":{\n        \"usernmae\":\"bla\",\n        \"password\":\"blablas\"\n    }\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{ritchie-server-url}}/credentials/admin",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"credentials",
+								"admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Org Credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9415a9a8-8afd-42ab-9ee5-9a2c63be0c00",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"type": "text",
+								"value": "{{x-org}}"
+							},
+							{
+								"key": "x-authorization",
+								"type": "text",
+								"value": "{{x-authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\":\"github\",\n    \"username\":\"user\",\n    \"credential\":{\n        \"usernmae\":\"bla\",\n        \"password\":\"blablas\"\n    }\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{ritchie-server-url}}/credentials/org",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"credentials",
+								"org"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Credentials me by service",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "02f2e695-dd8b-4869-bbcc-be8045e52ceb",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"type": "text",
+								"value": "{{x-org}}"
+							},
+							{
+								"key": "x-authorization",
+								"type": "text",
+								"value": "{{x-authorization}}"
+							}
+						],
+						"url": {
+							"raw": "{{ritchie-server-url}}/credentials/me/github",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"credentials",
+								"me",
+								"github"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Credentials config",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7abee630-cf88-4e57-bdf5-b0e2915f4baa",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"type": "text",
+								"value": "{{x-org}}"
+							},
+							{
+								"key": "x-authorization",
+								"type": "text",
+								"value": "{{x-authorization}}"
+							}
+						],
+						"url": {
+							"raw": "{{ritchie-server-url}}/credentials/config",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"credentials",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Credentials me",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2cb8cd08-3c2c-4f7f-bd72-7eba72202852",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"type": "text",
+								"value": "{{x-org}}"
+							},
+							{
+								"key": "x-authorization",
+								"type": "text",
+								"value": "{{x-authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\":\"github\",\n    \"username\":\"user\",\n    \"credential\":{\n        \"usernmae\":\"bla\",\n        \"password\":\"blablas\"\n    }\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{ritchie-server-url}}/credentials/me",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"credentials",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "22c1db2c-d87f-409f-b407-a4450e5408ba",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"type": "text",
+								"value": "{{x-org}}"
+							},
+							{
+								"key": "x-authorization",
+								"type": "text",
+								"value": "{{x-authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\":\"user\",\n    \"command\":\"init\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{ritchie-server-url}}/usage",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"usage"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "metricts",
+			"item": [
+				{
+					"name": "Metricts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cc996a57-e119-4dd5-b05c-fbca3692c94d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{ritchie-server-url}}/metrics",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"metrics"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "health",
+			"item": [
+				{
+					"name": "Health",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "eb9b25be-a3c0-4ef5-aef4-a046ce8c9dd7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{ritchie-server-url}}/health",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "usage",
+			"item": [
+				{
+					"name": "Usage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "22c1db2c-d87f-409f-b407-a4450e5408ba",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"type": "text",
+								"value": "{{x-org}}"
+							},
+							{
+								"key": "x-authorization",
+								"type": "text",
+								"value": "{{x-authorization}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\":\"user\",\n    \"command\":\"init\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "{{ritchie-server-url}}/usage",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"usage"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "cli-version",
+			"item": [
+				{
+					"name": "cli-version",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9018d5d7-3f8d-4ddf-977e-34fc95a5a628",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"value": "{{x-org}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ritchie-server-url}}/cli-version",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"cli-version"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "repositories",
+			"item": [
+				{
+					"name": "repositories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "eecf4119-26b9-42a4-afc2-9811b23a1ca6",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"type": "text",
+								"value": "{{x-org}}"
+							},
+							{
+								"key": "x-authorization",
+								"value": "{{x-authorization}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ritchie-server-url}}/repositories",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"repositories"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "tree",
+			"item": [
+				{
+					"name": "tree",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b266466b-2c72-48a8-be21-6ebc5d73a4a2",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"type": "text",
+								"value": "{{x-org}}"
+							},
+							{
+								"key": "x-authorization",
+								"type": "text",
+								"value": "{{x-authorization}}"
+							},
+							{
+								"key": "x-repo-name",
+								"value": "{{x-repo-name}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ritchie-server-url}}/tree/tree.json",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"tree",
+								"tree.json"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "formulas",
+			"item": [
+				{
+					"name": "formulas config",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d7414da4-85cf-4367-a73c-ff2470e0678e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"type": "text",
+								"value": "{{x-org}}"
+							},
+							{
+								"key": "x-authorization",
+								"type": "text",
+								"value": "{{x-authorization}}"
+							},
+							{
+								"key": "x-repo-name",
+								"type": "text",
+								"value": "{{x-repo-name}}"
+							}
+						],
+						"url": {
+							"raw": "{{ritchie-server-url}}/formulas/aws/terraform/config.json",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"formulas",
+								"aws",
+								"terraform",
+								"config.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "formulas zip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "186e25d4-cce7-49a2-926f-2a5d1e35b21e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-org",
+								"type": "text",
+								"value": "{{x-org}}"
+							},
+							{
+								"key": "x-authorization",
+								"type": "text",
+								"value": "{{x-authorization}}"
+							},
+							{
+								"key": "x-repo-name",
+								"type": "text",
+								"value": "{{x-repo-name}}"
+							}
+						],
+						"url": {
+							"raw": "{{ritchie-server-url}}/formulas/aws/terraform/linux.zip",
+							"host": [
+								"{{ritchie-server-url}}"
+							],
+							"path": [
+								"formulas",
+								"aws",
+								"terraform",
+								"linux.zip"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "keycloak",
+			"item": [
+				{
+					"name": "[IAM] - Token Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b39b2533-dd6c-44bf-ae89-279119b64963",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{keycloak-client-id}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"description": "\n",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{keycloak-client-secret}}",
+									"type": "text"
+								}
+							],
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "{{keyclock-url}}/auth/realms/{{keycloak-realm}}/protocol/openid-connect/token",
+							"host": [
+								"{{keyclock-url}}"
+							],
+							"path": [
+								"auth",
+								"realms",
+								"{{keycloak-realm}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
