@@ -51,13 +51,18 @@ test-local:
 
 release:
 	git config --global user.email "$(GIT_EMAIL)"
-	git config --global user.name "$(GIT_USER)"
-	git add .
-	git commit --allow-empty -m "release"
-	git push $(GIT_REMOTE) HEAD:release-$(RELEASE_VERSION)
-	git tag -a $(RELEASE_VERSION) -m "release"
+	git config --global user.name "$(GIT_NAME)"
+	git tag -a $(RELEASE_VERSION) -m "CHANGELOG: https://github.com/ZupIT/ritchie-server/blob/master/CHANGELOG.md"
 	git push $(GIT_REMOTE) $(RELEASE_VERSION)
+	gem install github_changelog_generator
+	github_changelog_generator -u zupit -p ritchie-server --token $(GIT_PASSWORD) --enhancement-labels feature,Feature --exclude-labels duplicate,question,invalid,wontfix
+	git add .
+	git commit --allow-empty -m "[ci skip] release"
+	git push $(GIT_REMOTE) HEAD:release-$(RELEASE_VERSION)
 	curl --user $(GIT_USERNAME):$(GIT_PASSWORD) -X POST https://api.github.com/repos/ZupIT/ritchie-server/pulls -H 'Content-Type: application/json' -d '{ "title": "Release $(RELEASE_VERSION) merge", "body": "Release $(RELEASE_VERSION) merge with master", "head": "release-$(RELEASE_VERSION)", "base": "master" }'
+	echo $(BUCKET)
+	echo -n "$(NEXT_VERSION)" > stable-server.txt
+	aws s3 sync . s3://$(BUCKET)/ --exclude "*" --include "stable-server.txt"
 
 build:
 	mkdir -p bin
@@ -76,9 +81,7 @@ ifeq "$(GONNA_RELEASE)" "RELEASE"
 	git add .
 	git commit --allow-empty -m "release-$(NEXT_VERSION)"
 	git push $(GIT_REMOTE) HEAD:release-$(NEXT_VERSION)
-	echo $(BUCKET)
-	echo -n "$(NEXT_VERSION)" > stable-server.txt
-	aws s3 sync . s3://$(BUCKET)/ --exclude "*" --include "stable-server.txt"
+
 else
 	@echo "NOT GONNA RELEASE"
 endif
