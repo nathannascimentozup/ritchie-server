@@ -185,6 +185,12 @@ jobs:
       - attach_workspace:
           at: ~/workspace
       - run:
+          name: Creating docker image
+          command: |
+            . ./.circleci/scripts/version.sh
+            . ./.circleci/scripts/registry.sh
+            make build-container
+      - run:
           name: Pushing docker image to registry DOCKERHUB
           command: |
             . ./.circleci/scripts/version.sh
@@ -200,6 +206,12 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/workspace
+      - run:
+          name: Creating docker image
+          command: |
+            . ./.circleci/scripts/version.sh
+            . ./.circleci/scripts/registry.sh
+            make build-container
       - run:
           name: Pushing docker image to registry ECR
           command: |
