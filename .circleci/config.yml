@@ -309,11 +309,17 @@ workflows:
           requires:
             - build_container
       - release:
+          name: release-publish
           filters:
             <<: *FILTERS_RELEASE
           requires:
             - delivery_hub
             - delivery_ecr
+      - delivery-file:
+          filters:
+            <<: *FILTERS_RELEASE
+          requires:
+            - release-publish
   delivery:
     jobs:
       - build:
