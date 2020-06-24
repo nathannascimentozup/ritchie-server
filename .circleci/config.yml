@@ -223,7 +223,7 @@ jobs:
   release:
     environment:
       <<: *ENVIRONMENT
-    executor: delivery-executor
+    executor: release-executor
     steps:
       - checkout
       - run:
@@ -231,6 +231,20 @@ jobs:
           command: |
             . ./.circleci/scripts/version.sh
             make release
+
+  persist_release:
+    environment:
+      <<: *ENVIRONMENT
+    executor: delivery-executor
+    steps:
+      - checkout
+      - run:
+          name: Releasing
+          command: |
+            pip install aws
+            . ./.circleci/scripts/version.sh
+            make delivery-file
+
 
 workflows:
   release_trigger:

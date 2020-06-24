@@ -1,5 +1,5 @@
 REGISTRY = $(DOCKER_REGISTRY)
-RELEASE = $(RELEASE_VERSION)
+VERSION = $(RELEASE_VERSION)
 
 # Go parameters
 GOCMD=go
@@ -22,6 +22,7 @@ DOCKERTAG=${DOCKERCMD} tag
 
 GONNA_RELEASE=$(shell ./.circleci/scripts/gonna_release.sh)
 NEXT_VERSION=$(shell ./.circleci/scripts/next-version.sh)
+IS_RELEASE=$(shell echo $(VERSION) | egrep "^[0-9.]+-beta.[0-9]+")
 
 BUCKET="ritchie-cli-bucket152849730126474"
 
@@ -35,11 +36,11 @@ build-local:
 
 delivery-ecr:
 	$(shell aws ecr get-login --region ${DOCKER_AWS_REGION} --no-include-email | sed 's/https:\/\///')
-	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
+	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${VERSION}"
 
 delivery-hub:
 	echo "${DOCKERHUB_PASS}" | ${DOCKERLOGIN} --username ${DOCKERHUB_USERNAME} --password-stdin
-	${DOCKERPUSH} "${DOCKERHUB_USERNAME}/${BINARY_NAME}:${RELEASE}"
+	${DOCKERPUSH} "${DOCKERHUB_USERNAME}/${BINARY_NAME}:${VERSION}"
 
 test:
 	DOCKER_REGISTRY_BUILDER=${REGISTRY} docker-compose -f docker-compose-ci.yml run server
@@ -60,9 +61,15 @@ release:
 	git commit --allow-empty -m "[ci skip] release"
 	git push $(GIT_REMOTE) HEAD:release-$(RELEASE_VERSION)
 	curl --user $(GIT_USERNAME):$(GIT_PASSWORD) -X POST https://api.github.com/repos/ZupIT/ritchie-server/pulls -H 'Content-Type: application/json' -d '{ "title": "Release $(RELEASE_VERSION) merge", "body": "Release $(RELEASE_VERSION) merge with master", "head": "release-$(RELEASE_VERSION)", "base": "master" }'
-	echo $(BUCKET)
+
+
+delivery-file:
+ifneq "$(IS_RELEASE)" ""
 	echo -n "$(NEXT_VERSION)" > stable-server.txt
 	aws s3 sync . s3://$(BUCKET)/ --exclude "*" --include "stable-server.txt"
+else
+	echo "NOT GONNA PUBLISH"
+endif
 
 build:
 	mkdir -p bin
@@ -70,8 +77,8 @@ build:
 
 build-container:
 	cp bin/$(BINARY_NAME) server
-	${DOCKERBUILD} -t "${REGISTRY}/${BINARY_NAME}:${RELEASE}" ./server
-	${DOCKERTAG} "${REGISTRY}/${BINARY_NAME}:${RELEASE}" "${DOCKERHUB_USERNAME}/${BINARY_NAME}:${RELEASE}"
+	${DOCKERBUILD} -t "${REGISTRY}/${BINARY_NAME}:${VERSION}" ./server
+	${DOCKERTAG} "${REGISTRY}/${BINARY_NAME}:${VERSION}" "${DOCKERHUB_USERNAME}/${BINARY_NAME}:${VERSION}"
 
 release-creator:
 ifeq "$(GONNA_RELEASE)" "RELEASE"
