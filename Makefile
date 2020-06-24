@@ -38,7 +38,7 @@ delivery-ecr:
 	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
 
 delivery-hub:
-	echo "${DOCKERHUB_PASS}" | docker login --username ${DOCKERHUB_USERNAME} --password-stdin
+	echo "${DOCKERHUB_PASS}" | ${DOCKERLOGIN} --username ${DOCKERHUB_USERNAME} --password-stdin
 	${DOCKERPUSH} "${DOCKERHUB_USERNAME}/${BINARY_NAME}:${RELEASE}"
 
 test:
