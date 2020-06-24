@@ -18,6 +18,7 @@ DOCKERBUILD=${DOCKERCMD} build
 DOCKERPUSH=${DOCKERCMD} push
 DOCKERTAG=${DOCKERCMD} tag
 DOCKERLOGIN=${DOCKERCMD} login
+DOCKERTAG=${DOCKERCMD} tag
 
 GONNA_RELEASE=$(shell ./.circleci/scripts/gonna_release.sh)
 NEXT_VERSION=$(shell ./.circleci/scripts/next-version.sh)
@@ -37,7 +38,7 @@ delivery-ecr:
 	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${RELEASE}"
 
 delivery-hub:
-	$(shell echo "${DOCKERHUB_PASS}" | ${DOCKER_LOGIN} --username ${DOCKERHUB_USERNAME} --password-stdin)
+	echo "${DOCKERHUB_PASS}" | ${DOCKERLOGIN} --username ${DOCKERHUB_USERNAME} --password-stdin
 	${DOCKERPUSH} "${DOCKERHUB_USERNAME}/${BINARY_NAME}:${RELEASE}"
 
 test:
@@ -64,7 +65,8 @@ build:
 
 build-container:
 	cp bin/$(BINARY_NAME) server
-	$(DOCKERBUILD) -t "${REGISTRY}/${BINARY_NAME}:${RELEASE}" ./server
+	${DOCKERBUILD} -t "${REGISTRY}/${BINARY_NAME}:${RELEASE}" ./server
+	${DOCKERTAG} "${REGISTRY}/${BINARY_NAME}:${RELEASE}" "${DOCKERHUB_USERNAME}/${BINARY_NAME}:${RELEASE}"
 
 release-creator:
 ifeq "$(GONNA_RELEASE)" "RELEASE"
