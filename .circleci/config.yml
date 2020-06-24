@@ -315,7 +315,7 @@ workflows:
           requires:
             - delivery_hub
             - delivery_ecr
-      - delivery-file:
+      - persist_release:
           filters:
             <<: *FILTERS_RELEASE
           requires:
