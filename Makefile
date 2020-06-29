@@ -1,4 +1,3 @@
-REGISTRY = $(DOCKER_REGISTRY)
 VERSION = $(RELEASE_VERSION)
 
 # Go parameters
@@ -18,7 +17,6 @@ DOCKERBUILD=${DOCKERCMD} build
 DOCKERPUSH=${DOCKERCMD} push
 DOCKERTAG=${DOCKERCMD} tag
 DOCKERLOGIN=${DOCKERCMD} login
-DOCKERTAG=${DOCKERCMD} tag
 
 GONNA_RELEASE=$(shell ./.circleci/scripts/gonna_release.sh)
 NEXT_VERSION=$(shell ./.circleci/scripts/next-version.sh)
@@ -34,16 +32,12 @@ build-local-mac:
 build-local:
 	${GOBUILD} -o ./${BINARY_NAME} -v ${CMD_PATH}
 
-delivery-ecr:
-	$(shell aws ecr get-login --region ${DOCKER_AWS_REGION} --no-include-email | sed 's/https:\/\///')
-	${DOCKERPUSH} "${REGISTRY}/${BINARY_NAME}:${VERSION}"
-
 delivery-hub:
 	echo "${DOCKERHUB_PASS}" | ${DOCKERLOGIN} --username ${DOCKERHUB_USERNAME} --password-stdin
 	${DOCKERPUSH} "${DOCKERHUB_USERNAME}/${BINARY_NAME}:${VERSION}"
 
 test:
-	DOCKER_REGISTRY_BUILDER=${REGISTRY} docker-compose -f docker-compose-ci.yml run server
+	DOCKER_REGISTRY_BUILDER= docker-compose -f docker-compose-ci.yml run server
 
 test-local:
 	docker-compose up -d
@@ -77,8 +71,7 @@ build:
 
 build-container:
 	cp bin/$(BINARY_NAME) server
-	${DOCKERBUILD} -t "${REGISTRY}/${BINARY_NAME}:${VERSION}" ./server
-	${DOCKERTAG} "${REGISTRY}/${BINARY_NAME}:${VERSION}" "${DOCKERHUB_USERNAME}/${BINARY_NAME}:${VERSION}"
+	${DOCKERBUILD} -t "${DOCKERHUB_USERNAME}/${BINARY_NAME}:${VERSION}" ./server
 
 release-creator:
 ifeq "$(GONNA_RELEASE)" "RELEASE"

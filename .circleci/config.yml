@@ -173,7 +173,6 @@ jobs:
           name: Creating docker image
           command: |
             . ./.circleci/scripts/version.sh
-            . ./.circleci/scripts/registry.sh
             make build-container
 
   delivery_hub:
@@ -188,37 +187,35 @@ jobs:
           name: Creating docker image
           command: |
             . ./.circleci/scripts/version.sh
-            . ./.circleci/scripts/registry.sh
             make build-container
       - run:
-          name: Pushing docker image to registry Dockerhub
+          name: Pushing docker image to Dockerhub
           command: |
             . ./.circleci/scripts/version.sh
-            . ./.circleci/scripts/registry.sh
             . ./.circleci/scripts/credentials.sh
             make delivery-hub
 
-  delivery_ecr:
-    executor: ritchie-server-executor
-    environment:
-      <<: *ENVIRONMENT
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/workspace
-      - run:
-          name: Creating docker image
-          command: |
-            . ./.circleci/scripts/version.sh
-            . ./.circleci/scripts/registry.sh
-            make build-container
-      - run:
-          name: Pushing docker image to registry ECR
-          command: |
-            . ./.circleci/scripts/version.sh
-            . ./.circleci/scripts/registry.sh
-            . ./.circleci/scripts/credentials.sh
-            make delivery-ecr
+#  delivery_ecr:
+#    executor: ritchie-server-executor
+#    environment:
+#      <<: *ENVIRONMENT
+#    steps:
+#      - checkout
+#      - attach_workspace:
+#          at: ~/workspace
+#      - run:
+#          name: Creating docker image
+#          command: |
+#            . ./.circleci/scripts/version.sh
+#            . ./.circleci/scripts/registry.sh
+#            make build-container
+#      - run:
+#          name: Pushing docker image to registry ECR
+#          command: |
+#            . ./.circleci/scripts/version.sh
+#            . ./.circleci/scripts/registry.sh
+#            . ./.circleci/scripts/credentials.sh
+#            make delivery-ecr
 
   release:
     environment:
@@ -299,11 +296,11 @@ workflows:
             <<: *FILTERS_RELEASE
           requires:
             - build
-      - delivery_ecr:
-          filters:
-            <<: *FILTERS_RELEASE
-          requires:
-            - build_container
+#      - delivery_ecr:
+#          filters:
+#            <<: *FILTERS_RELEASE
+#          requires:
+#            - build_container
       - delivery_hub:
           filters:
             <<: *FILTERS_RELEASE
@@ -315,7 +312,7 @@ workflows:
             <<: *FILTERS_RELEASE
           requires:
             - delivery_hub
-            - delivery_ecr
+#            - delivery_ecr
       - persist_release:
           filters:
             <<: *FILTERS_RELEASE
@@ -331,11 +328,11 @@ workflows:
             <<: *FILTERS_DELIVERY
           requires:
             - build
-      - delivery_ecr:
-          filters:
-            <<: *FILTERS_DELIVERY
-          requires:
-            - build_container
+#      - delivery_ecr:
+#          filters:
+#            <<: *FILTERS_DELIVERY
+#          requires:
+#            - build_container
       - delivery_hub:
           filters:
             <<: *FILTERS_DELIVERY
